@@ -1,0 +1,29 @@
+# MTL written from /Users/dequidt/Code/sofaar/trunk/TestScenes/bunnyVisu.obj
+newmtl Body
+Kd 0.0433232 0.535434 0.115189
+Ns 256
+d 1
+illum 2
+Ka 0 0 0
+Ks 0.2 0.2 0.2
+newmtl Default
+Kd 0.8 0.8 0.8
+Ns 256
+d 1
+illum 2
+Ka 0 0 0
+Ks 0.2 0.2 0.2
+newmtl Ear1
+Kd 0.8 0.0819068 0.0657326
+Ns 256
+d 1
+illum 2
+Ka 0 0 0
+Ks 0.2 0.2 0.2
+newmtl Ear2
+Kd 0.0785413 0.243425 0.778048
+Ns 256
+d 1
+illum 2
+Ka 0 0 0
+Ks 0.2 0.2 0.2

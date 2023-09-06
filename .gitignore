@@ -1,0 +1,12 @@
+# 'Compiled' Python files
+*.pyc
+*.o
+*.py.log
+*.py3.log
+*.pyscn.log
+*.py3scn.log
+*.view
+extlibs/qpOASES*/bin/*
+
+# Backup files
+*~

@@ -1,0 +1,8 @@
+# LICENSE
+
+The open source software " SoftRobots.Inverse " implements the patented Inria method for performing the inverse in real time in order to control the robot: Inria patent entitled "Method for controlling of a deformable robot, associated module and computer program", filed in France on 8 February 2013 (priority date) publication number: FR3002047 - 2014-08-15 - WO2014122134A1; US2015360367A1; EP2954429A1; JP2016513021A.
+  
+Clause 11 of its open source license "AGPLv3" grants you a non-exclusive, worldwide, royalty-free license to use and exploit this patent when you use  " SoftRobots.Inverse  " software or any derivative software work (i.e., developed from the source of that software) to implement this patented method. 
+ 
+Any other exploitation of the patent, in particular by using a software solution to implement the method other than " SoftRobots.Inverse  ", not using the source code of " SoftRobots.Inverse  ", developed by you and/or by a third party is not covered by this license. In 2023, at the time of publication of this software under the AGPLv3 license , Inria's intention is to allow exploitation of this patent only in connection with its software solution under the " SoftRobots.Inverse  " free license. Nevertheless, if you wish to use your own software solution to implement this patent, you may contact the person in charge of the transfer and innovation service of the Inria Lille center at the following address: stip-lille@inria.fr in order to consider the possibilities of granting  you a non-exclusive and paid licence to exploit this patent.
+

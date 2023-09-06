@@ -1,0 +1,63 @@
+<!-- Beam -->
+<Node name="root" dt="0.01">
+
+    <RequiredPlugin name="SoftRobots"/>
+    <RequiredPlugin name="SoftRobots.Inverse"/>
+    <RequiredPlugin name="BeamAdapter"/>
+
+    <VisualStyle displayFlags="showForceFields showCollisionModels showBehavior" />
+    <DefaultPipeline depth="6" verbose="0" draw="0" />
+    <BruteForceBroadPhase />
+    <BVHNarrowPhase/>
+    <MinProximityIntersection name="Proximity" alarmDistance="0.03" contactDistance="0.02" />
+    <DefaultContactManager/>
+    <FreeMotionAnimationLoop/>
+    <QPInverseProblemSolver printLog='0'/>
+
+    <Node name="beam">
+
+        <EulerImplicitSolver rayleighStiffness="0" printLog="false" />
+        <BTDLinearSolver template="BTDMatrix6d" printLog="false" verbose="false" />
+
+        <MechanicalObject template="Rigid3" name="DOFs"
+        position="0 0 0 0 0 0 1
+        0.989992 -0.125035 0 0 0 -0.114146 0.993464
+        1.94661 -0.41472 0 0 0 -0.171081 0.985257
+        2.87918 -0.775641 0 0 0 -0.191647 0.981464
+        3.80406 -1.15595 0 0 0 -0.194733 0.980856"/>
+
+        <MeshTopology name="lines" lines="0 1 1 2 2 3 3 4" />
+        <BeamInterpolation radius="0.1" straight="0"/>
+
+        <PositionEffector name="PositionEffector" indices="1 2 3 4" template="Rigid3"
+        effectorGoal="1 -0. 0 0 0 -0.114146 0.993464
+        1.94661 -0.3 0 0 0 -0.171081 0.985257
+        2.87918 -0.6 0 0 0 -0.191647 0.981464
+        3.80406 -1. 0 0 0 -0.194733 0.980856"/>
+
+        <Node name="cables">
+	        <MechanicalObject template="Vec3d" name="DOFs"
+	        position="0 0 0 1 0 0 2 0 0 3 0 0 4 0 0 "/>
+
+	        <CableActuator indices='1' pullPoint="1 0 0"/>
+	        <CableActuator indices='2' pullPoint="2 0 0"/>
+	        <CableActuator indices='3' pullPoint="3 0 0"/>
+	        <CableActuator indices='4' pullPoint="4 0 0"/>
+
+	        <BeamLinearMapping />
+        </Node>
+
+        <FixedConstraint name="FixedConstraint" indices="0" />
+        <AdaptiveBeamForceFieldAndMass name="FEM"/>
+
+        <Node name="Visual">
+            <CubeTopology nx="15" ny="2" nz="2" min="0 -0.1 -0.1" max="4 0.1 0.1" />
+            <OglModel/>
+            <BeamLinearMapping isMechanical="false" />
+        </Node>
+
+        <LinearSolverConstraintCorrection template="Rigid3"/>
+
+    </Node>
+
+</Node>

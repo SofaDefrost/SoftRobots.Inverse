@@ -1,0 +1,36 @@
+<center><img src="images/PluginImage.png"/></center>
+<h1 id="inversesoftrobotics">InverseSoftRobotics</h1>
+<ul>
+<li>SoftRobots.Inverse is private (closed-source) extension to the SoftRobots. The SoftRobots plugin is extended mainly by adding the capability of solving the Inverse Problem. The user has the capability of defining an Effector and a Goal so the Inverse Solver will determine the required actuation to minimize the distance between the Effector and the Goal. More information about the methods can be found here <a href="https://project.inria.fr/softrobot/documentation/constraint-resolution-method/">Constraint Resolution Method</a> and <a href="https://project.inria.fr/softrobot/documentation/real-time-inverse-simulation-method/">Real-Time Inverse Simulation Method</a></li>
+</ul>
+<h2 id="licence">Licence :</h2>
+<ul>
+<li>Closed source</li>
+</ul>
+<h2 id="other-comments">Other Comments :</h2>
+<h2 id="tutorials">Tutorials :</h2>
+<p>In addition to the tutorial provided with the SoftRobots plugin, in the following we will introduce the examples that show the functionality specific to the SoftRobots.Inverse plugin.</p>
+<p>Steps 1-4 of the Tutorial are provided in the SoftRobots plugin. If you haven't seen them we recommend you to look at them first by loading the SoftRobots.pyscn scene in your SoftRobots directory. <a href="./examples/Tutorial/step1-VolumetricMeshGeneretion/MeshTetraGeneration.pyscn">Tutorial 1</a></p>
+
+<h2 id="usage">Examples:</h2>
+<p><RequiredPlugin name="SoftRobots"> <RequiredPlugin name="SoftRobots.Inverse"></p>
+	
+<h3 id="constraints">Constraints:</h3>
+        <LI><LI>BarycentricCenterEffector<UL>
+        <LI><A HREF='examples/component/constraint/BarycentricCenterEffector/BarycentricCenterEffector_Rigid.pyscn'>BarycentricCenterEffector_Rigid.pyscn</A></LI></UL></LI>
+        <LI>CableActuator<UL>
+        <LI><A HREF='examples/component/constraint/CableActuator/Finger.pyscn'>Finger.pyscn</A></LI>
+        <LI><A HREF='examples/component/constraint/CableActuator/CableActuator.pyscn'>CableActuator.pyscn</A></LI></UL></LI>
+        <LI>CableEffector<UL>
+        <LI><A HREF='examples/component/constraint/CableEffector/PneuNets.pyscn'>PneuNets.pyscn</A></LI></UL></LI>
+        <LI>PositionEffector<UL>
+        <LI><A HREF='examples/component/constraint/PositionEffector/PositionEffector_Rigid.scn'>PositionEffector_Rigid.scn</A></LI></UL></LI>
+        <LI>SurfacePressureActuator<UL>
+        <LI><A HREF='examples/component/constraint/SurfacePressureActuator/PneuNets.pyscn'>PneuNets.pyscn</A></LI>
+        <LI><A HREF='examples/component/constraint/SurfacePressureActuator/SurfacePressureAndCableActuator.pyscn'>SurfacePressureAndCableActuator.pyscn</A></LI>
+        <LI><A HREF='examples/component/constraint/SurfacePressureActuator/SurfacePressureActuator.pyscn'>SurfacePressureActuator.pyscn</A></LI></UL></LI>
+        <LI>YoungModulusActuator<UL>
+        <LI><A HREF='examples/component/constraint/YoungModulusActuator/YoungModulusActuator.pyscn'>YoungModulusActuator.pyscn</A></LI>
+</UL></LI>
+
+</body></html>
