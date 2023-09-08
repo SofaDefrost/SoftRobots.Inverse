@@ -9,7 +9,7 @@ This plugin contains inverse method for soft robotics and have a strong dependen
 ![](https://github.com/SofaDefrost/SoftRobots.Inverse/blob/main/docs/images/PluginImage.png)
 
 ## Documentation
-You can find a complete documentation at this address: [SoftRobots Plugin for Sofa](https://project.inria.fr/softrobot/).   
+You can find a complete documentation at this address: [SoftRobots Plugin for SOFA](https://project.inria.fr/softrobot/).   
 You can also explore the [*examples/*](https://github.com/SofaDefrost/SoftRobots.Inverse/tree/main/examples) directory of this repository.
 
 ## Installation
