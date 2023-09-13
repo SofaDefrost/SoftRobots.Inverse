@@ -67,7 +67,6 @@ struct CableActuatorTest : public BaseTest,
     using CableActuator<_DataTypes>::d_maxDispVariation ;
     using CableActuator<_DataTypes>::d_minForce ;
     using CableActuator<_DataTypes>::d_maxForce ;
-    using BaseObject::m_componentstate ;
     /////////////////////////////////////////////////////////////////////
 
 
