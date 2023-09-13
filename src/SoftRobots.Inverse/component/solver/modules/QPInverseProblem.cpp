@@ -31,7 +31,6 @@
 
 #include <SoftRobots.Inverse/component/solver/modules/QPInverseProblem.h>
 #include <SoftRobots.Inverse/component/solver/modules/QPInverseProblemImpl.h>
-#include "libcholesky/QuadraticToLeastSquare.h"
 
 #include <sofa/helper/LCPcalc.h>
 #include <qpOASES.hpp>
