@@ -47,8 +47,6 @@ namespace softrobotsinverse {
 
         typedef sofa::core::topology::BaseMeshTopology::Quad Quad;
 
-        using BaseObject::m_componentstate ;
-
 
         void normalTests(){
             Simulation* simu;
