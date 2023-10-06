@@ -10,6 +10,8 @@ set(HEADER_FILES )
 include(component/constraint/ConstraintTest.cmake)
 include(component/solver/SolverTest.cmake)
 
+find_package(Sofa.Testing REQUIRED)
+
 add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${RC_FILES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE "${SoftRobots_INCLUDE_DIRS}")
