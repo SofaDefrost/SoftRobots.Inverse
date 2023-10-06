@@ -35,7 +35,7 @@
 #include <SoftRobots.Inverse/component/solver/modules/LCPQPSolver.h>
 
 #include <sofa/helper/AdvancedTimer.h>
-#include <sofa/component/collision/response/contact/CollisionResponse.h>
+#include <sofa/component/collision/response/contact/DefaultContactManager.h>
 #include <iomanip>
 #include <sstream>
 #include <qpOASES.hpp>
@@ -54,7 +54,7 @@ using std::istringstream;
 using sofa::linearalgebra::FullVector;
 using sofa::linearalgebra::LPtrFullMatrix;
 
-using sofa::component::collision::response::contact::CollisionResponse;
+using sofa::component::collision::response::contact::DefaultContactManager;
 using sofa::core::objectmodel::BaseContext;
 using sofa::core::behavior::BaseConstraint;
 
