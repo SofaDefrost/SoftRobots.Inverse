@@ -45,11 +45,15 @@ struct QPInverseProblemSolverTest : public BaseTest,
 
 
     simulation::Node::SPtr m_root;                 ///< Root of the scene graph, created by the constructor an re-used in the tests
+    simulation::Simulation* m_simulation;          ///< created by the constructor an re-used in the tests
 
 
     void normalTests()
     {
-        Node::SPtr node = sofa::simulation::getSimulation()->createNewGraph("root");
+        Simulation* simu;
+        setSimulation(simu = new simulation::graph::DAGSimulation());
+
+        Node::SPtr node = simu->createNewGraph("root");
         typename MechanicalObject<DataTypes>::SPtr mecaobject = New<MechanicalObject<DataTypes> >() ;
         typename ThisClass::SPtr thisobject = New<ThisClass >() ;
         mecaobject->init() ;
@@ -68,12 +72,14 @@ struct QPInverseProblemSolverTest : public BaseTest,
 
     void SetUp()
     {
+        simulation::setSimulation(m_simulation = new simulation::graph::DAGSimulation());
+
         /// Load the scene
         string sceneName = "Finger.scn";
 
         string fileName  = string(SOFTROBOTS_TEST_DIR) + "/component/solver/scenes/" + sceneName;
 
-        m_root = core::objectmodel::SPtr_dynamic_cast<simulation::Node>( sofa::simulation::node::load(fileName.c_str()));
+        m_root = core::objectmodel::SPtr_dynamic_cast<simulation::Node>( simulation::getSimulation()->load(fileName.c_str()));
 
         /// Test if load has succeededls
         simulation::SceneLoaderXML scene;
@@ -90,7 +96,7 @@ struct QPInverseProblemSolverTest : public BaseTest,
 
         SetUp();
 
-        sofa::simulation::node::initRoot(m_root.get());
+        m_simulation->init(m_root.get());
 
         int nbTimeStep = 10;
         string deltaString;
@@ -103,7 +109,7 @@ struct QPInverseProblemSolverTest : public BaseTest,
         m_root->getChild("goal")->getObject("goalMO")->findData("position")->read("-110 7.5 7.5");
 
         for(int i=0; i<nbTimeStep; i++)
-            sofa::simulation::node::animate(m_root.get());
+            m_simulation->animate(m_root.get());
 
         deltaString  = m_root->getChild("finger")->getChild("controlledPoints")->getObject("effector")->findData("delta")->getValueString();
 
@@ -114,7 +120,7 @@ struct QPInverseProblemSolverTest : public BaseTest,
         m_root->getChild("goal")->getObject("goalMO")->findData("position")->read("-110 10 7.5");
 
         for(int i=0; i<nbTimeStep; i++)
-            sofa::simulation::node::animate(m_root.get());
+            m_simulation->animate(m_root.get());
 
         deltaString  = m_root->getChild("finger")->getChild("controlledPoints")->getObject("effector")->findData("delta")->getValueString();
 
@@ -124,7 +130,7 @@ struct QPInverseProblemSolverTest : public BaseTest,
         m_root->getChild("goal")->getObject("goalMO")->findData("position")->read("-110 15 7.5");
 
         for(int i=0; i<nbTimeStep; i++)
-            sofa::simulation::node::animate(m_root.get());
+            m_simulation->animate(m_root.get());
 
         deltaString  = m_root->getChild("finger")->getChild("controlledPoints")->getObject("effector")->findData("delta")->getValueString();
 
@@ -136,7 +142,7 @@ struct QPInverseProblemSolverTest : public BaseTest,
     {
         SetUp();
 
-        sofa::simulation::node::initRoot(m_root.get());
+        m_simulation->init(m_root.get());
         string deltaString, lambdaString;
 
         int nbTimeStep = 10;
@@ -147,7 +153,7 @@ struct QPInverseProblemSolverTest : public BaseTest,
         m_root->getChild("finger")->getChild("controlledPoints")->getObject("cable")->reinit();
 
         for(int i=0; i<nbTimeStep; i++)
-            sofa::simulation::node::animate(m_root.get());
+            m_simulation->animate(m_root.get());
 
         lambdaString  =  m_root->getChild("finger")->getChild("controlledPoints")->getObject("cable")->findData("force")->getValueString();
         EXPECT_GE( stof(lambdaString.c_str()), 0.);
@@ -159,7 +165,7 @@ struct QPInverseProblemSolverTest : public BaseTest,
         m_root->getChild("finger")->getChild("controlledPoints")->getObject("cable")->reinit();
 
         for(int i=0; i<nbTimeStep; i++)
-            sofa::simulation::node::animate(m_root.get());
+            m_simulation->animate(m_root.get());
 
         lambdaString =  m_root->getChild("finger")->getChild("controlledPoints")->getObject("cable")->findData("force")->getValueString();
         EXPECT_GE( stof(lambdaString.c_str()), -20.);
@@ -171,7 +177,7 @@ struct QPInverseProblemSolverTest : public BaseTest,
         m_root->getChild("finger")->getChild("controlledPoints")->getObject("cable")->reinit();
 
         for(int i=0; i<nbTimeStep; i++)
-            sofa::simulation::node::animate(m_root.get());
+            m_simulation->animate(m_root.get());
 
         deltaString  =  m_root->getChild("finger")->getChild("controlledPoints")->getObject("cable")->findData("displacement")->getValueString();
         EXPECT_LE( stof(deltaString.c_str()), 15.);
@@ -181,14 +187,14 @@ struct QPInverseProblemSolverTest : public BaseTest,
         m_root->getChild("goal")->getObject("goalMO")->findData("position")->read("-110 7.5 7.5");
 
         for(int i=0; i<nbTimeStep; i++)
-            sofa::simulation::node::animate(m_root.get());
+            m_simulation->animate(m_root.get());
 
         m_root->getChild("goal")->getObject("goalMO")->findData("position")->read("-110 50 7.5");
         m_root->getChild("finger")->getChild("controlledPoints")->getObject("cable")->findData("maxForce")->read("3000");
         m_root->getChild("finger")->getChild("controlledPoints")->getObject("cable")->reinit();
 
         for(int i=0; i<nbTimeStep; i++)
-            sofa::simulation::node::animate(m_root.get());
+            m_simulation->animate(m_root.get());
 
         lambdaString =  m_root->getChild("finger")->getChild("controlledPoints")->getObject("cable")->findData("force")->getValueString();
         EXPECT_LE( stof(lambdaString.c_str()), 3000.);
@@ -201,7 +207,7 @@ struct QPInverseProblemSolverTest : public BaseTest,
         m_root->getChild("finger")->getChild("controlledPoints")->getObject("cable")->reinit();
 
         for(int i=0; i<nbTimeStep; i++)
-            sofa::simulation::node::animate(m_root.get());
+            m_simulation->animate(m_root.get());
 
         deltaString  = m_root->getChild("finger")->getChild("controlledPoints")->getObject("cable")->findData("displacement")->getValueString();
         EXPECT_GE( stof(deltaString.c_str()), -1.);
