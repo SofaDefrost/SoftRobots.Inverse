@@ -174,9 +174,6 @@ if(SOFA_HAVE_NEWMAT)
     target_link_libraries(${PROJECT_NAME} SofaDenseSolver)
 endif()
 
-# Config files and install rules for pythons scripts
-sofa_install_pythonscripts(PLUGIN_NAME ${PROJECT_NAME} PYTHONSCRIPTS_SOURCE_DIR "python")
-
 ## Install rules for the library and headers; CMake package configurations files
 sofa_create_package_with_targets(
     PACKAGE_NAME ${PROJECT_NAME}
