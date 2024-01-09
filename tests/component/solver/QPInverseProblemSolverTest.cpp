@@ -71,7 +71,7 @@ struct QPInverseProblemSolverTest : public BaseTest,
         /// Load the scene
         string sceneName = "Finger.scn";
 
-        string fileName  = string(SOFTROBOTS_TEST_DIR) + "/component/solver/scenes/" + sceneName;
+        string fileName  = string(SOFTROBOTSINVERSE_TEST_DIR) + "/component/solver/scenes/" + sceneName;
 
         m_root = core::objectmodel::SPtr_dynamic_cast<simulation::Node>( sofa::simulation::node::load(fileName.c_str()));
 
