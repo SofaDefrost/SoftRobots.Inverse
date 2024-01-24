@@ -62,7 +62,7 @@ const char* getModuleVersion()
 
 const char* getModuleLicense()
 {
-    return "Private";
+    return "AGPL-v3";
 }
 
 const char* getModuleDescription()
