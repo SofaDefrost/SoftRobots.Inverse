@@ -17,10 +17,10 @@
                 <RequiredPlugin name="Sofa.Component.SolidMechanics.Spring"/> <!-- Needed to use components [RestShapeSpringsForceField] -->
                 <RequiredPlugin name="Sofa.Component.StateContainer"/> <!-- Needed to use components [MechanicalObject] -->
                 <RequiredPlugin name="Sofa.Component.Topology.Container.Dynamic"/> <!-- Needed to use components [TetrahedronSetGeometryAlgorithms TetrahedronSetTopologyContainer] -->
-                <RequiredPlugin name="SoftRobots.Inverse"/> <!-- Needed to use components [PositionEffector] -->
+                <!--<RequiredPlugin name="SoftRobots.Inverse"/>  Needed to use components [PositionEffector] -->
   
                 <FreeMotionAnimationLoop/>
-                <DefaultPipeline  verbose='0'/>
+                <DefaultPipeline />
                 <BruteForceBroadPhase />
                 <BVHNarrowPhase />
                 <DefaultContactManager  response='FrictionContactConstraint'/>
