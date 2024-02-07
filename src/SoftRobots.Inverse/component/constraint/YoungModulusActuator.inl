@@ -30,13 +30,8 @@
 
 #include "YoungModulusActuator.h"
 
-namespace sofa
-{
 
-namespace component
-{
-
-namespace constraintset
+namespace sofa::component::constraintset
 {
 
 using type::vector;
@@ -248,9 +243,9 @@ void YoungModulusActuator<DataTypes>::storeResults(vector<double> &lambda, vecto
 }
 
 
-} // namespace constraintset
+} // namespace sofa::component::constraintset
 
-} // namespace component
 
-} // namespace sofa
+
+
 

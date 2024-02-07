@@ -30,13 +30,8 @@
 #include "YoungModulusActuator.inl"
 #include <sofa/core/ObjectFactory.h>
 
-namespace sofa
-{
 
-namespace component
-{
-
-namespace constraintset
+namespace sofa::component::constraintset
 {
 
 using namespace sofa::defaulttype;
@@ -62,9 +57,9 @@ int YoungModulusActuatorClass = core::RegisterObject("This component is used to 
 template class SOFA_SOFTROBOTS_INVERSE_API YoungModulusActuator<Vec3Types>;
 
 
-} // namespace constraintset
+} // namespace sofa::component::constraintset
 
-} // namespace component
 
-} // namespace sofa
+
+
 
