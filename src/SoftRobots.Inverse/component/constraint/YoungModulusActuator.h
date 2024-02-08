@@ -33,13 +33,8 @@
 
 #include <SoftRobots.Inverse/component/config.h>
 
-namespace sofa
-{
 
-namespace component
-{
-
-namespace constraintset
+namespace sofa::component::constraintset
 {
     using sofa::core::visual::VisualParams ;
     using sofa::linearalgebra::BaseVector ;
@@ -150,9 +145,9 @@ private:
 extern template class SOFA_SOFTROBOTS_INVERSE_API YoungModulusActuator<sofa::defaulttype::Vec3Types>;
 #endif
 
-} // namespace constraintset
+} // namespace sofa::component::constraintset
 
-} // namespace component
 
-} // namespace sofa
+
+
 
