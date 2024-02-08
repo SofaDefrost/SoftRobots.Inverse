@@ -25,6 +25,8 @@
 #include <SoftRobots.Inverse/component/config.h>
 
 #include <sofa/core/ObjectFactory.h>
+#include <SoftRobots/component/initSoftRobots.h>
+
 
 namespace softrobotsinverse
 {
@@ -45,6 +47,7 @@ void initExternalModule()
     static bool first = true;
     if (first)
     {
+        softrobots::init();
         first = false;
     }
 
