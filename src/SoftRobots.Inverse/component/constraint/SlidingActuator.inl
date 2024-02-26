@@ -86,6 +86,8 @@ SlidingActuator<DataTypes>::SlidingActuator(MechanicalState* object)
     , d_displacement(initData(&d_displacement,double(0.0), "displacement",
                           "Output displacement compared to the initial position."))
 
+    , d_accumulateDisp(initData(&d_accumulateDisp, false, "accumulateDisp", "In case of relative displacement, accumulate the displacement."))
+
     , d_showDirection(initData(&d_showDirection,false, "showDirection",
                           "Draw the direction."))
 
@@ -269,17 +271,37 @@ void SlidingActuator<DataTypes>::updateLimit()
     ReadAccessor<sofa::Data<Real>> maxNegativeDisplacement = d_maxNegativeDisplacement;
 
     if(d_maxPositiveDisplacement.isSet())
-        m_deltaMax[0] = maxPositiveDisplacement;
+    {
+        if (d_accumulateDisp.getValue() && displacement > 0)
+            m_deltaMax[0] = maxPositiveDisplacement - displacement;
+        else
+            m_deltaMax[0] = maxPositiveDisplacement;
+    }
 
     if(d_maxNegativeDisplacement.isSet())
-        m_deltaMin[0] = -maxNegativeDisplacement;
+    {
+        if (d_accumulateDisp.getValue() && displacement < 0)
+            m_deltaMin[0] = -maxNegativeDisplacement - displacement;
+        else
+            m_deltaMin[0] = -maxNegativeDisplacement;
+    }
 
     if(d_maxDispVariation.isSet())
     {
-        if(rabs(m_deltaMin[0] - displacement) >= maxDispVariation || !d_maxNegativeDisplacement.isSet())
-            m_deltaMin[0] = displacement - maxDispVariation;
-        if(rabs(m_deltaMax[0] - displacement) >= maxDispVariation || !d_maxPositiveDisplacement.isSet())
-            m_deltaMax[0] = displacement + maxDispVariation;
+        if (d_accumulateDisp.getValue())
+        {
+            if (m_deltaMin[0] < -maxDispVariation)
+                m_deltaMin[0] = -maxDispVariation;
+            if (m_deltaMax[0] > maxDispVariation)
+                m_deltaMax[0] = maxDispVariation;
+        }
+        else
+        {
+            if(rabs(m_deltaMin[0] - displacement) >= maxDispVariation || !d_maxNegativeDisplacement.isSet())
+                m_deltaMin[0] = displacement - maxDispVariation;
+            if(rabs(m_deltaMax[0] - displacement) >= maxDispVariation || !d_maxPositiveDisplacement.isSet())
+                m_deltaMax[0] = displacement + maxDispVariation;
+        }
     }
 }
 
@@ -344,7 +366,9 @@ void SlidingActuator<DataTypes>::getConstraintViolation(const ConstraintParams* 
     }
 
     if(indices.size())
+    {
         resV->set(m_constraintId, dFree);
+    }
 }
 
 template<class DataTypes>
@@ -354,7 +378,16 @@ void SlidingActuator<DataTypes>::storeResults(sofa::type::vector<double> &lambda
     if(d_componentState.getValue() != ComponentState::Valid)
         return ;
     d_force.setValue(lambda[0]);
-    d_displacement.setValue(delta[0]);
+
+    double& displacement = sofa::helper::getWriteAccessor(d_displacement);
+    if(d_accumulateDisp.getValue())
+    {
+        displacement += delta[0];
+    }
+    else
+    {
+        displacement = delta[0];
+    }
 
     updateLimit();
 
