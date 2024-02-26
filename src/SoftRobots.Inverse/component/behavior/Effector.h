@@ -63,6 +63,7 @@ protected:
 
     sofa::Data<bool>   d_limitShiftToTarget;
     sofa::Data<Real>   d_maxShiftToTarget;
+    sofa::Data<Real>   d_maxSpeed;
 
     SReal getTarget(const Real& target, const Real& current);
     Coord getTarget(const Coord& target, const Coord& current);

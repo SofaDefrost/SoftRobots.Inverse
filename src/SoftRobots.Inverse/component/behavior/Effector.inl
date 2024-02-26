@@ -41,6 +41,8 @@ Effector<DataTypes>::Effector(sofa::core::behavior::MechanicalState<DataTypes> *
 
     , d_maxShiftToTarget(initData(&d_maxShiftToTarget, Real(1.), "maxShiftToTarget", "Maximum shift to effector goal if limitShiftToTarget \n"
                                                                                      "is set to true."))
+
+    , d_maxSpeed(initData(&d_maxSpeed, Real(0.), "maxSpeed", "Limit the effector motion to a maximum speed."))
 {
     m_constraintType = EFFECTOR;
 }
@@ -73,8 +75,26 @@ template<class DataTypes>
 typename DataTypes::Coord Effector<DataTypes>:: getTarget(const Coord& target, const Coord& current)
 {
     Coord newTarget = target;
-    for(sofa::Size i=0; i<DataTypes::Coord::total_size; i++)
-        newTarget[i]=getTarget(target[i], current[i]);
+
+    auto direction = DataTypes::coordDifference(target, current);
+    Real displacement = direction.norm();
+    Real stepMaxDisplacement = d_maxSpeed.getValue() * this->getContext()->getDt();
+
+    if (d_maxSpeed.isSet() && displacement > stepMaxDisplacement)
+    {
+        for(sofa::Size i=0; i<DataTypes::Coord::total_size; i++)
+        {
+            newTarget[i] = current[i] + direction[i] / displacement * stepMaxDisplacement;
+            newTarget[i] = getTarget(newTarget[i], current[i]);
+        }
+    }
+    else
+    {
+        for(sofa::Size i=0; i<DataTypes::Coord::total_size; i++)
+        {
+            newTarget[i] = getTarget(target[i], current[i]);
+        }
+    }
 
     return newTarget;
 }
