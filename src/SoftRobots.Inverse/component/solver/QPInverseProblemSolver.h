@@ -68,7 +68,7 @@ using sofa::core::MultiVecDerivId;
 class SOFA_SOFTROBOTS_INVERSE_API QPInverseProblemSolver : public sofa::component::constraint::lagrangian::solver::ConstraintSolverImpl
 {
 public:
-    SOFA_CLASS(QPInverseProblemSolver, ConstraintSolver);
+    SOFA_CLASS(QPInverseProblemSolver, ConstraintSolverImpl);
 
     typedef vector<BaseConstraintCorrection*> list_cc;
     typedef vector<list_cc> VecListcc;
