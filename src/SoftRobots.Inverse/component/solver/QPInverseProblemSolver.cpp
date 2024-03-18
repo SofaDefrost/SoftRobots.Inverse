@@ -42,13 +42,11 @@
 #include <sofa/simulation/mechanicalvisitor/MechanicalVOpVisitor.h>
 #include <sofa/simulation/mechanicalvisitor/MechanicalProjectJacobianMatrixVisitor.h>
 #include <sofa/simulation/DefaultTaskScheduler.h>
+#include <sofa/simulation/MainTaskSchedulerFactory.h>
 #include <sofa/helper/AdvancedTimer.h>
 #include <sofa/helper/ScopedAdvancedTimer.h>
 #include <sofa/helper/map.h>
 #include <sofa/helper/system/thread/CTime.h>
-
-#include <math.h>
-#include <iomanip>
 
 #include <SoftRobots.Inverse/component/solver/QPInverseProblemSolver.h>
 #include <SoftRobots.Inverse/component/solver/modules/QPMechanicalSetConstraint.h>
@@ -174,9 +172,6 @@ void QPInverseProblemSolver::deleteProblems()
 QPInverseProblemSolver::~QPInverseProblemSolver()
 {
     deleteProblems();
-
-    if(d_multithreading.getValue())
-        sofa::simulation::TaskScheduler::getInstance()->stop();
 }
 
 void QPInverseProblemSolver::init()
@@ -208,7 +203,7 @@ void QPInverseProblemSolver::init()
     }
 
     if(d_multithreading.getValue())
-        sofa::simulation::TaskScheduler::getInstance()->init();
+        sofa::simulation::MainTaskSchedulerFactory::createInRegistry()->init();
 }
 
 void QPInverseProblemSolver::reinit()
@@ -355,7 +350,7 @@ inline void QPInverseProblemSolver::buildCompliance(const ConstraintParams *cPar
 
     if(d_multithreading.getValue()){
 
-        sofa::simulation::TaskScheduler* taskScheduler = sofa::simulation::TaskScheduler::getInstance();
+        sofa::simulation::TaskScheduler* taskScheduler = sofa::simulation::MainTaskSchedulerFactory::createInRegistry();
         sofa::simulation::CpuTask::Status status;
 
         sofa::type::vector<QPInverseProblemSolver::ComputeComplianceTask> tasks;
