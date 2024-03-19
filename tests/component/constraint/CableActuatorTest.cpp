@@ -22,7 +22,6 @@ using sofa::simulation::Simulation ;
 
 #include <sofa/simulation/Node.h>
 using sofa::simulation::Node ;
-using sofa::simulation::setSimulation ;
 using sofa::core::objectmodel::New ;
 using sofa::core::objectmodel::BaseData ;
 using sofa::component::statecontainer::MechanicalObject ;
@@ -112,8 +111,7 @@ struct CableActuatorTest : public BaseTest,
 
 
     void normalTests(){
-        Simulation* simu;
-        setSimulation(simu = new sofa::simulation::graph::DAGSimulation());
+        auto simu = sofa::simulation::getSimulation();
 
         Node::SPtr node = simu->createNewGraph("root");
         typename MechanicalObject<DataTypes>::SPtr mecaobject = New<MechanicalObject<DataTypes> >() ;

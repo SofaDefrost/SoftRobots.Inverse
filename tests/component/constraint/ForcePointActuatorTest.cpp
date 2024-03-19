@@ -19,7 +19,6 @@ using sofa::simulation::SceneLoaderXML ;
 using sofa::simulation::Simulation ;
 #include <sofa/simulation/Node.h>
 using sofa::simulation::Node ;
-using sofa::simulation::setSimulation ;
 using sofa::core::objectmodel::New ;
 using sofa::core::objectmodel::BaseData ;
 using sofa::component::statecontainer::MechanicalObject ;
@@ -67,8 +66,7 @@ struct ForcePointActuatorTest : public BaseTest, ForcePointActuator<_DataTypes>
 
 
     void normalTests(){
-        Simulation* simu;
-        setSimulation(simu = new sofa::simulation::graph::DAGSimulation());
+        auto simu = sofa::simulation::getSimulation();
 
         Node::SPtr node = simu->createNewGraph("root");
         typename MechanicalObject<DataTypes>::SPtr mecaobject = New<MechanicalObject<DataTypes> >() ;
@@ -101,8 +99,7 @@ struct ForcePointActuatorTest : public BaseTest, ForcePointActuator<_DataTypes>
 
 
     void limitsTests(){
-        Simulation* simu;
-        setSimulation(simu = new sofa::simulation::graph::DAGSimulation());
+        auto simu = sofa::simulation::getSimulation();
 
         Node::SPtr node = simu->createNewGraph("root");
         typename MechanicalObject<DataTypes>::SPtr mecaobject = New<MechanicalObject<DataTypes> >() ;
@@ -162,8 +159,7 @@ struct ForcePointActuatorTest : public BaseTest, ForcePointActuator<_DataTypes>
 
 
     bool buildMatrixTests(){
-        Simulation* simu;
-        setSimulation(simu = new sofa::simulation::graph::DAGSimulation());
+        auto simu = sofa::simulation::getSimulation();
 
         Node::SPtr node = simu->createNewGraph("root");
         typename MechanicalObject<DataTypes>::SPtr mecaobject = New<MechanicalObject<DataTypes> >() ;

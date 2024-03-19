@@ -22,7 +22,6 @@ using sofa::simulation::graph::DAGSimulation;
 using sofa::simulation::Simulation ;
 #include <sofa/simulation/Node.h>
 using sofa::simulation::Node ;
-using sofa::simulation::setSimulation ;
 using sofa::core::objectmodel::New ;
 using sofa::core::objectmodel::BaseData ;
 using sofa::component::statecontainer::MechanicalObject ;
@@ -58,8 +57,7 @@ struct PositionEffectorTest : public BaseTest, PositionEffector<_DataTypes>
 
 
     void normalBehaviorTests(){
-        Simulation* simu;
-        setSimulation(simu = new DAGSimulation());
+        auto simu = sofa::simulation::getSimulation();
 
         Node::SPtr node = simu->createNewGraph("root");
         typename MechanicalObject<DataTypes>::SPtr mecaObject = New<MechanicalObject<DataTypes> >() ;
@@ -95,8 +93,7 @@ struct PositionEffectorTest : public BaseTest, PositionEffector<_DataTypes>
 
 
     void defaultValuesTest(){
-        Simulation* simu;
-        setSimulation(simu = new DAGSimulation());
+        auto simu = sofa::simulation::getSimulation();
 
         Node::SPtr node = simu->createNewGraph("root");
         typename MechanicalObject<DataTypes>::SPtr mecaObject = New<MechanicalObject<DataTypes> >() ;
@@ -113,8 +110,7 @@ struct PositionEffectorTest : public BaseTest, PositionEffector<_DataTypes>
 
 
     void initTests(){
-        Simulation* simu;
-        setSimulation(simu = new DAGSimulation());
+        auto simu = sofa::simulation::getSimulation();
 
         Node::SPtr node = simu->createNewGraph("root");
         typename MechanicalObject<DataTypes>::SPtr mecaObject = New<MechanicalObject<DataTypes> >() ;
@@ -145,8 +141,7 @@ struct PositionEffectorTest : public BaseTest, PositionEffector<_DataTypes>
     template <>
     void PositionEffectorTest<Rigid3Types>::defaultValuesTest()
     {
-        Simulation* simu;
-        setSimulation(simu = new DAGSimulation());
+        auto simu = sofa::simulation::getSimulation();
 
         Node::SPtr node = simu->createNewGraph("root");
         typename MechanicalObject<DataTypes>::SPtr mecaObject = New<MechanicalObject<DataTypes> >() ;
@@ -164,8 +159,7 @@ struct PositionEffectorTest : public BaseTest, PositionEffector<_DataTypes>
 
     template <>
     void PositionEffectorTest<Rigid3Types>::initTests(){
-        Simulation* simu;
-        setSimulation(simu = new DAGSimulation());
+        auto simu = sofa::simulation::getSimulation();
 
         Node::SPtr node = simu->createNewGraph("root");
         typename MechanicalObject<DataTypes>::SPtr mecaObject = New<MechanicalObject<DataTypes> >() ;

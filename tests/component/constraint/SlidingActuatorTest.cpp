@@ -24,7 +24,6 @@ using sofa::defaulttype::Vec3Types ;
 using sofa::simulation::SceneLoaderXML ;
 using sofa::simulation::Simulation ;
 using sofa::simulation::Node ;
-using sofa::simulation::setSimulation ;
 using sofa::core::objectmodel::New ;
 using softrobotsinverse::constraint::SlidingActuator ;
 using sofa::core::objectmodel::ComponentState;
@@ -80,8 +79,7 @@ struct SlidingActuatorTest : public BaseTest,
 
     void normalTests()
     {
-        Simulation* simu;
-        setSimulation(simu = new sofa::simulation::graph::DAGSimulation());
+        auto simu = sofa::simulation::getSimulation();
 
         Node::SPtr node = simu->createNewGraph("root");
         typename MechanicalObject<DataTypes>::SPtr mecaobject = New<MechanicalObject<DataTypes> >() ;
