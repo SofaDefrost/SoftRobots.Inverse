@@ -138,6 +138,7 @@ protected:
     sofa::Data<double>                d_force;
     sofa::Data<double>                d_initDisplacement;
     sofa::Data<double>                d_displacement;
+    sofa::Data<bool>                  d_accumulateDisp;
 
     sofa::Data<bool>                  d_showDirection;
     sofa::Data<double>                d_showVisuScale;
