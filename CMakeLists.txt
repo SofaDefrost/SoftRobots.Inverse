@@ -139,13 +139,6 @@ endif()
 set(DOC_FILES README.md)
 file(GLOB_RECURSE EXAMPLE_FILES examples "*.pyscn" "*.py" "*.md" "*.psl" "*.pslx" "*.scn" "*.xml")
 
-set(OASES_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/extlibs/qpOASES-3.2.0/")
-add_subdirectory(${OASES_LIBRARY_DIRECTORY} extlibs/libqpOASES)
-find_package(libqpOASES REQUIRED)
-message("libqpOASES_INCLUDE_DIRS = ${libqpOASES_INCLUDE_DIRS}")
-include_directories(${libqpOASES_INCLUDE_DIRS})
-sofa_install_libraries(PATHS ${libqpOASES_LIBRARY})
-
 option(SOFTROBOTSINVERSE_INSTALL_HEADERS "Install the headers" ON)
 if(SOFTROBOTSINVERSE_INSTALL_HEADERS)
     add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${DOC_FILES} ${EXAMPLE_FILES} ${HEADER_FILES})
@@ -153,11 +146,24 @@ else()
     add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${DOC_FILES} ${EXAMPLE_FILES} "${SRC_DIR}/component/config.h.in")
 endif()
 
+find_package(qpOASES)
+if(qpOASES_FOUND)
+  include_directories(${qpOASES_INCLUDE_DIRS})
+  target_link_libraries(${PROJECT_NAME} ${qpOASES_LIBRARIES})
+else()
+  message("External package qpOASES not found, using embedded version...")
+  set(OASES_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/extlibs/qpOASES-3.2.0/")
+  add_subdirectory(${OASES_LIBRARY_DIRECTORY} extlibs/libqpOASES)
+  find_package(libqpOASES REQUIRED)
+  include_directories(${libqpOASES_INCLUDE_DIRS})
+  sofa_install_libraries(PATHS ${libqpOASES_LIBRARY})
+  target_link_libraries(${PROJECT_NAME} ${libqpOASES_LIBRARY})
+endif()
+
 target_link_libraries(${PROJECT_NAME}
     SoftRobots
     Sofa.Component.Constraint.Lagrangian.Solver
     Sofa.Component.Collision.Response.Contact)
-target_link_libraries(${PROJECT_NAME} ${libqpOASES_LIBRARY})
 
 # TODO: remove this when SoftRobotsConfig.cmake.in is fixed
 message("SOFTROBOTS_HAVE_SOFA_GL = ${SOFTROBOTS_HAVE_SOFA_GL}")
