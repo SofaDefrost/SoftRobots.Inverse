@@ -39,7 +39,7 @@ jobs:
           SoftRobots_ROOT="$GITHUB_WORKSPACE/SoftRobots"
           mkdir -p "${{ runner.temp }}/sp3_tmp/zip" "${{ runner.temp }}/sp3_tmp/binaries" "$SoftRobots_ROOT"
           url="https://github.com/SofaDefrost/SoftRobots/releases/download"
-          url="${url}/release-${{ matrix.sofa_branch }}/SoftRobots_${{ matrix.sofa_branch }}_python-${{ matrix.python_version }}_for-SOFA-${{ matrix.sofa_branch }}_${{ runner.os }}.zip"
+          url="${url}/release-${{ matrix.sofa_branch }}/SoftRobots_${{ matrix.sofa_branch }}_for-SOFA-${{ matrix.sofa_branch }}_${{ runner.os }}.zip"
           echo "Getting SoftRobots from $url"
           curl --output "${{ runner.temp }}/sp3_tmp/SoftRobots.zip" -L $url
           unzip -qq "${{ runner.temp }}/sp3_tmp/SoftRobots.zip" -d "${{ runner.temp }}/sp3_tmp/binaries"
@@ -141,8 +141,7 @@ jobs:
 
   deploy:
     name: Deploy artifacts
-    if: always() && startsWith(github.ref, 'refs/heads/') # we are on a branch (not a PR)
-    needs: [build-and-test]
+    if: always() && startsWith(github.repository, 'SofaDefrost') && (startsWith(github.ref, 'refs/heads/') || startsWith(github.ref, 'refs/tags/')) # we are not on a fork and on a branch or a tag (not a PR)    needs: [build-and-test]
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
