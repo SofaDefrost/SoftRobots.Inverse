@@ -174,6 +174,11 @@ if(SOFA_HAVE_NEWMAT)
     target_link_libraries(${PROJECT_NAME} SofaDenseSolver)
 endif()
 
+find_package(SofaPython3 QUIET)
+if(SofaPython3_FOUND)
+    add_subdirectory(${SRC_DIR}/binding)
+endif()
+
 ## Install rules for the library and headers; CMake package configurations files
 sofa_create_package_with_targets(
     PACKAGE_NAME ${PROJECT_NAME}
