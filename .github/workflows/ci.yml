@@ -138,9 +138,9 @@ jobs:
         if: always()
         shell: bash
         run: |
-          chmod +x $WORKSPACE_BUILD_PATH/bin/SoftRobots_test${{ steps.sofa.outputs.exe }}
+          chmod +x $WORKSPACE_BUILD_PATH/bin/SoftRobots.Inverse_test${{ steps.sofa.outputs.exe }}
           cd $WORKSPACE_BUILD_PATH
-          ./bin/SoftRobots_test${{ steps.sofa.outputs.exe }}
+          ./bin/SoftRobots.Inverse_test${{ steps.sofa.outputs.exe }}
 
   deploy:
     name: Deploy artifacts
