@@ -73,7 +73,37 @@ bool QPInverseProblemSolver_Trampoline::solveSystem(const sofa::core::Constraint
     SOFA_UNUSED(res1);
     SOFA_UNUSED(res2);
 
-    return solveSystem();
+    bool result = solveSystem();
+    storeResults();
+
+    return result;
+}
+
+void QPInverseProblemSolver_Trampoline::storeResults()
+{
+    double *lambda = m_currentCP->getF();
+    double **w = m_currentCP->getW();
+    double *dfree = m_currentCP->getDfree();
+
+    solver::module::QPInverseProblem::QPConstraintLists* qpCLists = m_currentCP->getQPConstraintLists();
+
+    unsigned int nbActuatorRows = qpCLists->actuatorRowIds.size();
+    unsigned int nbEffectorRows = qpCLists->effectorRowIds.size();
+    unsigned int nbSensorRows   = qpCLists->sensorRowIds.size();
+    unsigned int nbContactRows  = qpCLists->contactRowIds.size();
+    unsigned int nbEqualityRows = qpCLists->equalityRowIds.size();
+    unsigned int nbRows = nbEffectorRows + nbActuatorRows + nbContactRows + nbSensorRows + nbEqualityRows;
+
+    solver::module::QPInverseProblemImpl::QPSystem* qpSystem = m_currentCP->getQPSystem();
+    qpSystem->delta.resize(nbRows);
+    for(unsigned int i=0; i<nbRows; i++)
+    {
+        qpSystem->delta[i] = dfree[i];
+        for(unsigned int j=0; j<nbRows; j++)
+            qpSystem->delta[i] += lambda[j]*w[i][j];
+    }
+
+    m_currentCP->sendResults();
 }
 
 void moduleAddQPInverseProblemSolver(py::module &m)

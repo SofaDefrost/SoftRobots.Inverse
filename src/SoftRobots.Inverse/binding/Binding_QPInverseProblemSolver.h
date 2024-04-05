@@ -1,6 +1,6 @@
 /******************************************************************************
-*                              SofaPython3 plugin                             *
-*                  (c) 2021 CNRS, University of Lille, INRIA                  *
+*                 SOFA, Simulation Open-Framework Architecture                *
+*                    (c) 2006 INRIA, USTL, UJF, CNRS, MGH                     *
 *                                                                             *
 * This program is free software; you can redistribute it and/or modify it     *
 * under the terms of the GNU Lesser General Public License as published by    *
@@ -15,9 +15,17 @@
 * You should have received a copy of the GNU Lesser General Public License    *
 * along with this program. If not, see <http://www.gnu.org/licenses/>.        *
 *******************************************************************************
-* Contact information: contact@sofa-framework.org                             *
+*                       Plugin SoftRobots.Inverse                             *
+*                                                                             *
+* This plugin is distributed under the GNU AGPL v3 (Affero General            *
+* Public License) license.                                                    *
+*                                                                             *
+* Authors: Christian Duriez, Eulalie Coevoet, Yinoussa Adagolodjo             *
+*                                                                             *
+* (c) 2023 INRIA                                                              *
+*                                                                             *
+* Contact information: https://project.inria.fr/softrobot/contact/            *
 ******************************************************************************/
-
 #pragma once
 
 #include <pybind11/pybind11.h>
@@ -41,6 +49,9 @@ public:
                      sofa::core::MultiVecId res2=sofa::core::MultiVecId::null()) override;
 
     std::string getClassName() const override;
+
+protected:
+    void storeResults();
 };
 
 void moduleAddQPInverseProblemSolver(pybind11::module &m);
