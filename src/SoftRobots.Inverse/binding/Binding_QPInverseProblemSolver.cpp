@@ -73,7 +73,7 @@ bool QPInverseProblemSolver_Trampoline::solveSystem(const sofa::core::Constraint
     SOFA_UNUSED(res1);
     SOFA_UNUSED(res2);
 
-    bool result = solveSystem();
+    const bool result = solveSystem();
     storeResults();
 
     return result;
@@ -87,12 +87,12 @@ void QPInverseProblemSolver_Trampoline::storeResults()
 
     solver::module::QPInverseProblem::QPConstraintLists* qpCLists = m_currentCP->getQPConstraintLists();
 
-    std::size_t nbActuatorRows = qpCLists->actuatorRowIds.size();
-    std::size_t nbEffectorRows = qpCLists->effectorRowIds.size();
-    std::size_t nbSensorRows   = qpCLists->sensorRowIds.size();
-    std::size_t nbContactRows  = qpCLists->contactRowIds.size();
-    std::size_t nbEqualityRows = qpCLists->equalityRowIds.size();
-    std::size_t nbRows = nbEffectorRows + nbActuatorRows + nbContactRows + nbSensorRows + nbEqualityRows;
+    const std::size_t nbActuatorRows = qpCLists->actuatorRowIds.size();
+    const std::size_t nbEffectorRows = qpCLists->effectorRowIds.size();
+    const std::size_t nbSensorRows   = qpCLists->sensorRowIds.size();
+    const std::size_t nbContactRows  = qpCLists->contactRowIds.size();
+    const std::size_t nbEqualityRows = qpCLists->equalityRowIds.size();
+    const std::size_t nbRows = nbEffectorRows + nbActuatorRows + nbContactRows + nbSensorRows + nbEqualityRows;
 
     solver::module::QPInverseProblemImpl::QPSystem* qpSystem = m_currentCP->getQPSystem();
     qpSystem->delta.resize(nbRows);
