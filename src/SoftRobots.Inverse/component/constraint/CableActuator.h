@@ -115,8 +115,8 @@ protected:
     sofa::Data<bool>                  d_displayCableLimit;
 
     sofa::type::RGBAColor    m_color;
-
-    void initDatas();
+    
+    void initData();
     void initLimit();
     void updateLimit();
     void updateVisualization();

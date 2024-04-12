@@ -80,7 +80,7 @@ template<class DataTypes>
 void CableActuator<DataTypes>::init()
 {
     softrobots::constraint::CableModel<DataTypes>::init();
-    initDatas();
+    initData();
     initLimit();
 }
 
@@ -89,19 +89,19 @@ template<class DataTypes>
 void CableActuator<DataTypes>::reinit()
 {
     softrobots::constraint::CableModel<DataTypes>::reinit();
-    initDatas();
+    initData();
     initLimit();
 }
 
 template<class DataTypes>
 void CableActuator<DataTypes>::reset()
 {
-    initDatas();
+    initData();
     initLimit();
 }
 
 template<class DataTypes>
-void CableActuator<DataTypes>::initDatas()
+void CableActuator<DataTypes>::initData()
 {
     d_displacement.setValue(0.0);
     d_force.setValue(d_initForce.getValue());
