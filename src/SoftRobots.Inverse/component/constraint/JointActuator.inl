@@ -247,7 +247,7 @@ void JointActuator<DataTypes>::getConstraintViolation(const ConstraintParams* cP
     if(!this->isComponentStateValid())
         return ;
 
-    Real dFree = Jdx->element(0) - d_initAngle.getValue() + d_angle.getValue();
+    Real dFree = Jdx->element(0) - d_initAngle.getValue() + m_state->readPositions()[d_index.getValue()][0];
     resV->set(m_constraintId, dFree);
 }
 
