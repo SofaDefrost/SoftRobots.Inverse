@@ -109,35 +109,14 @@ void QPInverseProblemSolver_Trampoline::storeResults()
 void moduleAddQPInverseProblemSolver(py::module &m)
 {
     py::class_<softrobotsinverse::solver::QPInverseProblemSolver,
+               sofa::component::constraint::lagrangian::solver::ConstraintSolverImpl,
                QPInverseProblemSolver_Trampoline,
-               BaseObject,
                sofapython3::py_shared_ptr<softrobotsinverse::solver::QPInverseProblemSolver>> s(m, "QPInverseProblemSolver",
                                          py::dynamic_attr(),
                                          softrobotsinverse::python3::doc::QPInverseProblemSolver);
 
     s.def(py::init<>());
     s.def("solveSystem", &softrobotsinverse::solver::QPInverseProblemSolver::solveSystem);
-
-    s.def("W", [](QPInverseProblemSolver& self) -> EigenMatrixMap
-        {
-            assert(self.getConstraintProblem());
-            auto& W_matrix = self.getConstraintProblem()->W;
-            return { W_matrix.ptr(), W_matrix.rows(), W_matrix.cols()};
-        });
-
-    s.def("lambda_force", [](QPInverseProblemSolver& self) -> Eigen::Map<Eigen::Matrix<SReal, Eigen::Dynamic, 1> >
-        {
-            assert(self.getConstraintProblem());
-            auto& lambda = self.getConstraintProblem()->f;
-            return { lambda.ptr(), lambda.size()};
-        });
-
-    s.def("dfree", [](QPInverseProblemSolver& self) -> Eigen::Map<Eigen::Matrix<SReal, Eigen::Dynamic, 1> >
-        {
-            assert(self.getConstraintProblem());
-            auto& dfree = self.getConstraintProblem()->dFree;
-            return { dfree.ptr(), dfree.size()};
-        });
 }
 
 }
