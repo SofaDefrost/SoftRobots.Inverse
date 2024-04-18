@@ -132,7 +132,7 @@ void QPInverseProblem::storeResults(const vector<double> &x)
     unsigned int nbEffectorRows = m_qpCLists->effectorRowIds.size();
     unsigned int nbSensorRows   = m_qpCLists->sensorRowIds.size();
     unsigned int nbContactRows  = m_qpCLists->contactRowIds.size();
-    unsigned int nbEqualityRows     = m_qpCLists->equalityRowIds.size();
+    unsigned int nbEqualityRows = m_qpCLists->equalityRowIds.size();
     unsigned int nbRows = nbEffectorRows + nbActuatorRows + nbContactRows + nbSensorRows + nbEqualityRows;
 
     m_qpSystem->delta.resize(nbRows);

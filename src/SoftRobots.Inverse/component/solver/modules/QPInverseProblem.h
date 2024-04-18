@@ -120,6 +120,7 @@ class SOFA_SOFTROBOTS_INVERSE_API QPInverseProblem : public sofa::component::con
     QPSystem* getQPSystem() {return m_qpSystem;}
     QPConstraintLists* getQPConstraintLists() {return m_qpCLists;}
 
+    void sendResults();
 
 protected:
 
@@ -142,7 +143,6 @@ protected:
     double   m_time{0.};
 
     void storeResults(const sofa::type::vector<double> &x);
-    void sendResults();
 
 public:
     Eigen::MatrixXd getQPMatriceQ(){
