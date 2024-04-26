@@ -18,7 +18,7 @@ SP3_add_python_module(
     TARGET       ${PROJECT_NAME}
     PACKAGE      Bindings.Modules
     MODULE       SoftRobotsInverse
-    DESTINATION  Sofa
+    DESTINATION  /
     SOURCES      ${SOURCE_FILES}
     HEADERS      ${HEADER_FILES}
     DEPENDS      SofaPython3::Plugin SofaPython3::Bindings.Sofa Sofa.GL SoftRobots.Inverse
