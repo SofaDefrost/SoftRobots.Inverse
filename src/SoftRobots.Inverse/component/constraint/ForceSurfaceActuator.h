@@ -145,7 +145,7 @@ protected:
     /// otherwise any access to the base::attribute would require
     /// the "this->" approach.
     using Actuator<DataTypes>::m_state ;
-    using Actuator<DataTypes>::m_constraintId ;
+    using Actuator<DataTypes>::m_constraintIndex ;
     ////////////////////////////////////////////////////////////////////////////
 
 

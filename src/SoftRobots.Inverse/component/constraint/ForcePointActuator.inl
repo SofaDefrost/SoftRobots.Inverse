@@ -212,7 +212,8 @@ void ForcePointActuator<DataTypes>::buildConstraintMatrix(const ConstraintParams
     SOFA_UNUSED(cParams);
     SOFA_UNUSED(x);
 
-    m_constraintId = cIndex;
+    m_constraintIndex.setValue(cIndex);
+    const auto& constraintIndex = sofa::helper::getReadAccessor(m_constraintIndex);
 
     Deriv direction = d_direction.getValue();
 
@@ -224,7 +225,7 @@ void ForcePointActuator<DataTypes>::buildConstraintMatrix(const ConstraintParams
         {
             Deriv dir;
             dir[j] = 1;
-            MatrixDerivRowIterator rowIterator = matrix.writeLine(m_constraintId+j);
+            MatrixDerivRowIterator rowIterator = matrix.writeLine(constraintIndex+j);
             for(unsigned int i=0; i<d_indices.getValue().size(); i++)
                 if(d_indices.getValue()[i]<m_state->getSize())
                     rowIterator.addCol(d_indices.getValue()[i], dir);
@@ -235,7 +236,7 @@ void ForcePointActuator<DataTypes>::buildConstraintMatrix(const ConstraintParams
     {
         direction /= direction.norm();
         MatrixDeriv& matrix = *cMatrix.beginEdit();
-        MatrixDerivRowIterator rowIterator = matrix.writeLine(m_constraintId);
+        MatrixDerivRowIterator rowIterator = matrix.writeLine(constraintIndex);
         for(unsigned int i=0; i<d_indices.getValue().size(); i++)
             if(d_indices.getValue()[i]<m_state->getSize())
                 rowIterator.addCol(d_indices.getValue()[i], direction);
@@ -244,8 +245,8 @@ void ForcePointActuator<DataTypes>::buildConstraintMatrix(const ConstraintParams
     }
 
     cMatrix.endEdit();
-
-    m_nbLines = cIndex - m_constraintId;
+    
+    m_nbLines = cIndex - constraintIndex;
 }
 
 
@@ -257,15 +258,16 @@ void ForcePointActuator<DataTypes>::getConstraintViolation(const ConstraintParam
     SOFA_UNUSED(cParams);
     SOFA_UNUSED(Jdx);
 
+    const auto& constraintId = sofa::helper::getReadAccessor(m_constraintIndex);
     Deriv direction = d_direction.getValue();
 
     if(direction.norm() == 0) // No fixed direction
     {
         for(unsigned int j=0; j<Deriv::total_size; j++)
-            resV->set(m_constraintId+j, 0.);
+            resV->set(constraintId+j, 0.);
     }
     else
-        resV->set(m_constraintId, 0.);
+        resV->set(constraintId, 0.);
 }
 
 
