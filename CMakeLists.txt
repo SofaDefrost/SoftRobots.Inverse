@@ -144,6 +144,7 @@ add_subdirectory(${OASES_LIBRARY_DIRECTORY} extlibs/libqpOASES)
 find_package(libqpOASES REQUIRED)
 message("libqpOASES_INCLUDE_DIRS = ${libqpOASES_INCLUDE_DIRS}")
 include_directories(${libqpOASES_INCLUDE_DIRS})
+set(QPOASES_INCLUDE_DIR ${libqpOASES_INCLUDE_DIRS} CACHE INTERNAL "")
 sofa_install_libraries(PATHS ${libqpOASES_LIBRARY})
 
 option(SOFTROBOTSINVERSE_INSTALL_HEADERS "Install the headers" ON)
