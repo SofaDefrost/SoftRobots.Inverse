@@ -87,8 +87,9 @@ public:
 };
 
 #if !defined(SOFTROBOTS_INVERSE_POSITIONEFFECTOR_CPP)
-extern template class SOFA_SOFTROBOTS_INVERSE_API PositionEffector<sofa::defaulttype::Vec3Types>;
+extern template class SOFA_SOFTROBOTS_INVERSE_API PositionEffector<sofa::defaulttype::Vec1Types>;
 extern template class SOFA_SOFTROBOTS_INVERSE_API PositionEffector<sofa::defaulttype::Vec2Types>;
+extern template class SOFA_SOFTROBOTS_INVERSE_API PositionEffector<sofa::defaulttype::Vec3Types>;
 extern template class SOFA_SOFTROBOTS_INVERSE_API PositionEffector<sofa::defaulttype::Rigid3Types>;
 #endif
 
