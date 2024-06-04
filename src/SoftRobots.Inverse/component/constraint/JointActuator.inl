@@ -223,17 +223,18 @@ void JointActuator<DataTypes>::buildConstraintMatrix(const ConstraintParams* cPa
     if(!this->isComponentStateValid())
         return ;
 
-    m_constraintId = cIndex;
+    m_constraintIndex.setValue(cIndex);
+    const auto& constraintIndex = sofa::helper::getReadAccessor(m_constraintIndex);
 
     MatrixDeriv& matrix = *cMatrix.beginEdit();
-
-    MatrixDerivRowIterator rowIterator = matrix.writeLine(m_constraintId);
+    
+    MatrixDerivRowIterator rowIterator = matrix.writeLine(constraintIndex);
     rowIterator.addCol(d_index.getValue(), Deriv(1.));
     cIndex++;
 
     cMatrix.endEdit();
-
-    m_nbLines = cIndex - m_constraintId;
+    
+    m_nbLines = cIndex - constraintIndex;
 }
 
 
@@ -248,7 +249,7 @@ void JointActuator<DataTypes>::getConstraintViolation(const ConstraintParams* cP
         return ;
 
     Real dFree = Jdx->element(0) - d_initAngle.getValue() + m_state->readPositions()[d_index.getValue()][0];
-    resV->set(m_constraintId, dFree);
+    resV->set(m_constraintIndex.getValue(), dFree);
 }
 
 

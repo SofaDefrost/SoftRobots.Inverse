@@ -101,7 +101,8 @@ void PositionEquality<DataTypes>::buildConstraintMatrix(const ConstraintParams* 
     const auto& indices = sofa::helper::getReadAccessor(d_indices);
     const auto& directions = sofa::helper::getReadAccessor(d_directions);
     const auto& useDirections = sofa::helper::getReadAccessor(d_useDirections);
-    m_constraintId = cIndex;
+    m_constraintIndex.setValue(cIndex);
+    const auto& constraintIndex = sofa::helper::getReadAccessor(m_constraintIndex);
 
     for (sofa::Index i: indices)
     {
@@ -116,7 +117,7 @@ void PositionEquality<DataTypes>::buildConstraintMatrix(const ConstraintParams* 
     }
 
     cMatrix.endEdit();
-    m_nbLines = cIndex - m_constraintId;
+    m_nbLines = cIndex - constraintIndex;
 }
 
 
@@ -132,6 +133,7 @@ void PositionEquality<DataTypes>::getConstraintViolation(const ConstraintParams*
     ReadAccessor<sofa::Data<VecCoord>> positions = m_state->readPositions();
     const auto& indices = sofa::helper::getReadAccessor(d_indices);
     const auto& useDirections = sofa::helper::getReadAccessor(d_useDirections);
+    const auto& constraintIndex = sofa::helper::getReadAccessor(m_constraintIndex);
 
     bool withJdx = (Jdx->size()!=0);
 
@@ -147,7 +149,7 @@ void PositionEquality<DataTypes>::getConstraintViolation(const ConstraintParams*
                 {
                     dfree += Jdx->element(index);
                 }
-                resV->set(m_constraintId + index++, dfree);
+                resV->set(constraintIndex + index++, dfree);
             }
         }
     }

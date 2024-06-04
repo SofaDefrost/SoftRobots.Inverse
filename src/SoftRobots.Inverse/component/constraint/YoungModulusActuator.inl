@@ -156,7 +156,8 @@ void YoungModulusActuator<DataTypes>::buildConstraintMatrix(const ConstraintPara
     if(d_componentState.getValue() == ComponentState::Invalid)
         return;
 
-    m_constraintId = cIndex;
+    m_constraintIndex.setValue(cIndex);
+    const auto& constraintIndex = sofa::helper::getReadAccessor(m_constraintIndex);
 
     MatrixDeriv& matrix = *cMatrix.beginEdit();
 
@@ -166,8 +167,8 @@ void YoungModulusActuator<DataTypes>::buildConstraintMatrix(const ConstraintPara
     // TODO(damien): this seems a bit hacky :) what are the other possibilities.
     VecDeriv force;
     getForce(force, x);
-
-    MatrixDerivRowIterator rowIterator = matrix.writeLine(m_constraintId);
+    
+    MatrixDerivRowIterator rowIterator = matrix.writeLine(constraintIndex);
 
     for (unsigned int j=0; j<force.size(); j++)
     {
@@ -179,7 +180,7 @@ void YoungModulusActuator<DataTypes>::buildConstraintMatrix(const ConstraintPara
     cIndex++;
 
     cMatrix.endEdit();
-    m_nbLines = cIndex - m_constraintId;
+    m_nbLines = cIndex - constraintIndex;
 }
 
 
@@ -215,8 +216,8 @@ void YoungModulusActuator<DataTypes>::getConstraintViolation(const ConstraintPar
 
     SOFA_UNUSED(Jdx);
     SOFA_UNUSED(cParams);
-
-    resV->set(m_constraintId, 0.0);
+    
+    resV->set(m_constraintIndex.getValue(), 0.0);
 }
 
 

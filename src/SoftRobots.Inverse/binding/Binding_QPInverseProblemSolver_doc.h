@@ -35,6 +35,7 @@ static auto QPInverseProblemSolver = R"(
 
         Typical usage example:
 
+        import Sofa.Constraint
         import Sofa.SoftRobotsInverse
 
 

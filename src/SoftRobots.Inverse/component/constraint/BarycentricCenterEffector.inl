@@ -144,7 +144,8 @@ void BarycentricCenterEffector<DataTypes>::buildConstraintMatrix(const Constrain
     SOFA_UNUSED(cParams);
     SOFA_UNUSED(x);
 
-    m_constraintId = cIndex;
+    m_constraintIndex.setValue(cIndex);
+    const auto& constraintIndex = sofa::helper::getReadAccessor(m_constraintIndex);
 
     const unsigned int nbp = m_state->getSize();
 
@@ -154,7 +155,7 @@ void BarycentricCenterEffector<DataTypes>::buildConstraintMatrix(const Constrain
 
     if(d_axis.getValue()[0])
     {
-        MatrixDerivRowIterator rowIterator = matrix.writeLine(m_constraintId+index);
+        MatrixDerivRowIterator rowIterator = matrix.writeLine(constraintIndex+index);
         for (unsigned int i=0; i<nbp; i++)
             rowIterator.setCol(i, Deriv(1.0/Real(nbp), 0, 0));
         index++;
@@ -162,7 +163,7 @@ void BarycentricCenterEffector<DataTypes>::buildConstraintMatrix(const Constrain
 
     if(d_axis.getValue()[1])
     {
-        MatrixDerivRowIterator rowIterator = matrix.writeLine(m_constraintId+index);
+        MatrixDerivRowIterator rowIterator = matrix.writeLine(constraintIndex+index);
         for (unsigned int i=0; i<nbp; i++)
             rowIterator.setCol(i, Deriv(0, 1.0/Real(nbp), 0));
         index++;
@@ -170,7 +171,7 @@ void BarycentricCenterEffector<DataTypes>::buildConstraintMatrix(const Constrain
 
     if(d_axis.getValue()[2])
     {
-        MatrixDerivRowIterator rowIterator = matrix.writeLine(m_constraintId+index);
+        MatrixDerivRowIterator rowIterator = matrix.writeLine(constraintIndex+index);
         for (unsigned int i=0; i<nbp; i++)
             rowIterator.setCol(i, Deriv(0, 0, 1.0/Real(nbp)));
         index++;
@@ -179,7 +180,7 @@ void BarycentricCenterEffector<DataTypes>::buildConstraintMatrix(const Constrain
     cIndex+=index;
 
     cMatrix.endEdit();
-    m_nbLines = cIndex - m_constraintId;
+    m_nbLines = cIndex - constraintIndex;
 
     computeBarycenter();
 }
@@ -207,22 +208,24 @@ void BarycentricCenterEffector<DataTypes>::getConstraintViolation(const Constrai
     for(unsigned int i=0; i<m_nbLines; i++)
         dFree[i] += Jdx->element(i);
 
+    const auto& constraintIndex = sofa::helper::getReadAccessor(m_constraintIndex);
+
     int index = 0;
     if(d_axis.getValue()[0])
     {
-        resV->set(m_constraintId, dFree[0]);
+        resV->set(constraintIndex, dFree[0]);
         index++;
     }
 
     if(d_axis.getValue()[1])
     {
-        resV->set(m_constraintId+index, dFree[1]);
+        resV->set(constraintIndex+index, dFree[1]);
         index++;
     }
 
     if(d_axis.getValue()[2])
     {
-        resV->set(m_constraintId+index, dFree[2]);
+        resV->set(constraintIndex+index, dFree[2]);
         index++;
     }
 }

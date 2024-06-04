@@ -129,7 +129,7 @@ private:
     /// the "this->" approach.
     using Actuator<DataTypes>::m_state ;
     using Actuator<DataTypes>::m_nbLines ;
-    using Actuator<DataTypes>::m_constraintId ;
+    using Actuator<DataTypes>::m_constraintIndex ;
     using Actuator<DataTypes>::m_hasLambdaMin ;
     using Actuator<DataTypes>::m_hasLambdaMax ;
     using Actuator<DataTypes>::m_lambdaMax ;

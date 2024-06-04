@@ -105,8 +105,8 @@ protected:
 
     using Equality<DataTypes>::m_hasLambdaEqual;
     using Equality<DataTypes>::m_lambdaEqual ;
-
-    using SoftRobotsBaseConstraint::m_constraintId ;
+    
+    using SoftRobotsBaseConstraint::m_constraintIndex ;
     using SoftRobotsBaseConstraint::m_nbLines ;
     using Equality<DataTypes>::d_componentState ;
 

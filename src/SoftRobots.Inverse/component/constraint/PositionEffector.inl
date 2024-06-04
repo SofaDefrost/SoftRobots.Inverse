@@ -112,7 +112,7 @@ void PositionEffector<DataTypes>::getConstraintViolation(const sofa::core::Const
     const auto& weight = sofa::helper::getReadAccessor(d_weight);
     const auto& indices = sofa::helper::getReadAccessor(d_indices);
     sofa::Index sizeIndices = indices.size();
-
+    const auto& constraintIndex = sofa::helper::getReadAccessor(m_constraintIndex);
 
     int index = 0;
     for (unsigned int i=0; i<sizeIndices; i++)
@@ -126,7 +126,7 @@ void PositionEffector<DataTypes>::getConstraintViolation(const sofa::core::Const
             if(useDirections[j])
             {
                 Real dfree = Jdx->element(index) + d*directions[j]*weight[j];
-                resV->set(m_constraintId+index, dfree);
+                resV->set(constraintIndex+index, dfree);
                 index++;
             }
     }

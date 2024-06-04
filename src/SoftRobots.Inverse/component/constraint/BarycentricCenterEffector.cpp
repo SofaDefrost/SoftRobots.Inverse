@@ -48,7 +48,8 @@ void BarycentricCenterEffector<Rigid3Types>::buildConstraintMatrix(const Constra
     SOFA_UNUSED(cParams);
     SOFA_UNUSED(x);
 
-    m_constraintId = cIndex;
+    m_constraintIndex.setValue(cIndex);
+    const auto& constraintIndex = sofa::helper::getReadAccessor(m_constraintIndex);
 
     const unsigned int nbp = m_state->getSize();
 
@@ -60,7 +61,7 @@ void BarycentricCenterEffector<Rigid3Types>::buildConstraintMatrix(const Constra
 
     if(d_axis.getValue()[0])
     {
-        MatrixDerivRowIterator rowIterator = matrix.writeLine(m_constraintId+index);
+        MatrixDerivRowIterator rowIterator = matrix.writeLine(constraintIndex+index);
         for (unsigned int i=0; i<nbp; i++)
             rowIterator.setCol(i, Deriv(cx,vZero));
         index++;
@@ -68,7 +69,7 @@ void BarycentricCenterEffector<Rigid3Types>::buildConstraintMatrix(const Constra
 
     if(d_axis.getValue()[1])
     {
-        MatrixDerivRowIterator rowIterator = matrix.writeLine(m_constraintId+index);
+        MatrixDerivRowIterator rowIterator = matrix.writeLine(constraintIndex+index);
         for (unsigned int i=0; i<nbp; i++)
             rowIterator.setCol(i, Deriv(cy,vZero));
         index++;
@@ -76,7 +77,7 @@ void BarycentricCenterEffector<Rigid3Types>::buildConstraintMatrix(const Constra
 
     if(d_axis.getValue()[2])
     {
-        MatrixDerivRowIterator rowIterator = matrix.writeLine(m_constraintId+index);
+        MatrixDerivRowIterator rowIterator = matrix.writeLine(constraintIndex+index);
         for (unsigned int i=0; i<nbp; i++)
             rowIterator.setCol(i, Deriv(cz,vZero));
         index++;
@@ -85,7 +86,7 @@ void BarycentricCenterEffector<Rigid3Types>::buildConstraintMatrix(const Constra
     cIndex+=index;
 
     cMatrix.endEdit();
-    m_nbLines = cIndex - m_constraintId;
+    m_nbLines = cIndex - constraintIndex;
 }
 
 

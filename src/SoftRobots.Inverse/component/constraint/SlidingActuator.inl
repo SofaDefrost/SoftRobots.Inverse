@@ -318,11 +318,12 @@ void SlidingActuator<DataTypes>::buildConstraintMatrix(const ConstraintParams* c
     if(d_componentState.getValue() != ComponentState::Valid)
         return ;
 
-    m_constraintId = cIndex;
+    m_constraintIndex.setValue(cIndex);
+    const auto& constraintIndex = sofa::helper::getReadAccessor(m_constraintIndex);
 
     MatrixDeriv& matrix = *cMatrix.beginEdit();
-
-    MatrixDerivRowIterator rowIterator = matrix.writeLine(m_constraintId);
+    
+    MatrixDerivRowIterator rowIterator = matrix.writeLine(constraintIndex);
 
     Deriv direction = d_direction.getValue();
 
@@ -336,7 +337,7 @@ void SlidingActuator<DataTypes>::buildConstraintMatrix(const ConstraintParams* c
 
     cIndex++;
     cMatrix.endEdit();
-    m_nbLines = cIndex - m_constraintId;
+    m_nbLines = cIndex - constraintIndex;
 }
 
 
@@ -367,7 +368,7 @@ void SlidingActuator<DataTypes>::getConstraintViolation(const ConstraintParams* 
 
     if(indices.size())
     {
-        resV->set(m_constraintId, dFree);
+        resV->set(m_constraintIndex.getValue(), dFree);
     }
 }
 

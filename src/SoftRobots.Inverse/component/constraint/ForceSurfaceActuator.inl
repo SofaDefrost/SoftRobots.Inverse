@@ -618,7 +618,8 @@ void ForceSurfaceActuator<DataTypes>::buildConstraintMatrix(const ConstraintPara
 
     computeSurfaces();
 
-    m_constraintId = cIndex;
+    m_constraintIndex.setValue(cIndex);
+    const auto& constraintIndex = sofa::helper::getReadAccessor(m_constraintIndex);
 
     if(d_updateNormals.getValue() && m_useNormals)
         computeNormals();
@@ -629,15 +630,15 @@ void ForceSurfaceActuator<DataTypes>::buildConstraintMatrix(const ConstraintPara
     MatrixDeriv& matrix = *cMatrix.beginEdit();
     for(unsigned int i=0; i<centers.size(); i++)
     {
-        MatrixDerivRowIterator rowIterator = matrix.writeLine(m_constraintId+i);
+        MatrixDerivRowIterator rowIterator = matrix.writeLine(constraintIndex+i);
         for(unsigned int j=0; j<m_pointsInSphereId[i].size(); j++)
             rowIterator.addCol(m_pointsInSphereId[i][j], directions[i]*m_ratios[i][j]);
 
         cIndex++;
     }
     cMatrix.endEdit();
-
-    m_nbLines = cIndex - m_constraintId;
+    
+    m_nbLines = cIndex - constraintIndex;
 }
 
 
@@ -649,8 +650,9 @@ void ForceSurfaceActuator<DataTypes>::getConstraintViolation(const ConstraintPar
     SOFA_UNUSED(cParams);
     SOFA_UNUSED(Jdx);
 
+    const auto& constraintIndex = sofa::helper::getReadAccessor(m_constraintIndex);
     for(unsigned int i=0; i<d_centers.getValue().size(); i++)
-        resV->set(m_constraintId+i, 0);
+        resV->set(constraintIndex+i, 0);
 }
 
 
