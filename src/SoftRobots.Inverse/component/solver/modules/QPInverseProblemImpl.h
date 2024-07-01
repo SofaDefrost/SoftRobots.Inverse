@@ -95,8 +95,15 @@ protected:
     void solveInverseProblem(double &objective,
                              vector<double> &result,
                              vector<double> &dual);
+    void solveInverseProblemProxQP(double &objective,
+                             vector<double> &result,
+                             vector<double> &dual) const;
+    void solveInverseProblemQPOASES(double &objective,
+                             vector<double> &result,
+                             vector<double> &dual);
+    void updateProxQPMatrices(Eigen::MatrixXd& H, Eigen::VectorXd& g, Eigen::MatrixXd& A, Eigen::VectorXd& b, Eigen::MatrixXd& C, Eigen::VectorXd& l, Eigen::VectorXd& u, Eigen::VectorXd& lbox, Eigen::VectorXd& ubox) const;
 
-    void updateOASESMatrices(real_t * Q, real_t * c, real_t * l, real_t * u,
+    void updateQPOASESMatrices(real_t * Q, real_t * c, real_t * l, real_t * u,
                              real_t * A, real_t * bl, real_t * bu);
 
     void updateLambda(const vector<double>& x);
@@ -110,8 +117,7 @@ protected:
 
 
 private:
-    qpOASES::QProblem getNewQProblem(int &nWSR);
-
+    qpOASES::QProblem getNewQProblemQPOASES(int &nWSR);
 };
 
 } //namespace

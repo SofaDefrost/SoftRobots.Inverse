@@ -39,6 +39,7 @@
 #include <iomanip>
 #include <sstream>
 #include <qpOASES.hpp>
+#include <proxsuite/proxqp/dense/dense.hpp>
 
 namespace softrobotsinverse::solver::module
 {
@@ -450,8 +451,104 @@ void QPInverseProblemImpl::solveContacts(vector<double>& res)
             res[i] = m_qpSystem->lambda[i];
 }
 
-
 void QPInverseProblemImpl::solveInverseProblem(double& objective,
+                                               vector<double> &result,
+                                               vector<double> &dual)
+{
+  double objective_proxQP;
+  vector<double> result_proxQP, dual_proxQP;
+  AdvancedTimer::stepBegin("QP resolution (ProxQP)");
+  solveInverseProblemProxQP(objective_proxQP, result_proxQP, dual_proxQP);
+  AdvancedTimer::stepEnd("QP resolution (ProxQP)");
+
+  double objective_QPOASES;
+  vector<double> result_QPOASES, dual_QPOASES;
+  AdvancedTimer::stepBegin("QP resolution (qpOASES)");
+  solveInverseProblemQPOASES(objective_QPOASES, result_QPOASES, dual_QPOASES);
+  AdvancedTimer::stepEnd("QP resolution (qpOASES)");
+
+  // store chosen solver results
+  objective = objective_proxQP;
+  result = result_proxQP;
+  dual = dual_proxQP;
+}
+
+// proxQP impl
+void QPInverseProblemImpl::solveInverseProblemProxQP(double& objective,
+                                               vector<double> &result,
+                                               vector<double> &dual) const
+{
+    // m_qpSystem->previousResult = result;
+
+    const int n_eq = m_qpSystem->Aeq.size();
+    const int n_in = m_qpSystem->A.size();
+    const int n_constraints = n_eq + n_in;
+    const int d = m_qpSystem->dim;
+    Eigen::MatrixXd H(d, d);
+    Eigen::VectorXd g(d);
+    Eigen::MatrixXd A(n_eq, d);
+    Eigen::VectorXd b(n_eq);
+    Eigen::MatrixXd C(n_in, d);
+    Eigen::VectorXd l(n_in);
+    Eigen::VectorXd u(n_in);
+    Eigen::VectorXd l_box(d);
+    Eigen::VectorXd u_box(d);
+
+    updateProxQPMatrices(H, g, A, b, C, l, u, l_box, u_box);
+
+    proxsuite::proxqp::dense::QP<double> qp(d, n_eq, n_in, true); // create the QP object with box constraints
+    // msg_info("QPInverseProblemImpl") << "QP dim = " << d << " / n_eq = " << n_eq << " / n_in = " << n_in;
+    qp.init(H, g, A, b, C, l, u, l_box, u_box); // initialize the model
+
+    qp.solve();
+
+    switch(qp.results.info.status)
+    {
+      case proxsuite::proxqp::QPSolverOutput::PROXQP_SOLVED:
+        // msg_info("QPInverseProblemImpl") << "Solver status: PROXQP_SOLVED";
+      break;
+      case proxsuite::proxqp::QPSolverOutput::PROXQP_MAX_ITER_REACHED:
+        msg_warning("QPInverseProblemImpl") << "Solver status: PROXQP_MAX_ITER_REACHED";
+      break;
+      case proxsuite::proxqp::QPSolverOutput::PROXQP_PRIMAL_INFEASIBLE:
+        msg_warning("QPInverseProblemImpl") << "Solver status: PROXQP_PRIMAL_INFEASIBLE";
+      break;
+      case proxsuite::proxqp::QPSolverOutput::PROXQP_SOLVED_CLOSEST_PRIMAL_FEASIBLE:
+        msg_warning("QPInverseProblemImpl") << "Solver status: PROXQP_SOLVED_CLOSEST_PRIMAL_FEASIBLE";
+      break;
+      case proxsuite::proxqp::QPSolverOutput::PROXQP_DUAL_INFEASIBLE:
+        msg_warning("QPInverseProblemImpl") << "Solver status: PROXQP_DUAL_INFEASIBLE";
+      break;
+      case proxsuite::proxqp::QPSolverOutput::PROXQP_NOT_RUN:
+        msg_warning("QPInverseProblemImpl") << "Solver status: PROXQP_NOT_RUN";
+      break;
+      default:
+        msg_error("QPInverseProblemImpl") << "Unknown solver status";
+    }
+
+    objective = qp.results.info.objValue;
+
+    // dual is the vector stacking dual solution for inequalities then equalities, i.e. dual = [z; y]^T
+    dual.resize(n_constraints);
+    for (int i = 0; i < n_in; ++i)
+    {
+        dual[i] = qp.results.z[i];
+    }
+    for (int i = 0; i < n_eq; ++i)
+    {
+        dual[n_in + i] = qp.results.y[i];
+    }
+
+    // primal solution
+    result.clear();
+    result.resize(d);
+    for (int i = 0; i < d; ++i)
+    {
+        result[i] = qp.results.x[i];
+    }
+}
+// qpOASES impl
+void QPInverseProblemImpl::solveInverseProblemQPOASES(double& objective,
                                                vector<double> &result,
                                                vector<double> &dual)
 {
@@ -471,7 +568,7 @@ void QPInverseProblemImpl::solveInverseProblem(double& objective,
     real_t* bu = new real_t[nbConstraints];
     real_t* bl = new real_t[nbConstraints];
 
-    updateOASESMatrices(Q, c, l, u, A, bl, bu);
+    updateQPOASESMatrices(Q, c, l, u, A, bl, bu);
 
     int_t nWSR = 500;
     //    Eulalie.C (01/19): QProblemB of qpOASES for simply bounded problem does not work (constraints are not satisfied). We should either find why or remove this commented block of code
@@ -487,7 +584,7 @@ void QPInverseProblemImpl::solveInverseProblem(double& objective,
     //    }
     //    else
     //    {
-    QProblem problem = getNewQProblem(nWSR);
+    QProblem problem = getNewQProblemQPOASES(nWSR);
 
     problem.init(Q, c, A, l, u, bl, bu, nWSR);
 
@@ -497,9 +594,9 @@ void QPInverseProblemImpl::solveInverseProblem(double& objective,
         {
             msg_warning("QPInverseProblemImpl") << "QP infeasible at time = " << m_time << " with " << m_qpCParams->contactStates.size() << " contacts, check constraint on actuators." ;
             m_constraintHandler->checkAndUpdateActuatorConstraints(result, m_qpSystem, m_qpCLists);
-            updateOASESMatrices(Q, c, l, u, A, bl, bu);
+            updateQPOASESMatrices(Q, c, l, u, A, bl, bu);
 
-            problem = getNewQProblem(nWSR);
+            problem = getNewQProblemQPOASES(nWSR);
             problem.init(Q, c, A, l, u, bl, bu, nWSR);
         }
 
@@ -508,9 +605,9 @@ void QPInverseProblemImpl::solveInverseProblem(double& objective,
             msg_warning("QPInverseProblemImpl") << "QP infeasible at time = " << m_time << ", try with option HST_INDEF." ;
             m_constraintHandler->buildInequalityConstraintMatrices(result, m_qpSystem, m_qpCLists);
             m_constraintHandler->getConstraintOnLambda(result, m_qpSystem, m_qpCLists);
-            updateOASESMatrices(Q, c, l, u, A, bl, bu);
+            updateQPOASESMatrices(Q, c, l, u, A, bl, bu);
 
-            problem = getNewQProblem(nWSR);
+            problem = getNewQProblemQPOASES(nWSR);
             problem.setHessianType(qpOASES::HST_INDEF);
             problem.init(Q, c, A, l, u, bl, bu, nWSR);
 
@@ -554,8 +651,7 @@ void QPInverseProblemImpl::solveInverseProblem(double& objective,
     delete[] lambda;
 }
 
-
-QProblem QPInverseProblemImpl::getNewQProblem(int& nWSR)
+QProblem QPInverseProblemImpl::getNewQProblemQPOASES(int& nWSR)
 {
     int nbVariables = m_qpSystem->dim;
     int nbConstraints = m_qpSystem->A.size()+m_qpSystem->Aeq.size();
@@ -572,8 +668,7 @@ QProblem QPInverseProblemImpl::getNewQProblem(int& nWSR)
     return problem;
 }
 
-
-void QPInverseProblemImpl::updateOASESMatrices(real_t * Q, real_t * c, real_t * l, real_t * u,
+void QPInverseProblemImpl::updateQPOASESMatrices(real_t * Q, real_t * c, real_t * l, real_t * u,
                                                real_t * A, real_t * bl, real_t * bu)
 {
     for (unsigned int i=0; i<m_qpSystem->dim; i++)
@@ -612,6 +707,53 @@ void QPInverseProblemImpl::updateOASESMatrices(real_t * Q, real_t * c, real_t * 
     }
 }
 
+void QPInverseProblemImpl::updateProxQPMatrices(Eigen::MatrixXd& H, Eigen::VectorXd& g, Eigen::MatrixXd& A, Eigen::VectorXd& b, Eigen::MatrixXd& C, Eigen::VectorXd& l, Eigen::VectorXd& u, Eigen::VectorXd& lbox, Eigen::VectorXd& ubox) const
+{
+    for (unsigned int i = 0; i < m_qpSystem->dim; ++i)
+    {
+        for (unsigned int j = 0; j < m_qpSystem->dim; ++j)
+        {
+            H(i, j) = m_qpSystem->Q[i][j];
+        }
+        g[i] = m_qpSystem->c[i];
+    }
+
+    const int n_in = m_qpSystem->A.size();
+    const int n_eq = m_qpSystem->Aeq.size();
+    for (int i = 0; i < n_in; ++i)
+    {
+        for (unsigned int j = 0; j < m_qpSystem->dim; ++j)
+        {
+            C(i, j) = m_qpSystem->A[i][j];
+        }
+        u[i] = m_qpSystem->bu[i];
+        if (m_qpSystem->hasBothSideInequalityConstraint)
+        {
+          l[i] = m_qpSystem->bl[i];
+        }
+        else
+        {
+          l[i] = -1e99; // XXX
+        }
+    }
+
+    if(n_eq > 0)
+    {
+        for (int i = 0; i < n_eq; ++i)
+        {
+            for (unsigned int j = 0; j < m_qpSystem->dim; ++j)
+            {
+                A(i, j) = m_qpSystem->Aeq[i][j];
+            }
+            b[i] = m_qpSystem->beq[i];
+        }
+    }
+    for (unsigned int i = 0; i < m_qpSystem->dim; i++)
+    {
+        ubox[i] = m_qpSystem->u[i];
+        lbox[i] = m_qpSystem->l[i];
+    }
+}
 
 /// Utils for pivot algorithm
 

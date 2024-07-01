@@ -154,11 +154,17 @@ else()
     add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${DOC_FILES} ${EXAMPLE_FILES} "${SRC_DIR}/component/config.h.in")
 endif()
 
+find_package(proxsuite REQUIRED)
+
 target_link_libraries(${PROJECT_NAME}
     SoftRobots
     Sofa.Component.Constraint.Lagrangian.Solver
     Sofa.Component.Collision.Response.Contact)
 target_link_libraries(${PROJECT_NAME} ${libqpOASES_LIBRARY})
+target_link_libraries(${PROJECT_NAME} proxsuite::proxsuite)
+# XXX proxsuite vectorization support via SIMDE and activated by the compilation options '-march=native' or `-mavx2 -mavx512f`
+# target_link_libraries(${PROJECT_NAME} PUBLIC proxsuite::proxsuite-vectorized)
+# target_compile_options(${PROJECT_NAME}  PUBLIC "-march=native")
 
 sofa_find_package(Sofa.Component.SolidMechanics.FEM.Elastic)
 target_link_libraries(${PROJECT_NAME} Sofa.Component.SolidMechanics.FEM.Elastic)
