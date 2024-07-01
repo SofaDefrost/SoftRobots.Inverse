@@ -118,7 +118,6 @@ set(SOURCE_FILES
     ${SRC_DIR}/component/solver/QPInverseProblemSolver.cpp
     ${SRC_DIR}/component/solver/modules/ContactHandler.cpp
     ${SRC_DIR}/component/solver/modules/ConstraintHandler.cpp
-    ${SRC_DIR}/component/solver/modules/LCPQPSolver.cpp
     ${SRC_DIR}/component/solver/modules/NLCPSolver.cpp
     ${SRC_DIR}/component/solver/modules/QPInverseProblem.cpp
     ${SRC_DIR}/component/solver/modules/QPInverseProblemImpl.cpp
@@ -139,13 +138,35 @@ endif()
 set(DOC_FILES README.md)
 file(GLOB_RECURSE EXAMPLE_FILES examples "*.pyscn" "*.py" "*.md" "*.psl" "*.pslx" "*.scn" "*.xml")
 
-set(OASES_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/extlibs/qpOASES-3.2.0/")
-add_subdirectory(${OASES_LIBRARY_DIRECTORY} extlibs/libqpOASES)
-find_package(libqpOASES REQUIRED)
-message("libqpOASES_INCLUDE_DIRS = ${libqpOASES_INCLUDE_DIRS}")
-include_directories(${libqpOASES_INCLUDE_DIRS})
-set(QPOASES_INCLUDE_DIR ${libqpOASES_INCLUDE_DIRS} CACHE INTERNAL "")
-sofa_install_libraries(PATHS ${libqpOASES_LIBRARY})
+
+option(SOFTROBOTSINVERSE_ENABLE_PROXQP "Build proxQP wrapper for inverse problems" OFF)
+option(SOFTROBOTSINVERSE_ENABLE_QPOASES "Build qpOASES wrapper for inverse problems" ON)
+
+if(NOT SOFTROBOTSINVERSE_ENABLE_PROXQP AND NOT SOFTROBOTSINVERSE_ENABLE_QPOASES)
+    message(FATAL_ERROR "Both proxQP and qpOASES solvers are disabled. Please enable at least one solver.")
+endif()
+
+if(SOFTROBOTSINVERSE_ENABLE_PROXQP)
+    list(APPEND HEADER_FILES
+        ${SRC_DIR}/component/solver/modules/QPInverseProblemProxQP.h
+        ${SRC_DIR}/component/solver/modules/LCPQPSolverProxQP.h
+        )
+    list(APPEND SOURCE_FILES
+        ${SRC_DIR}/component/solver/modules/QPInverseProblemProxQP.cpp
+        ${SRC_DIR}/component/solver/modules/LCPQPSolverProxQP.cpp
+        )
+endif()
+
+if(SOFTROBOTSINVERSE_ENABLE_QPOASES)
+    list(APPEND HEADER_FILES
+        ${SRC_DIR}/component/solver/modules/QPInverseProblemQPOases.h
+        ${SRC_DIR}/component/solver/modules/LCPQPSolverQPOases.h
+        )
+    list(APPEND SOURCE_FILES
+        ${SRC_DIR}/component/solver/modules/QPInverseProblemQPOases.cpp
+        ${SRC_DIR}/component/solver/modules/LCPQPSolverQPOases.cpp
+        )
+endif()
 
 option(SOFTROBOTSINVERSE_INSTALL_HEADERS "Install the headers" ON)
 if(SOFTROBOTSINVERSE_INSTALL_HEADERS)
@@ -154,14 +175,47 @@ else()
     add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${DOC_FILES} ${EXAMPLE_FILES} "${SRC_DIR}/component/config.h.in")
 endif()
 
-target_link_libraries(${PROJECT_NAME}
+
+if(SOFTROBOTSINVERSE_ENABLE_PROXQP)
+    find_package(proxsuite REQUIRED)
+    message("Sofa.SoftRobots.Inverse: proxsuite FOUND. Will build with proxsuite support.")
+
+    target_link_libraries(${PROJECT_NAME} PUBLIC proxsuite::proxsuite)
+    # XXX proxsuite vectorization support via SIMDE and activated by the compilation options '-march=native' or `-mavx2 -mavx512f`
+    # This will not be available if proxsuite has been fetched
+    # target_link_libraries(${PROJECT_NAME} PUBLIC proxsuite::proxsuite-vectorized)
+    # target_compile_options(${PROJECT_NAME}  PUBLIC "-march=native")
+    target_compile_definitions(${PROJECT_NAME} PUBLIC SOFTROBOTSINVERSE_ENABLE_PROXQP)
+endif()
+
+if(SOFTROBOTSINVERSE_ENABLE_QPOASES)
+    find_package(qpOASES QUIET)
+
+    if(qpOASES_FOUND)
+        message("Sofa.SoftRobots.Inverse: external qpOASES FOUND. Will build with qpOASES support.")
+        include_directories(${qpOASES_INCLUDE_DIRS})
+        target_link_libraries(${PROJECT_NAME} PUBLIC ${qpOASES_LIBRARIES})
+        set(QPOASES_INCLUDE_DIR ${qpOASES_INCLUDE_DIRS} CACHE INTERNAL "")
+    else()
+        message("External package qpOASES not found, using embedded version for qpOASES support")
+        set(OASES_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/extlibs/qpOASES-3.2.0/")
+        add_subdirectory(${OASES_LIBRARY_DIRECTORY} extlibs/libqpOASES)
+        find_package(libqpOASES REQUIRED)
+        include_directories(${libqpOASES_INCLUDE_DIRS})
+        set(QPOASES_INCLUDE_DIR ${libqpOASES_INCLUDE_DIRS} CACHE INTERNAL "")
+        sofa_install_libraries(PATHS ${libqpOASES_LIBRARY})
+        target_link_libraries(${PROJECT_NAME} PUBLIC ${libqpOASES_LIBRARY})
+    endif()
+    target_compile_definitions(${PROJECT_NAME} PUBLIC SOFTROBOTSINVERSE_ENABLE_QPOASES)
+  endif()
+
+target_link_libraries(${PROJECT_NAME} PUBLIC
     SoftRobots
     Sofa.Component.Constraint.Lagrangian.Solver
     Sofa.Component.Collision.Response.Contact)
-target_link_libraries(${PROJECT_NAME} ${libqpOASES_LIBRARY})
 
 sofa_find_package(Sofa.Component.SolidMechanics.FEM.Elastic)
-target_link_libraries(${PROJECT_NAME} Sofa.Component.SolidMechanics.FEM.Elastic)
+target_link_libraries(${PROJECT_NAME} PUBLIC Sofa.Component.SolidMechanics.FEM.Elastic)
 
 find_package(SofaPython3 QUIET)
 if(SofaPython3_FOUND)

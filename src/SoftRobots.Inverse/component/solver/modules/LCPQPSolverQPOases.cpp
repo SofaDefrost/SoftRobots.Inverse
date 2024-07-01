@@ -28,8 +28,9 @@
 ******************************************************************************/
 
 #include <qpOASES.hpp>
+#include <sofa/type/vector.h>
 #include <sofa/helper/logging/Messaging.h>
-#include <SoftRobots.Inverse/component/solver/modules/LCPQPSolver.h>
+#include <SoftRobots.Inverse/component/solver/modules/LCPQPSolverQPOases.h>
 
 
 namespace softrobotsinverse::solver::module
@@ -45,7 +46,7 @@ using qpOASES::int_t;
 using sofa::type::vector;
 
 
-void LCPQPSolver::solve(int dim, double*q, double**M, double*res)
+void LCPQPSolverQPOases::solve(int dim, double*q, double**M, double*res)
 {
     //////////////////////////////////////////
     // Constraints on lambda

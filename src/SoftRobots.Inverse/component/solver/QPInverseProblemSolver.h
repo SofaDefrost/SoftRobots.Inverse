@@ -32,10 +32,12 @@
 #include <sofa/core/behavior/BaseConstraint.h>
 #include <sofa/core/behavior/ConstraintSolver.h>
 #include <sofa/core/behavior/BaseConstraintCorrection.h>
+#include <sofa/core/objectmodel/DataCallback.h>
 #include <sofa/core/objectmodel/KeypressedEvent.h>
 #include <sofa/simulation/TaskScheduler.h>
 #include <sofa/simulation/InitTasks.h>
 #include <sofa/helper/map.h>
+#include <sofa/helper/OptionsGroup.h>
 
 #include <SoftRobots/component/behavior/SoftRobotsBaseConstraint.h>
 #include <SoftRobots.Inverse/component/solver/modules/QPInverseProblemImpl.h>
@@ -58,6 +60,7 @@ using std::string;
 using sofa::simulation::Node;
 using sofa::core::MultiVecDerivId;
 
+
 /**
  * This component solves an inverse problem set by actuator and effector constraints. The method
  * is based on the formulation of a quadratic program (QP).
@@ -68,6 +71,13 @@ using sofa::core::MultiVecDerivId;
 class SOFA_SOFTROBOTS_INVERSE_API QPInverseProblemSolver : public sofa::component::constraint::lagrangian::solver::ConstraintSolverImpl
 {
 public:
+    // List of availables QP solvers used to solve the inverse problem
+    enum QPSolverImpl
+    {
+        QPOASES = 0,
+        PROXQP
+    };
+
     SOFA_CLASS(QPInverseProblemSolver, ConstraintSolverImpl);
 
     typedef vector<BaseConstraintCorrection*> list_cc;
@@ -136,6 +146,7 @@ public:
     sofa::Data<int>       d_maxIterations;
     sofa::Data<double>    d_tolerance;
     sofa::Data<double>    d_responseFriction;
+    sofa::Data<sofa::helper::OptionsGroup> d_qpSolver;
 
     sofa::Data<double>    d_epsilon;
     sofa::Data<bool>      d_actuatorsOnly;
@@ -154,6 +165,7 @@ protected:
     module::QPInverseProblemImpl *m_lastCP, *m_currentCP;
     vector<BaseConstraintCorrection*> m_constraintsCorrections;
     vector<char> m_isConstraintCorrectionActive;
+    sofa::core::objectmodel::DataCallback m_qpSolverCB;
 
     Node *m_context;
 

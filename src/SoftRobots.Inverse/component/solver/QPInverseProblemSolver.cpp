@@ -53,6 +53,14 @@
 #include <SoftRobots.Inverse/component/solver/modules/QPMechanicalSetConstraint.h>
 #include <SoftRobots.Inverse/component/solver/modules/QPMechanicalAccumulateConstraint.h>
 
+#ifdef SOFTROBOTSINVERSE_ENABLE_QPOASES
+#include <SoftRobots.Inverse/component/solver/modules/QPInverseProblemQPOases.h>
+#endif
+
+#ifdef SOFTROBOTSINVERSE_ENABLE_PROXQP
+#include <SoftRobots.Inverse/component/solver/modules/QPInverseProblemProxQP.h>
+#endif
+
 using sofa::simulation::mechanicalvisitor::MechanicalProjectJacobianMatrixVisitor;
 using sofa::simulation::mechanicalvisitor::MechanicalResetConstraintVisitor;
 using sofa::component::constraint::lagrangian::solver::ConstraintStoreLambdaVisitor ;
@@ -122,6 +130,8 @@ QPInverseProblemSolver::QPInverseProblemSolver()
 
     , d_responseFriction(initData(&d_responseFriction, 0., "responseFriction", "Response friction for contact resolution"))
 
+    , d_qpSolver(initData(&d_qpSolver, "qpSolver", "QP solver implementation to be used"))
+
     , d_epsilon(initData(&d_epsilon, 1e-3, "epsilon",
                          "An energy term is added in the minimization process. \n"
                          "Epsilon has to be chosen sufficiently small so that the deformation \n"
@@ -149,25 +159,77 @@ QPInverseProblemSolver::QPInverseProblemSolver()
     , d_objective(initData(&d_objective, 250.0, "objective", "Erreur between the target and the end effector "))
 
     , m_lastCP(NULL)
+    , m_CP1(nullptr)
+    , m_CP2(nullptr)
+    , m_CP3(nullptr)
 {
-    createProblems();
+    sofa::helper::OptionsGroup qpSolvers{"qpOASES" , "proxQP"};
+#if defined SOFTROBOTSINVERSE_ENABLE_PROXQP && !defined SOFTROBOTSINVERSE_ENABLE_QPOASES
+    qpSolvers.setSelectedItem(QPSolverImpl::PROXQP);
+#else
+    qpSolvers.setSelectedItem(QPSolverImpl::QPOASES);
+#endif
+
+    d_qpSolver.setValue(qpSolvers);
+
     d_graph.setWidget("graph");
+    createProblems();
+
+    m_qpSolverCB.addInput(&d_qpSolver);
+    m_qpSolverCB.addCallback([this]()
+    {
+        deleteProblems();
+        createProblems();
+    });
 }
 
 void QPInverseProblemSolver::createProblems()
 {
-    m_CP1 = new module::QPInverseProblemImpl();
-    m_CP2 = new module::QPInverseProblemImpl();
-    m_CP3 = new module::QPInverseProblemImpl();
+    switch(d_qpSolver.getValue().getSelectedId())
+    {
+#ifdef SOFTROBOTSINVERSE_ENABLE_PROXQP
+    case QPSolverImpl::PROXQP :
+        msg_info() << "Using proxQP solver";
+        m_CP1 = new module::QPInverseProblemProxQP();
+        m_CP2 = new module::QPInverseProblemProxQP();
+        m_CP3 = new module::QPInverseProblemProxQP();
+        break;
+#endif
+#ifdef SOFTROBOTSINVERSE_ENABLE_QPOASES
+    case QPSolverImpl::QPOASES :
+        msg_info() << "Using qpOASES solver";
+        m_CP1 = new module::QPInverseProblemQPOases();
+        m_CP2 = new module::QPInverseProblemQPOases();
+        m_CP3 = new module::QPInverseProblemQPOases();
+        break;
+#endif
+    default :
+        msg_error() << "Unkown specified solved: " << d_qpSolver.getValue();
+        sofa::core::objectmodel::BaseObject::d_componentState.setValue(sofa::core::objectmodel::ComponentState::Invalid);
+        break;
+    }
+
 
     m_currentCP = m_CP1;
 }
 
 void QPInverseProblemSolver::deleteProblems()
 {
-    delete m_CP1;
-    delete m_CP2;
-    delete m_CP3;
+    if(m_CP1)
+    {
+      delete m_CP1;
+      m_CP1 = nullptr;
+    }
+     if(m_CP2)
+    {
+      delete m_CP2;
+      m_CP2 = nullptr;
+    }
+     if(m_CP3)
+    {
+      delete m_CP3;
+      m_CP3 = nullptr;
+    }
 }
 
 QPInverseProblemSolver::~QPInverseProblemSolver()
