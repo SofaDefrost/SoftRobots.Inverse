@@ -160,20 +160,8 @@ target_link_libraries(${PROJECT_NAME}
     Sofa.Component.Collision.Response.Contact)
 target_link_libraries(${PROJECT_NAME} ${libqpOASES_LIBRARY})
 
-# TODO: remove this when SoftRobotsConfig.cmake.in is fixed
-message("SOFTROBOTS_HAVE_SOFA_GL = ${SOFTROBOTS_HAVE_SOFA_GL}")
-if(SOFTROBOTS_HAVE_SOFA_GL)
-    find_package(Sofa.GL REQUIRED)
-    target_link_libraries(${PROJECT_NAME} Sofa.GL)
-endif()
-
-# Sofa.Component.Compat should permit to avoid this
-find_package(Sofa.Component.SolidMechanics.FEM.Elastic)
+sofa_find_package(Sofa.Component.SolidMechanics.FEM.Elastic)
 target_link_libraries(${PROJECT_NAME} Sofa.Component.SolidMechanics.FEM.Elastic)
-
-if(SOFA_HAVE_NEWMAT)
-    target_link_libraries(${PROJECT_NAME} SofaDenseSolver)
-endif()
 
 find_package(SofaPython3 QUIET)
 if(SofaPython3_FOUND)
