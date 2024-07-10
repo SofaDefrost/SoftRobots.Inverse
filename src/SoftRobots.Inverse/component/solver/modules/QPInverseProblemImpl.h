@@ -30,6 +30,14 @@
 
 #include <Eigen/Core>
 #include <qpOASES/Types.hpp>
+
+//When the macro is defined by qpOASES/Types.hpp it has side effects on the
+//rest of the code, in particular in boost (source_location). This macro is
+//no longer necessary if a modern compiler is used.
+#ifdef snprintf
+    #undef snprintf
+#endif
+
 #include <qpOASES/QProblem.hpp>
 #include <SoftRobots/component/behavior/SoftRobotsBaseConstraint.h>
 
