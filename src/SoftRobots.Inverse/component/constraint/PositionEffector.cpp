@@ -27,6 +27,7 @@
 * Contact information: https://project.inria.fr/softrobot/contact/            *
 ******************************************************************************/
 #define SOFTROBOTS_INVERSE_POSITIONEFFECTOR_CPP
+#include <SoftRobots.Inverse/component/config.h>
 #include <sofa/core/ObjectFactory.h>
 #include <SoftRobots.Inverse/component/constraint/PositionEffector.inl>
 

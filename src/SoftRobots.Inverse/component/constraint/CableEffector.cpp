@@ -30,6 +30,7 @@
 
 #include <sofa/defaulttype/VecTypes.h>
 #include <sofa/component/statecontainer/MechanicalObject.h>
+#include <SoftRobots.Inverse/component/config.h>
 #include <sofa/core/ObjectFactory.h>
 using namespace sofa::defaulttype;
 using namespace sofa::helper;
@@ -40,7 +41,7 @@ using namespace sofa::core;
 namespace softrobotsinverse::constraint
 {
 
-int CableEffectorClass = RegisterObject("Simulate cable sensor to meassure lengths.")
+int CableEffectorClass = RegisterObject("Simulate cable sensor to measure lengths.")
 .add< CableEffector<Vec3Types> >(true)
 ;
 

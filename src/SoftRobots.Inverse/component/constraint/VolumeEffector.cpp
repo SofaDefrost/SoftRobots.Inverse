@@ -29,6 +29,7 @@
 #define SOFTROBOTS_INVERSE_VOLUMEEFFECTOR_CPP
 #include <sofa/defaulttype/VecTypes.h>
 #include <sofa/component/statecontainer/MechanicalObject.h>
+#include <SoftRobots.Inverse/component/config.h>
 #include <sofa/core/ObjectFactory.h>
 using namespace sofa::defaulttype;
 using namespace sofa::helper;
