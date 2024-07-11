@@ -29,6 +29,7 @@
 #define SOFTROBOTSINVERSE_CONSTRAINT_SLIDINGACTUATOR_CPP
 
 #include <sofa/defaulttype/VecTypes.h>
+#include <SoftRobots.Inverse/component/config.h>
 #include <sofa/core/ObjectFactory.h>
 using namespace sofa::defaulttype;
 using namespace sofa::helper;
@@ -69,7 +70,7 @@ void SlidingActuator<Rigid3Types>::initDatas()
 
 
 int SlidingActuatorClass = RegisterObject("This component simulates a force exerted along a given direction to solve an inverse problem. \n"
-                                          "In case of Rigid template, it additionaly simulates a force in rotation: the size of 'direction' is equal to 6,\n"
+                                          "In case of Rigid template, it additionally simulates a force in rotation: the size of 'direction' is equal to 6,\n"
                                           "the three first component give the direction in translation and the three last the axe of rotation.")
 .add< SlidingActuator<Vec3Types> >(true)
 .add< SlidingActuator<Rigid3Types> >()

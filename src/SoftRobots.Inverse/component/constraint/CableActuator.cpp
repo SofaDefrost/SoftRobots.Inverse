@@ -30,6 +30,7 @@
 
 #include <sofa/defaulttype/VecTypes.h>
 #include <sofa/component/statecontainer/MechanicalObject.h>
+#include <SoftRobots.Inverse/component/config.h>
 #include <sofa/core/ObjectFactory.h>
 
 #include <SoftRobots.Inverse/component/constraint/CableActuator.inl>
