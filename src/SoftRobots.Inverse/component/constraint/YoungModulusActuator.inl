@@ -121,7 +121,7 @@ void YoungModulusActuator<DataTypes>::bwdInit()
     if(m_tetraForceField != nullptr)
     {
         msg_info()<<"Found tetrahedronFEMForceField named "<<m_tetraForceField->getName();
-        VecReal youngModulus = m_tetraForceField->_youngModulus.getValue();
+        const VecReal& youngModulus = m_tetraForceField->d_youngModulus.getValue();
         m_youngModulus = youngModulus[0];
         m_initialYoungModulus = m_youngModulus;
         initLimit();
@@ -156,12 +156,12 @@ void YoungModulusActuator<DataTypes>::buildConstraintMatrix(const ConstraintPara
     if(d_componentState.getValue() == ComponentState::Invalid)
         return;
 
-    m_constraintIndex.setValue(cIndex);
-    const auto& constraintIndex = sofa::helper::getReadAccessor(m_constraintIndex);
+    this->d_constraintIndex.setValue(cIndex);
+    const auto& constraintIndex = sofa::helper::getReadAccessor(this->d_constraintIndex);
 
     MatrixDeriv& matrix = *cMatrix.beginEdit();
 
-    VecReal youngModulus = m_tetraForceField->_youngModulus.getValue();
+    const VecReal& youngModulus = m_tetraForceField->d_youngModulus.getValue();
     m_youngModulus = youngModulus[0];
 
     // TODO(damien): this seems a bit hacky :) what are the other possibilities.
@@ -217,7 +217,7 @@ void YoungModulusActuator<DataTypes>::getConstraintViolation(const ConstraintPar
     SOFA_UNUSED(Jdx);
     SOFA_UNUSED(cParams);
     
-    resV->set(m_constraintIndex.getValue(), 0.0);
+    resV->set(this->d_constraintIndex.getValue(), 0.0);
 }
 
 
@@ -229,13 +229,13 @@ void YoungModulusActuator<DataTypes>::storeResults(vector<double> &lambda, vecto
     if(d_componentState.getValue() == ComponentState::Invalid)
         return;
 
-    VecReal &youngModulus = *m_tetraForceField->_youngModulus.beginEdit();
+    VecReal &youngModulus = *m_tetraForceField->d_youngModulus.beginEdit();
 
     m_previousYoungValue = youngModulus[0];
     youngModulus[0] += Real(lambda[0]);
     m_youngModulus = youngModulus[0];
 
-    m_tetraForceField->_youngModulus.endEdit();
+    m_tetraForceField->d_youngModulus.endEdit();
     m_tetraForceField->reinit();
 
     updateLimit();
