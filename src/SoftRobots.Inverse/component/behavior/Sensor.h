@@ -67,10 +67,3 @@ extern template class SOFA_SOFTROBOTS_INVERSE_API Sensor<sofa::defaulttype::Rigi
 #endif
 
 } // namespace
-
-namespace sofa::core::behavior
-{
-    template <class DataTypes>
-    using Sensor SOFA_ATTRIBUTE_DEPRECATED__RENAME_NAMESPACE_SOFTROBOTS_INVERSE()
-        = softrobotsinverse::behavior::Sensor<DataTypes>;
-}

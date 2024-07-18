@@ -106,8 +106,8 @@ void JointActuator<DataTypes>::init()
                        "adding a MechanicalObject." ;
         return;
     }
-
-    initDatas();
+    
+    initData();
     initLimit();
     d_componentState.setValue(ComponentState::Valid);
 }
@@ -116,7 +116,7 @@ void JointActuator<DataTypes>::init()
 template<class DataTypes>
 void JointActuator<DataTypes>::reinit()
 {
-    initDatas();
+    initData();
     initLimit();
 }
 
@@ -171,7 +171,7 @@ void JointActuator<DataTypes>::initLimit()
 
 
 template<class DataTypes>
-void JointActuator<DataTypes>::initDatas()
+void JointActuator<DataTypes>::initData()
 {
     d_effort.setValue(d_initEffort.getValue());
     d_angle.setValue(d_initAngle.getValue());

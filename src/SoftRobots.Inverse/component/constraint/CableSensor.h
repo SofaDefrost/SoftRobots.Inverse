@@ -85,10 +85,3 @@ extern template class SOFA_SOFTROBOTS_INVERSE_API CableSensor<sofa::defaulttype:
 #endif
 
 } // namespace
-
-namespace sofa::component::constraintset
-{
-    template <class DataTypes>
-    using CableSensor SOFA_ATTRIBUTE_DEPRECATED__RENAME_NAMESPACE_SOFTROBOTS_INVERSE()
-        = softrobotsinverse::constraint::CableSensor<DataTypes>;
-}

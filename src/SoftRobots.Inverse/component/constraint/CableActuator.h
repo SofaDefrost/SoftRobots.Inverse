@@ -36,7 +36,7 @@
 namespace softrobotsinverse::constraint
 {
 
-using sofa::core::behavior::Actuator;
+using softrobotsinverse::behavior::Actuator;
 using sofa::helper::ReadAccessor;
 using sofa::core::VecCoordId;
 using sofa::core::ConstraintParams;
@@ -128,10 +128,3 @@ extern template class SOFA_SOFTROBOTS_INVERSE_API CableActuator<sofa::defaulttyp
 
 } // namespace
 
-
-namespace sofa::component::constraintset
-{
-    template <class DataTypes>
-    using CableActuator SOFA_ATTRIBUTE_DEPRECATED__RENAME_NAMESPACE_SOFTROBOTS_INVERSE()
-        = softrobotsinverse::constraint::CableActuator<DataTypes>;
-}

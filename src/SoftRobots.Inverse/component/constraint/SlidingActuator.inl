@@ -151,8 +151,8 @@ void SlidingActuator<DataTypes>::init()
     }
     else
         checkIndicesRegardingState();
-
-    initDatas();
+    
+    initData();
     initLimit();
 
     d_componentState = ComponentState::Valid ;
@@ -170,7 +170,7 @@ void SlidingActuator<DataTypes>::reinit()
         return ;
 
     checkIndicesRegardingState();
-    initDatas();
+    initData();
     initLimit();
 }
 
@@ -183,7 +183,7 @@ void SlidingActuator<DataTypes>::reset()
 
 // Rigid implementation in SlidingActuator.cpp
 template<class DataTypes>
-void SlidingActuator<DataTypes>::initDatas()
+void SlidingActuator<DataTypes>::initData()
 {
     if (!d_direction.isSet())
     {

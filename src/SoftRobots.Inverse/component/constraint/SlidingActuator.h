@@ -34,7 +34,7 @@
 namespace softrobotsinverse::constraint
 {
 
-using sofa::core::behavior::Actuator;
+using softrobotsinverse::behavior::Actuator;
 using sofa::helper::ReadAccessor;
 using sofa::core::VecCoordId;
 using sofa::core::ConstraintParams;
@@ -142,8 +142,8 @@ protected:
 
     sofa::Data<bool>                  d_showDirection;
     sofa::Data<double>                d_showVisuScale;
-
-    void initDatas();
+    
+    void initData();
     void initLimit();
     void updateLimit();
     void checkIndicesRegardingState();
@@ -155,10 +155,3 @@ extern template class SOFA_SOFTROBOTS_INVERSE_API SlidingActuator<sofa::defaultt
 #endif
 
 } // namespace
-
-namespace sofa::component::constraintset
-{
-    template <class DataTypes>
-    using SlidingActuator SOFA_ATTRIBUTE_DEPRECATED__RENAME_NAMESPACE_SOFTROBOTS_INVERSE()
-        = softrobotsinverse::constraint::SlidingActuator<DataTypes>;
-}

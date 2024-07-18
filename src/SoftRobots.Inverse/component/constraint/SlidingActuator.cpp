@@ -42,7 +42,7 @@ namespace softrobotsinverse::constraint
 using sofa::defaulttype::Rigid3Types;
 
 template<>
-void SlidingActuator<Rigid3Types>::initDatas()
+void SlidingActuator<Rigid3Types>::initData()
 {
     if (!d_direction.isSet())
     {

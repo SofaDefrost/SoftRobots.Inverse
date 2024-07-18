@@ -76,10 +76,3 @@ extern template class SOFA_SOFTROBOTS_INVERSE_API Effector<sofa::defaulttype::Ve
 extern template class SOFA_SOFTROBOTS_INVERSE_API Effector<sofa::defaulttype::Rigid3Types>;
 #endif
 } // namespace
-
-namespace sofa::core::behavior
-{
-    template <class DataTypes>
-    using Effector SOFA_ATTRIBUTE_DEPRECATED__RENAME_NAMESPACE_SOFTROBOTS_INVERSE()
-        = softrobotsinverse::behavior::Effector<DataTypes>;
-}

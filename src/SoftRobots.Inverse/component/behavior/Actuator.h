@@ -73,10 +73,3 @@ extern template class SOFA_SOFTROBOTS_INVERSE_API Actuator<sofa::defaulttype::Ri
 #endif
 
 } // namespace
-
-namespace sofa::core::behavior
-{
-    template <class DataTypes>
-    using Actuator SOFA_ATTRIBUTE_DEPRECATED__RENAME_NAMESPACE_SOFTROBOTS_INVERSE()
-        = softrobotsinverse::behavior::Actuator<DataTypes>;
-}

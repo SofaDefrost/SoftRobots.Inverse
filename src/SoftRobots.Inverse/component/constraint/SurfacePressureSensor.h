@@ -94,10 +94,3 @@ extern template class SOFA_SOFTROBOTS_INVERSE_API SurfacePressureSensor<sofa::de
 #endif
 
 } // namespace
-
-namespace sofa::component::constraintset
-{
-    template <class DataTypes>
-    using SurfacePressureSensor SOFA_ATTRIBUTE_DEPRECATED__RENAME_NAMESPACE_SOFTROBOTS_INVERSE()
-        = softrobotsinverse::constraint::SurfacePressureSensor<DataTypes>;
-}

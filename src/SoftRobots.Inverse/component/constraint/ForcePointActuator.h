@@ -35,7 +35,7 @@
 
 namespace softrobotsinverse::constraint
 {
-    using sofa::core::behavior::Actuator;
+    using softrobotsinverse::behavior::Actuator;
     using sofa::core::topology::BaseMeshTopology;
     using sofa::core::visual::VisualParams;
     using sofa::core::ConstraintParams;
@@ -52,7 +52,7 @@ template< class DataTypes >
 class ForcePointActuator : public Actuator<DataTypes>
 {
 public:
-    SOFA_CLASS(SOFA_TEMPLATE(ForcePointActuator,DataTypes), SOFA_TEMPLATE(sofa::core::behavior::Actuator,DataTypes));
+    SOFA_CLASS(SOFA_TEMPLATE(ForcePointActuator,DataTypes), SOFA_TEMPLATE(softrobotsinverse::behavior::Actuator,DataTypes));
 
     typedef typename DataTypes::VecCoord                    VecCoord;
     typedef typename DataTypes::VecDeriv                    VecDeriv;

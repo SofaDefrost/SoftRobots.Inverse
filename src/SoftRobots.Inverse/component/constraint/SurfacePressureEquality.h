@@ -106,11 +106,3 @@ extern template class SOFA_SOFTROBOTS_INVERSE_API SurfacePressureEquality<sofa::
 #endif
 
 } // namespace
-
-namespace sofa::component::constraintset
-{
-    template <class DataTypes>
-    using SurfacePressureEquality SOFA_ATTRIBUTE_DEPRECATED__RENAME_NAMESPACE_SOFTROBOTS_INVERSE()
-        = softrobotsinverse::constraint::SurfacePressureEquality<DataTypes>;
-}
-

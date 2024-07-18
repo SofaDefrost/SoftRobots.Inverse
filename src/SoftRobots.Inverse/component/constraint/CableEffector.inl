@@ -56,7 +56,7 @@ CableEffector<DataTypes>::~CableEffector()
 template<class DataTypes>
 void CableEffector<DataTypes>::setUpData()
 {
-    // These datas from CableModel have no sense for effector
+    // These data from CableModel have no sense for effector
     d_maxForce.setDisplayed(false);
     d_minForce.setDisplayed(false);
     d_maxDispVariation.setDisplayed(false);
