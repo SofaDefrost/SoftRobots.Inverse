@@ -76,7 +76,7 @@ void CableEffector<DataTypes>::getConstraintViolation(const ConstraintParams* cP
     d_cableLength.setValue(getCableLength(m_state->readPositions().ref()));
     Real desiredLength = getTarget(d_desiredLength.getValue(), d_cableLength.getValue());
     Real dfree = Jdx->element(0) + desiredLength - d_cableLength.getValue();
-    resV->set(m_constraintIndex.getValue(), dfree);
+    resV->set(d_constraintIndex.getValue(), dfree);
 }
 
 } // namespace

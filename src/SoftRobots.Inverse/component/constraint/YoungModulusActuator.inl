@@ -156,8 +156,8 @@ void YoungModulusActuator<DataTypes>::buildConstraintMatrix(const ConstraintPara
     if(d_componentState.getValue() == ComponentState::Invalid)
         return;
 
-    m_constraintIndex.setValue(cIndex);
-    const auto& constraintIndex = sofa::helper::getReadAccessor(m_constraintIndex);
+    d_constraintIndex.setValue(cIndex);
+    const auto& constraintIndex = sofa::helper::getReadAccessor(d_constraintIndex);
 
     MatrixDeriv& matrix = *cMatrix.beginEdit();
 
@@ -217,7 +217,7 @@ void YoungModulusActuator<DataTypes>::getConstraintViolation(const ConstraintPar
     SOFA_UNUSED(Jdx);
     SOFA_UNUSED(cParams);
     
-    resV->set(m_constraintIndex.getValue(), 0.0);
+    resV->set(d_constraintIndex.getValue(), 0.0);
 }
 
 

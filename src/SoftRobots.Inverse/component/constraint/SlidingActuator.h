@@ -118,7 +118,7 @@ protected:
     using Inherit::m_lambdaMin ;
 
     using Inherit::m_nbLines ;
-    using Inherit::m_constraintIndex ;
+    using Inherit::d_constraintIndex ;
     using Inherit::d_componentState ;
 
     using Inherit::m_state ;
