@@ -97,7 +97,7 @@ protected:
     ////////////////////////////////////////////////////////////////////////////
 
 private:
-    void initDatas();
+    void initData();
     void initLimits();
     void updateLimits();
 

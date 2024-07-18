@@ -143,7 +143,7 @@ protected:
     sofa::Data<bool>                  d_showDirection;
     sofa::Data<double>                d_showVisuScale;
 
-    void initDatas();
+    void initData();
     void initLimit();
     void updateLimit();
     void checkIndicesRegardingState();

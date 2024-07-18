@@ -46,7 +46,7 @@ SurfacePressureActuator<DataTypes>::SurfacePressureActuator(MechanicalState* obj
     , d_initPressure(initData(&d_initPressure,Real(0.0), "initPressure",
                           "Initial pressure if any. Default is 0."))
 {
-    // These datas from SurfacePressureModel have no sense for actuator
+    // These data from SurfacePressureModel have no sense for actuator
     d_eqPressure.setDisplayed(false);
     d_eqVolumeGrowth.setDisplayed(false);
 
@@ -67,7 +67,7 @@ template<class DataTypes>
 void SurfacePressureActuator<DataTypes>::init()
 {
     softrobots::constraint::SurfacePressureModel<DataTypes>::init();
-    initDatas();
+    initData();
     initLimits();
 }
 
@@ -75,7 +75,7 @@ template<class DataTypes>
 void SurfacePressureActuator<DataTypes>::reinit()
 {
     softrobots::constraint::SurfacePressureModel<DataTypes>::reinit();
-    initDatas();
+    initData();
     initLimits();
 }
 
@@ -83,12 +83,12 @@ template<class DataTypes>
 void SurfacePressureActuator<DataTypes>::reset()
 {
     softrobots::constraint::SurfacePressureModel<DataTypes>::reset();
-    initDatas();
+    initData();
     initLimits();
 }
 
 template<class DataTypes>
-void SurfacePressureActuator<DataTypes>::initDatas()
+void SurfacePressureActuator<DataTypes>::initData()
 {
     d_volumeGrowth.setValue(0.0);
     d_pressure.setValue(d_initPressure.getValue());

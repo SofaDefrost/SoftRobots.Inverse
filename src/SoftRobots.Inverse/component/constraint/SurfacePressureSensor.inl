@@ -66,7 +66,7 @@ SurfacePressureSensor<DataTypes>::SurfacePressureSensor(MechanicalState* object)
     : Sensor<DataTypes>(object)
     , softrobots::constraint::SurfacePressureModel<DataTypes>(object)
 {
-    // These datas from SurfacePressureModel have no sense for sensor
+    // These data from SurfacePressureModel have no sense for sensor
     d_eqPressure.setDisplayed(false);
     d_eqVolumeGrowth.setDisplayed(false);
     d_minPressure.setDisplayed(false);

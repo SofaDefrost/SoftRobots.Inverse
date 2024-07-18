@@ -121,7 +121,7 @@ protected:
 
 
     void initLimit();
-    void initDatas();
+    void initData();
     void updateLimit();
 
     ////////////////////////// Inherited attributes ////////////////////////////
