@@ -32,10 +32,6 @@
 #  define SOFA_ATTRIBUTE_DEPRECATED__RENAME_NAMESPACE_SOFTROBOTS_INVERSE()
 #else
 #  define SOFA_SOFTROBOTS_INVERSE_API SOFA_IMPORT_DYNAMIC_LIBRARY
-#  define SOFA_ATTRIBUTE_DEPRECATED__RENAME_NAMESPACE_SOFTROBOTS_INVERSE() \
-    SOFA_ATTRIBUTE_DEPRECATED( \
-        "v23.06", "v23.12", \
-        "Namespace in the plugin SoftRobots.Inverse is now 'softrobotsinverse'.")
 #endif
 
 namespace softrobotsinverse
