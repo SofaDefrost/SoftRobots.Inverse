@@ -97,18 +97,20 @@ public:
 
 protected:
 
-    sofa::Data<sofa::type::vector<unsigned int>>  d_indices;
-    sofa::Data<Real>                          d_maxForce;
-    sofa::Data<Real>                          d_minForce;
-    sofa::Data<Real>                          d_initForce;
-    sofa::Data<Real>                          d_maxForceVariation;
-    sofa::Data<sofa::type::vector<Real>>      d_force;
-    sofa::Data<Real>                          d_displacement;
-    sofa::Data<Deriv>                         d_direction;
-    sofa::Data<Real>                          d_epsilon;
+    sofa::Data<sofa::type::vector<sofa::Index>>  d_indices;
+    sofa::Data<Real>                             d_maxForce;
+    sofa::Data<Real>                             d_minForce;
+    sofa::Data<Real>                             d_initForce;
+    sofa::Data<Real>                             d_maxForceVariation;
+    sofa::Data<sofa::type::vector<Real>>         d_force;
+    sofa::Data<Real>                             d_displacement;
+    sofa::Data<Deriv>                            d_direction;
+    sofa::Data<Real>                             d_epsilon;
 
-    sofa::Data<bool>                          d_showForce;
-    sofa::Data<Real>                          d_visuScale;
+    sofa::Data<bool>                             d_showForce;
+    sofa::Data<Real>                             d_visuScale;
+
+    sofa::Size                                   m_dim;
 
     ////////////////////////// Inherited attributes ////////////////////////////
     /// https://gcc.gnu.org/onlinedocs/gcc/Name-lookup.html
