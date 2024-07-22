@@ -72,7 +72,7 @@ public:
     /// otherwise any access to the base::attribute would require
     /// the "this->" approach.
     using softrobots::constraint::CableModel<DataTypes>::d_cableLength ;
-    using softrobots::constraint::CableModel<DataTypes>::m_constraintIndex ;
+    using softrobots::constraint::CableModel<DataTypes>::d_constraintIndex ;
     using softrobots::constraint::CableModel<DataTypes>::m_state ;
     using softrobots::constraint::CableModel<DataTypes>::getCableLength ;
 

@@ -77,7 +77,7 @@ public:
     using softrobots::constraint::PositionModel<DataTypes>::d_indices ;
     using softrobots::constraint::PositionModel<DataTypes>::d_directions ;
     using softrobots::constraint::PositionModel<DataTypes>::d_useDirections ;
-    using softrobots::constraint::PositionModel<DataTypes>::m_constraintIndex ;
+    using softrobots::constraint::PositionModel<DataTypes>::d_constraintIndex ;
     using softrobots::constraint::PositionModel<DataTypes>::d_weight ;
     using softrobots::behavior::SoftRobotsConstraint<DataTypes>::m_state ;
     using softrobots::behavior::SoftRobotsConstraint<DataTypes>::d_componentState ;

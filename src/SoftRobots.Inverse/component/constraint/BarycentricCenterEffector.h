@@ -115,7 +115,7 @@ protected:
     using Effector<DataTypes>::m_state ;
     using Effector<DataTypes>::getContext ;
     using Effector<DataTypes>::m_nbLines ;
-    using Effector<DataTypes>::m_constraintIndex ;
+    using Effector<DataTypes>::d_constraintIndex ;
     using Effector<DataTypes>::f_listening ;
     using Effector<DataTypes>::getTarget ;
 

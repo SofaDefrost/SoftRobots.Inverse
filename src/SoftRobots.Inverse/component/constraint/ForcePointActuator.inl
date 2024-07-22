@@ -120,7 +120,7 @@ void ForcePointActuator<DataTypes>::init()
                             "To remove this error message fix your scene possibly by "
                             "adding a MechanicalObject." ;
 
-    initDatas();
+    initData();
     initLimit();
 }
 
@@ -128,7 +128,7 @@ void ForcePointActuator<DataTypes>::init()
 template<class DataTypes>
 void ForcePointActuator<DataTypes>::reinit()
 {
-    initDatas();
+    initData();
     initLimit();
 }
 
@@ -161,7 +161,7 @@ void ForcePointActuator<DataTypes>::initLimit()
 
 
 template<class DataTypes>
-void ForcePointActuator<DataTypes>::initDatas()
+void ForcePointActuator<DataTypes>::initData()
 {
     if(d_epsilon.isSet())
     {
@@ -212,8 +212,8 @@ void ForcePointActuator<DataTypes>::buildConstraintMatrix(const ConstraintParams
     SOFA_UNUSED(cParams);
     SOFA_UNUSED(x);
 
-    m_constraintIndex.setValue(cIndex);
-    const auto& constraintIndex = sofa::helper::getReadAccessor(m_constraintIndex);
+    d_constraintIndex.setValue(cIndex);
+    const auto& constraintIndex = sofa::helper::getReadAccessor(d_constraintIndex);
 
     Deriv direction = d_direction.getValue();
 
@@ -258,7 +258,7 @@ void ForcePointActuator<DataTypes>::getConstraintViolation(const ConstraintParam
     SOFA_UNUSED(cParams);
     SOFA_UNUSED(Jdx);
 
-    const auto& constraintId = sofa::helper::getReadAccessor(m_constraintIndex);
+    const auto& constraintId = sofa::helper::getReadAccessor(d_constraintIndex);
     Deriv direction = d_direction.getValue();
 
     if(direction.norm() == 0) // No fixed direction
