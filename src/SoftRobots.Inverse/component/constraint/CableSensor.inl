@@ -57,7 +57,7 @@ CableSensor<DataTypes>::~CableSensor()
 template<class DataTypes>
 void CableSensor<DataTypes>::setUpData()
 {
-    // These datas from CableModel have no sense for sensor
+    // These data from CableModel have no sense for sensor
     d_maxForce.setDisplayed(false);
     d_minForce.setDisplayed(false);
     d_eqForce.setDisplayed(false);

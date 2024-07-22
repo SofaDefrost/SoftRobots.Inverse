@@ -44,7 +44,7 @@ VolumeEffector<DataTypes>::VolumeEffector(MechanicalState* object)
     , softrobots::constraint::SurfacePressureModel<DataTypes>(object)
     , d_desiredVolume(initData(&d_desiredVolume, "desiredVolume",""))
 {
-    // These datas from SurfacePressureModel have no sense for effector
+    // These data from SurfacePressureModel have no sense for effector
     d_maxPressure.setDisplayed(false);
     d_minPressure.setDisplayed(false);
     d_maxPressureVariation.setDisplayed(false);
@@ -79,7 +79,7 @@ void VolumeEffector<DataTypes>::getConstraintViolation(const ConstraintParams* c
     d_cavityVolume.setValue(getCavityVolume(m_state->readPositions().ref()));
     Real desiredVolume = getTarget(d_desiredVolume.getValue(), d_cavityVolume.getValue());
     Real dfree = Jdx->element(0) + d_cavityVolume.getValue() - desiredVolume;
-    resV->set(m_constraintIndex.getValue(), dfree);
+    resV->set(d_constraintIndex.getValue(), dfree);
 }
 
 template<class DataTypes>

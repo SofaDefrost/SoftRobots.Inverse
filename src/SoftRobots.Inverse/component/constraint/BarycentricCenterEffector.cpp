@@ -48,8 +48,8 @@ void BarycentricCenterEffector<Rigid3Types>::buildConstraintMatrix(const Constra
     SOFA_UNUSED(cParams);
     SOFA_UNUSED(x);
 
-    m_constraintIndex.setValue(cIndex);
-    const auto& constraintIndex = sofa::helper::getReadAccessor(m_constraintIndex);
+    d_constraintIndex.setValue(cIndex);
+    const auto& constraintIndex = sofa::helper::getReadAccessor(d_constraintIndex);
 
     const unsigned int nbp = m_state->getSize();
 

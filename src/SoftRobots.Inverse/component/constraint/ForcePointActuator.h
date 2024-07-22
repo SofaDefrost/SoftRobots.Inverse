@@ -118,12 +118,12 @@ protected:
     /// otherwise any access to the base::attribute would require
     /// the "this->" approach.
     using Actuator<DataTypes>::m_state ;
-    using Actuator<DataTypes>::m_constraintIndex ;
+    using Actuator<DataTypes>::d_constraintIndex ;
     ////////////////////////////////////////////////////////////////////////////
 
 
     void initLimit();
-    void initDatas();
+    void initData();
     void updateLimit();
 
     ////////////////////////// Inherited attributes ////////////////////////////

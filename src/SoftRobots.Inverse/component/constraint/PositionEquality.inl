@@ -101,8 +101,8 @@ void PositionEquality<DataTypes>::buildConstraintMatrix(const ConstraintParams* 
     const auto& indices = sofa::helper::getReadAccessor(d_indices);
     const auto& directions = sofa::helper::getReadAccessor(d_directions);
     const auto& useDirections = sofa::helper::getReadAccessor(d_useDirections);
-    m_constraintIndex.setValue(cIndex);
-    const auto& constraintIndex = sofa::helper::getReadAccessor(m_constraintIndex);
+    d_constraintIndex.setValue(cIndex);
+    const auto& constraintIndex = sofa::helper::getReadAccessor(d_constraintIndex);
 
     for (sofa::Index i: indices)
     {
@@ -133,7 +133,7 @@ void PositionEquality<DataTypes>::getConstraintViolation(const ConstraintParams*
     ReadAccessor<sofa::Data<VecCoord>> positions = m_state->readPositions();
     const auto& indices = sofa::helper::getReadAccessor(d_indices);
     const auto& useDirections = sofa::helper::getReadAccessor(d_useDirections);
-    const auto& constraintIndex = sofa::helper::getReadAccessor(m_constraintIndex);
+    const auto& constraintIndex = sofa::helper::getReadAccessor(d_constraintIndex);
 
     bool withJdx = (Jdx->size()!=0);
 

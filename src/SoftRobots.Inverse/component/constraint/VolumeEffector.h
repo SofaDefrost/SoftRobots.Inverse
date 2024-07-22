@@ -74,7 +74,7 @@ public:
     /////////////////////////////////////////////////////////////////////////
 
     ////////////////////////// Inherited attributes ////////////////////////////
-    using softrobots::constraint::SurfacePressureModel<DataTypes>::m_constraintIndex ;
+    using softrobots::constraint::SurfacePressureModel<DataTypes>::d_constraintIndex ;
     using softrobots::constraint::SurfacePressureModel<DataTypes>::d_cavityVolume ;
     using softrobots::constraint::SurfacePressureModel<DataTypes>::m_state ;
     using softrobots::constraint::SurfacePressureModel<DataTypes>::d_initialCavityVolume ;

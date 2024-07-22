@@ -53,7 +53,7 @@ struct SlidingActuatorTest : public BaseTest,
     // more info at: https://gcc.gnu.org/onlinedocs/gcc/Name-lookup.html
     using SlidingActuator<_DataTypes>::d_indices ;
     using SlidingActuator<_DataTypes>::d_direction ;
-    using SlidingActuator<_DataTypes>::m_constraintIndex ;
+    using SlidingActuator<_DataTypes>::d_constraintIndex ;
     using SlidingActuator<_DataTypes>::m_state ;
     using BaseObject::d_componentState ;
     //////////////////////////////////////////////////////////////////
@@ -62,7 +62,7 @@ struct SlidingActuatorTest : public BaseTest,
 
     void setUp(Data<VecCoord> &x)
     {
-        m_constraintIndex.setValue(0);
+        d_constraintIndex.setValue(0);
 
         d_direction.setValue(Deriv(1.,0.,0.));
         d_componentState = ComponentState::Valid;

@@ -107,7 +107,7 @@ void JointActuator<DataTypes>::init()
         return;
     }
 
-    initDatas();
+    initData();
     initLimit();
     d_componentState.setValue(ComponentState::Valid);
 }
@@ -116,7 +116,7 @@ void JointActuator<DataTypes>::init()
 template<class DataTypes>
 void JointActuator<DataTypes>::reinit()
 {
-    initDatas();
+    initData();
     initLimit();
 }
 
@@ -171,7 +171,7 @@ void JointActuator<DataTypes>::initLimit()
 
 
 template<class DataTypes>
-void JointActuator<DataTypes>::initDatas()
+void JointActuator<DataTypes>::initData()
 {
     d_effort.setValue(d_initEffort.getValue());
     d_angle.setValue(d_initAngle.getValue());
@@ -223,8 +223,8 @@ void JointActuator<DataTypes>::buildConstraintMatrix(const ConstraintParams* cPa
     if(!this->isComponentStateValid())
         return ;
 
-    m_constraintIndex.setValue(cIndex);
-    const auto& constraintIndex = sofa::helper::getReadAccessor(m_constraintIndex);
+    d_constraintIndex.setValue(cIndex);
+    const auto& constraintIndex = sofa::helper::getReadAccessor(d_constraintIndex);
 
     MatrixDeriv& matrix = *cMatrix.beginEdit();
     
@@ -249,7 +249,7 @@ void JointActuator<DataTypes>::getConstraintViolation(const ConstraintParams* cP
         return ;
 
     Real dFree = Jdx->element(0) - d_initAngle.getValue() + m_state->readPositions()[d_index.getValue()][0];
-    resV->set(m_constraintIndex.getValue(), dFree);
+    resV->set(d_constraintIndex.getValue(), dFree);
 }
 
 

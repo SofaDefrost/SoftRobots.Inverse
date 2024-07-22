@@ -144,8 +144,8 @@ void BarycentricCenterEffector<DataTypes>::buildConstraintMatrix(const Constrain
     SOFA_UNUSED(cParams);
     SOFA_UNUSED(x);
 
-    m_constraintIndex.setValue(cIndex);
-    const auto& constraintIndex = sofa::helper::getReadAccessor(m_constraintIndex);
+    d_constraintIndex.setValue(cIndex);
+    const auto& constraintIndex = sofa::helper::getReadAccessor(d_constraintIndex);
 
     const unsigned int nbp = m_state->getSize();
 
@@ -208,7 +208,7 @@ void BarycentricCenterEffector<DataTypes>::getConstraintViolation(const Constrai
     for(unsigned int i=0; i<m_nbLines; i++)
         dFree[i] += Jdx->element(i);
 
-    const auto& constraintIndex = sofa::helper::getReadAccessor(m_constraintIndex);
+    const auto& constraintIndex = sofa::helper::getReadAccessor(d_constraintIndex);
 
     int index = 0;
     if(d_axis.getValue()[0])

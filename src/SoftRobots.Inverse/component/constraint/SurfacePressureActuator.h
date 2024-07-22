@@ -93,11 +93,11 @@ protected:
     using softrobots::constraint::SurfacePressureModel<DataTypes>::d_pressure ;
     using softrobots::constraint::SurfacePressureModel<DataTypes>::d_volumeGrowth ;
     using softrobots::constraint::SurfacePressureModel<DataTypes>::d_maxVolumeGrowthVariation ;
-    using softrobots::constraint::SurfacePressureModel<DataTypes>::m_constraintIndex;
+    using softrobots::constraint::SurfacePressureModel<DataTypes>::d_constraintIndex;
     ////////////////////////////////////////////////////////////////////////////
 
 private:
-    void initDatas();
+    void initData();
     void initLimits();
     void updateLimits();
 

@@ -152,7 +152,7 @@ void SlidingActuator<DataTypes>::init()
     else
         checkIndicesRegardingState();
 
-    initDatas();
+    initData();
     initLimit();
 
     d_componentState = ComponentState::Valid ;
@@ -170,7 +170,7 @@ void SlidingActuator<DataTypes>::reinit()
         return ;
 
     checkIndicesRegardingState();
-    initDatas();
+    initData();
     initLimit();
 }
 
@@ -183,7 +183,7 @@ void SlidingActuator<DataTypes>::reset()
 
 // Rigid implementation in SlidingActuator.cpp
 template<class DataTypes>
-void SlidingActuator<DataTypes>::initDatas()
+void SlidingActuator<DataTypes>::initData()
 {
     if (!d_direction.isSet())
     {
@@ -318,8 +318,8 @@ void SlidingActuator<DataTypes>::buildConstraintMatrix(const ConstraintParams* c
     if(d_componentState.getValue() != ComponentState::Valid)
         return ;
 
-    m_constraintIndex.setValue(cIndex);
-    const auto& constraintIndex = sofa::helper::getReadAccessor(m_constraintIndex);
+    d_constraintIndex.setValue(cIndex);
+    const auto& constraintIndex = sofa::helper::getReadAccessor(d_constraintIndex);
 
     MatrixDeriv& matrix = *cMatrix.beginEdit();
     
@@ -368,7 +368,7 @@ void SlidingActuator<DataTypes>::getConstraintViolation(const ConstraintParams* 
 
     if(indices.size())
     {
-        resV->set(m_constraintIndex.getValue(), dFree);
+        resV->set(d_constraintIndex.getValue(), dFree);
     }
 }
 
