@@ -120,7 +120,7 @@ void ForcePointActuator<DataTypes>::init()
                             "To remove this error message fix your scene possibly by "
                             "adding a MechanicalObject." ;
 
-    initDatas();
+    initData();
     initLimit();
 }
 
@@ -128,7 +128,7 @@ void ForcePointActuator<DataTypes>::init()
 template<class DataTypes>
 void ForcePointActuator<DataTypes>::reinit()
 {
-    initDatas();
+    initData();
     initLimit();
 }
 
@@ -161,7 +161,7 @@ void ForcePointActuator<DataTypes>::initLimit()
 
 
 template<class DataTypes>
-void ForcePointActuator<DataTypes>::initDatas()
+void ForcePointActuator<DataTypes>::initData()
 {
     if(d_epsilon.isSet())
     {

@@ -58,7 +58,7 @@ CableActuator<DataTypes>::CableActuator(MechanicalState* object)
     d_displayCableLimit.setGroup("Visualization");
     m_color = d_color.getValue();
 
-    // These datas from CableModel have no sense for actuator
+    // These data from CableModel have no sense for actuator
     d_eqForce.setDisplayed(false);
     d_eqDisplacement.setDisplayed(false);
 

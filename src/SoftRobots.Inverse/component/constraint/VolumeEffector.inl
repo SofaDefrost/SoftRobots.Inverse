@@ -44,7 +44,7 @@ VolumeEffector<DataTypes>::VolumeEffector(MechanicalState* object)
     , softrobots::constraint::SurfacePressureModel<DataTypes>(object)
     , d_desiredVolume(initData(&d_desiredVolume, "desiredVolume",""))
 {
-    // These datas from SurfacePressureModel have no sense for effector
+    // These data from SurfacePressureModel have no sense for effector
     d_maxPressure.setDisplayed(false);
     d_minPressure.setDisplayed(false);
     d_maxPressureVariation.setDisplayed(false);
