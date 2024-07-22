@@ -79,7 +79,7 @@ void VolumeEffector<DataTypes>::getConstraintViolation(const ConstraintParams* c
     d_cavityVolume.setValue(getCavityVolume(m_state->readPositions().ref()));
     Real desiredVolume = getTarget(d_desiredVolume.getValue(), d_cavityVolume.getValue());
     Real dfree = Jdx->element(0) + d_cavityVolume.getValue() - desiredVolume;
-    resV->set(m_constraintIndex.getValue(), dfree);
+    resV->set(d_constraintIndex.getValue(), dfree);
 }
 
 template<class DataTypes>

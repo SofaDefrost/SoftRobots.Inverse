@@ -212,8 +212,8 @@ void ForcePointActuator<DataTypes>::buildConstraintMatrix(const ConstraintParams
     SOFA_UNUSED(cParams);
     SOFA_UNUSED(x);
 
-    m_constraintIndex.setValue(cIndex);
-    const auto& constraintIndex = sofa::helper::getReadAccessor(m_constraintIndex);
+    d_constraintIndex.setValue(cIndex);
+    const auto& constraintIndex = sofa::helper::getReadAccessor(d_constraintIndex);
 
     Deriv direction = d_direction.getValue();
 
@@ -258,7 +258,7 @@ void ForcePointActuator<DataTypes>::getConstraintViolation(const ConstraintParam
     SOFA_UNUSED(cParams);
     SOFA_UNUSED(Jdx);
 
-    const auto& constraintId = sofa::helper::getReadAccessor(m_constraintIndex);
+    const auto& constraintId = sofa::helper::getReadAccessor(d_constraintIndex);
     Deriv direction = d_direction.getValue();
 
     if(direction.norm() == 0) // No fixed direction
