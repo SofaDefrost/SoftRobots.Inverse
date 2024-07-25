@@ -35,8 +35,7 @@ namespace softrobotsinverse
 {
 
 template <typename _DataTypes>
-struct CableActuatorTest : public BaseTest,
-        CableActuator<_DataTypes>
+struct CableActuatorTest : public BaseTest, CableActuator<_DataTypes>
 {
     typedef CableActuator<_DataTypes> ThisClass ;
     typedef _DataTypes DataTypes;

@@ -13,14 +13,13 @@ on:
 
 jobs:
   build-and-test:
-    name: Run on ${{ matrix.os }} with SOFA ${{ matrix.sofa_branch }} and python ${{ matrix.python_version }}
+    name: Run on ${{ matrix.os }} with SOFA ${{ matrix.sofa_branch }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, macos-12, windows-2022]
+        os: [ubuntu-22.04, macos-13, windows-2022]
         sofa_branch: [master]
-        python_version: ['3.10']
 
     steps:
             
@@ -31,7 +30,7 @@ jobs:
           sofa_root: ${{ github.workspace }}/sofa
           sofa_version: ${{ matrix.sofa_branch }}
           sofa_scope: 'standard'
-          python_version: '${{ matrix.python_version }}'
+          sofa_with_sofapython3: 'true'
 
       - name: Install SoftRobots
         shell: bash
@@ -59,10 +58,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX="$WORKSPACE_INSTALL_PATH" \
             -DCMAKE_PREFIX_PATH="$SOFA_ROOT/lib/cmake" \
-            -DSOFTROBOTS_BUILD_TESTS=True \
-            -DSOFTROBOTS_IGNORE_ERRORS=True \
-            -DPYTHON_ROOT=$PYTHON_ROOT -DPython_ROOT=$PYTHON_ROOT \
-            -DPYTHON_EXECUTABLE=$PYTHON_EXE -DPython_EXECUTABLE=$PYTHON_EXE"
+            "
           if [ -e "$(command -v ccache)" ]; then
             cmake_options="$cmake_options -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
           fi
@@ -109,18 +105,36 @@ jobs:
           if [[ "$RUNNER_OS" == "Windows" ]]; then
             echo "$(cd $WORKSPACE_ARTIFACT_PATH/lib && pwd -W)" >> $GITHUB_PATH
             echo "$(cd $WORKSPACE_ARTIFACT_PATH/bin && pwd -W)" >> $GITHUB_PATH
+            echo "$(cd $SoftRobots_ROOT/bin && pwd -W)" >> $GITHUB_PATH
           elif [[ "$RUNNER_OS" == "macOS" ]]; then
             echo "DYLD_LIBRARY_PATH=$WORKSPACE_ARTIFACT_PATH/lib:$SOFA_ROOT/lib:$DYLD_LIBRARY_PATH" | tee -a $GITHUB_ENV
           fi
           echo "LD_LIBRARY_PATH=$WORKSPACE_ARTIFACT_PATH/lib:$SOFA_ROOT/lib:$LD_LIBRARY_PATH" | tee -a $GITHUB_ENV
           # Add execution right on the tests
           chmod +x $WORKSPACE_BUILD_PATH/bin/*_test${{ steps.sofa.outputs.exe }}
+          
+      - name: Check environment for tests
+        shell: bash
+        run: |
+          echo '------ ls -la "$WORKSPACE_SRC_PATH" ------'
+          ls -la "$WORKSPACE_SRC_PATH"
+          echo '------ ls -la "$WORKSPACE_BUILD_PATH" ------'
+          ls -la "$WORKSPACE_BUILD_PATH"
+          echo '------ ls -la "$WORKSPACE_BUILD_PATH/bin" ------'
+          ls -la "$WORKSPACE_BUILD_PATH"/bin
+          echo '------ ls -la "$WORKSPACE_INSTALL_PATH" ------'
+          ls -la "$WORKSPACE_INSTALL_PATH"
+          echo '------ ls -la "$WORKSPACE_ARTIFACT_PATH" ------'
+          ls -la "$WORKSPACE_ARTIFACT_PATH"
+          echo '----------------------'
+          echo "SOFA_ROOT = $SOFA_ROOT"=
+          echo '----------------------'
+          python -c "import sys; print('sys.version = ' + str(sys.version)); print('sys.path = ' + str(sys.path))"
 
       - name: Run tests
         if: always()
         shell: bash
         run: |
-          chmod +x $WORKSPACE_BUILD_PATH/bin/SoftRobots.Inverse_test${{ steps.sofa.outputs.exe }}
           cd $WORKSPACE_BUILD_PATH
           ./bin/SoftRobots.Inverse_test${{ steps.sofa.outputs.exe }}
 

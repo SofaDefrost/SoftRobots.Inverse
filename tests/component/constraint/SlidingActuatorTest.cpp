@@ -30,8 +30,7 @@ using sofa::core::objectmodel::ComponentState;
 
 
 template <typename _DataTypes>
-struct SlidingActuatorTest : public BaseTest,
-        SlidingActuator<_DataTypes>
+struct SlidingActuatorTest : public BaseTest, SlidingActuator<_DataTypes>
 {
     typedef SlidingActuator<_DataTypes> ThisClass ;
     typedef _DataTypes DataTypes;
