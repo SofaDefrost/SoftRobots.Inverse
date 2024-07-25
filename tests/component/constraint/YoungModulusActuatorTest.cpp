@@ -46,6 +46,7 @@ struct YoungModulusActuatorTest : public BaseTest,
         string scene =
                 "<?xml version='1.0'?>"
                 "<Node 	name='Root' gravity='0 0 0' time='0' animate='0'   > "
+                "   <RequiredPlugin name='Sofa.Component.StateContainer'/>  "
                 "   <MechanicalObject/>              "
                 "   <TetrahedronFEMForceField/>     "
                 "   <YoungModulusActuator/>       "
