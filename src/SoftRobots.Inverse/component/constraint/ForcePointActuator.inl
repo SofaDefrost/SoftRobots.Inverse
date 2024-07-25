@@ -84,11 +84,6 @@ ForcePointActuator<DataTypes>::ForcePointActuator(MechanicalState* object)
 
 {
     setUpData();
-
-    // QP on only one value, we set dimension to one
-    m_lambdaInit.resize(1);
-    m_lambdaMax.resize(1);
-    m_lambdaMin.resize(1);
 }
 
 
@@ -132,37 +127,11 @@ void ForcePointActuator<DataTypes>::reinit()
     initLimit();
 }
 
-
-template<class DataTypes>
-void ForcePointActuator<DataTypes>::initLimit()
-{
-    if(d_maxForce.isSet())
-    {
-        m_hasLambdaMax = true;
-        m_lambdaMax[0] = d_maxForce.getValue();
-    }
-
-    if(d_minForce.isSet())
-    {
-        m_hasLambdaMin = true;
-        m_lambdaMin[0] = d_minForce.getValue();
-    }
-
-    if(d_maxForceVariation.isSet())
-    {
-        m_hasLambdaMax = true;
-        m_hasLambdaMin = true;
-        if(rabs(m_lambdaMin[0] - d_force.getValue()[0]) >= d_maxForceVariation.getValue() || !d_minForce.isSet())
-            m_lambdaMin[0] = d_force.getValue()[0] - d_maxForceVariation.getValue();
-        if(rabs(m_lambdaMax[0] - d_force.getValue()[0]) >= d_maxForceVariation.getValue() || !d_maxForce.isSet())
-            m_lambdaMax[0] = d_force.getValue()[0] + d_maxForceVariation.getValue();
-    }
-}
-
-
 template<class DataTypes>
 void ForcePointActuator<DataTypes>::initData()
 {
+    m_dim = (d_direction.getValue().norm()<1e-10)? Deriv::total_size: 1;
+
     if(d_epsilon.isSet())
     {
         m_hasEpsilon = true;
@@ -176,11 +145,32 @@ void ForcePointActuator<DataTypes>::initData()
     }
 
     sofa::type::vector<Real> force;
-    if(d_direction.getValue().norm()==0)
-        force.resize(Deriv::total_size, d_initForce.getValue());
-    else
-        force.resize(1, d_initForce.getValue());
+    force.resize(m_dim, d_initForce.getValue());
     d_force.setValue(force);
+
+    // QP on only one value, we set dimension to one
+    m_lambdaInit.resize(m_dim);
+    m_lambdaMax.resize(m_dim);
+    m_lambdaMin.resize(m_dim);
+}
+
+
+template<class DataTypes>
+void ForcePointActuator<DataTypes>::initLimit()
+{
+    if(d_maxForce.isSet())
+        m_hasLambdaMax = true;
+
+    if(d_minForce.isSet())
+        m_hasLambdaMin = true;
+
+    if(d_maxForceVariation.isSet())
+    {
+        m_hasLambdaMax = true;
+        m_hasLambdaMin = true;
+    }
+
+    updateLimit();
 }
 
 
@@ -188,17 +178,36 @@ template<class DataTypes>
 void ForcePointActuator<DataTypes>::updateLimit()
 {
     if(d_maxForce.isSet())
-        m_lambdaMax[0] = d_maxForce.getValue();
+    {
+        for (auto& lambda: m_lambdaMax)
+            lambda = d_maxForce.getValue();
+    }
 
     if(d_minForce.isSet())
-        m_lambdaMin[0] = d_minForce.getValue();
+    {
+        for (auto& lambda: m_lambdaMin)
+            lambda = d_minForce.getValue();
+    }
 
     if(d_maxForceVariation.isSet())
     {
-        if(rabs(m_lambdaMin[0] - d_force.getValue()[0]) >= d_maxForceVariation.getValue() || !d_minForce.isSet())
-            m_lambdaMin[0] = d_force.getValue()[0] - d_maxForceVariation.getValue();
-        if(rabs(m_lambdaMax[0] - d_force.getValue()[0]) >= d_maxForceVariation.getValue() || !d_maxForce.isSet())
-            m_lambdaMax[0] = d_force.getValue()[0] + d_maxForceVariation.getValue();
+        if (m_dim>1)
+        {
+            for(unsigned int j=0; j<Deriv::total_size; j++)
+            {
+                if(rabs(m_lambdaMin[j] - d_force.getValue()[j]) >= d_maxForceVariation.getValue() || !d_minForce.isSet())
+                    m_lambdaMin[j] = d_force.getValue()[j] - d_maxForceVariation.getValue();
+                if(rabs(m_lambdaMax[j] - d_force.getValue()[j]) >= d_maxForceVariation.getValue() || !d_maxForce.isSet())
+                    m_lambdaMax[j] = d_force.getValue()[j] + d_maxForceVariation.getValue();
+            }
+        }
+        else
+        {
+            if(rabs(m_lambdaMin[0] - d_force.getValue()[0]) >= d_maxForceVariation.getValue() || !d_minForce.isSet())
+                m_lambdaMin[0] = d_force.getValue()[0] - d_maxForceVariation.getValue();
+            if(rabs(m_lambdaMax[0] - d_force.getValue()[0]) >= d_maxForceVariation.getValue() || !d_maxForce.isSet())
+                m_lambdaMax[0] = d_force.getValue()[0] + d_maxForceVariation.getValue();
+        }
     }
 }
 
@@ -214,10 +223,11 @@ void ForcePointActuator<DataTypes>::buildConstraintMatrix(const ConstraintParams
 
     d_constraintIndex.setValue(cIndex);
     const auto& constraintIndex = sofa::helper::getReadAccessor(d_constraintIndex);
+    const auto& nbIndices = d_indices.getValue().size();
 
     Deriv direction = d_direction.getValue();
 
-    if(direction.norm() == 0) // No fixed direction
+    if(m_dim > 1) // No fixed direction
     {
         MatrixDeriv& matrix = *cMatrix.beginEdit();
 
@@ -226,7 +236,7 @@ void ForcePointActuator<DataTypes>::buildConstraintMatrix(const ConstraintParams
             Deriv dir;
             dir[j] = 1;
             MatrixDerivRowIterator rowIterator = matrix.writeLine(constraintIndex+j);
-            for(unsigned int i=0; i<d_indices.getValue().size(); i++)
+            for(unsigned int i=0; i<nbIndices; i++)
                 if(d_indices.getValue()[i]<m_state->getSize())
                     rowIterator.addCol(d_indices.getValue()[i], dir);
             cIndex++;
@@ -237,7 +247,7 @@ void ForcePointActuator<DataTypes>::buildConstraintMatrix(const ConstraintParams
         direction /= direction.norm();
         MatrixDeriv& matrix = *cMatrix.beginEdit();
         MatrixDerivRowIterator rowIterator = matrix.writeLine(constraintIndex);
-        for(unsigned int i=0; i<d_indices.getValue().size(); i++)
+        for(unsigned int i=0; i<nbIndices; i++)
             if(d_indices.getValue()[i]<m_state->getSize())
                 rowIterator.addCol(d_indices.getValue()[i], direction);
 
@@ -259,9 +269,8 @@ void ForcePointActuator<DataTypes>::getConstraintViolation(const ConstraintParam
     SOFA_UNUSED(Jdx);
 
     const auto& constraintId = sofa::helper::getReadAccessor(d_constraintIndex);
-    Deriv direction = d_direction.getValue();
 
-    if(direction.norm() == 0) // No fixed direction
+    if(m_dim > 1) // No fixed direction
     {
         for(unsigned int j=0; j<Deriv::total_size; j++)
             resV->set(constraintId+j, 0.);
@@ -278,8 +287,7 @@ void ForcePointActuator<DataTypes>::storeResults(vector<double> &lambda, vector<
 
     d_displacement.setValue(delta[0]);
 
-    Deriv direction = d_direction.getValue();
-    if(direction.norm() == 0) // No fixed direction
+    if(m_dim > 1) // No fixed direction
     {
         for(unsigned int j=0; j<Deriv::total_size; j++)
             force[j]=lambda[j];
@@ -301,29 +309,31 @@ void ForcePointActuator<DataTypes>::draw(const VisualParams* vparams)
 
     vparams->drawTool()->setLightingEnabled(true);
 
-    Deriv direction = d_direction.getValue();
-
+    ReadAccessor<sofa::Data<sofa::type::vector<sofa::Index>>> indices = sofa::helper::getReadAccessor(d_indices);
+    ReadAccessor<sofa::Data<Real>> visuScale = sofa::helper::getReadAccessor(d_visuScale);
     ReadAccessor<sofa::Data<VecCoord> > positions = m_state->readPositions();
     ReadAccessor<sofa::Data<vector<Real>>> force = d_force;
+    Deriv direction = d_direction.getValue();
 
     static const sofa::type::RGBAColor color(0,0,0.8,1);
-    for(unsigned int i=0; i<d_indices.getValue().size(); i++)
-        if(d_indices.getValue()[i]<m_state->getSize())
+    for(const sofa::Index& index: indices)
+    {
+        if(index < m_state->getSize())
         {
-            Coord coord = positions[d_indices.getValue()[i]];
-            Vec3 position = Vec3(coord[0],coord[1],coord[2]);
-            if(direction.norm()==0)
+            Vec3 position = Vec3(positions[index][0], positions[index][1], positions[index][2]);
+            if(m_dim > 1)
             {
                 Vec3 dir = Vec3(force[0], force[1], force[2]);
-                vparams->drawTool()->drawArrow(position - dir*d_visuScale.getValue(), position, dir.norm()*d_visuScale.getValue()/20.0f, color, 4);
+                vparams->drawTool()->drawArrow(position - dir*visuScale, position, dir.norm()*visuScale/20.0f, color, 4);
             }
             else
             {
                 direction /= direction.norm();
-                Vec3 dir = Vec3(direction[0],direction[1],direction[2]);
-                vparams->drawTool()->drawArrow(position - dir*log(force[0]+1)*d_visuScale.getValue(), position, log(force[0]+1)*d_visuScale.getValue()/20.0f, color, 4);
+                Vec3 dir = Vec3(direction[0], direction[1], direction[2]);
+                vparams->drawTool()->drawArrow(position - dir*log(force[0]+1)*visuScale, position, log(force[0]+1)*visuScale/20.0f, color, 4);
             }
         }
+    }
 
     vparams->drawTool()->restoreLastState();
 }
