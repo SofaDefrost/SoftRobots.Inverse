@@ -113,9 +113,3 @@ extern template class SOFA_SOFTROBOTS_INVERSE_API CableEquality<sofa::defaulttyp
 
 } // namespace
 
-namespace sofa::component::constraintset
-{
-    template <class DataTypes>
-    using CableEquality SOFA_ATTRIBUTE_DEPRECATED__RENAME_NAMESPACE_SOFTROBOTS_INVERSE()
-        = softrobotsinverse::constraint::CableEquality<DataTypes>;
-}

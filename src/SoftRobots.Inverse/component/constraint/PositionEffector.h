@@ -35,7 +35,7 @@
 
 namespace softrobotsinverse::constraint
 {
-using sofa::core::behavior::Effector ;
+using softrobotsinverse::behavior::Effector ;
 
 /**
  * The "PositionEffector" component is used to constrain one or several points of a model
@@ -95,10 +95,4 @@ extern template class SOFA_SOFTROBOTS_INVERSE_API PositionEffector<sofa::default
 
 } // namespace
 
-namespace sofa::component::constraintset
-{
-    template <class DataTypes>
-    using PositionEffector SOFA_ATTRIBUTE_DEPRECATED__RENAME_NAMESPACE_SOFTROBOTS_INVERSE()
-        = softrobotsinverse::constraint::PositionEffector<DataTypes>;
-}
 

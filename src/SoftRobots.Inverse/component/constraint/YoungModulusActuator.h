@@ -39,7 +39,7 @@ namespace sofa::component::constraintset
     using sofa::core::visual::VisualParams ;
     using sofa::linearalgebra::BaseVector ;
     using sofa::core::ConstraintParams ;
-    using sofa::core::behavior::Actuator ;
+    using softrobotsinverse::behavior::Actuator ;
     using sofa::component::solidmechanics::fem::elastic::TetrahedronFEMForceField ;
 
 /**

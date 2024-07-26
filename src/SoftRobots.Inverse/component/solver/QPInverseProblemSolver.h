@@ -202,9 +202,3 @@ private:
 
 } // namespace
 
-namespace sofa::component::constraintset
-{
-    template <class DataTypes>
-    using QPInverseProblemSolver SOFA_ATTRIBUTE_DEPRECATED__RENAME_NAMESPACE_SOFTROBOTS_INVERSE()
-        = softrobotsinverse::solver::QPInverseProblemSolver;
-}

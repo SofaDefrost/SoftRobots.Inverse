@@ -35,7 +35,7 @@
 
 namespace softrobotsinverse::constraint
 {
-    using sofa::core::behavior::Actuator;
+    using softrobotsinverse::behavior::Actuator;
     using sofa::core::topology::BaseMeshTopology;
     using sofa::core::visual::VisualParams;
     using sofa::core::ConstraintParams;
@@ -53,7 +53,7 @@ template< class DataTypes >
 class JointActuator : public Actuator<DataTypes>
 {
 public:
-    SOFA_CLASS(SOFA_TEMPLATE(JointActuator,DataTypes), SOFA_TEMPLATE(sofa::core::behavior::Actuator,DataTypes));
+    SOFA_CLASS(SOFA_TEMPLATE(JointActuator,DataTypes), SOFA_TEMPLATE(softrobotsinverse::behavior::Actuator,DataTypes));
 
     typedef typename DataTypes::VecCoord                    VecCoord;
     typedef typename DataTypes::VecDeriv                    VecDeriv;
@@ -155,10 +155,3 @@ extern template class SOFA_SOFTROBOTS_INVERSE_API JointActuator<sofa::defaulttyp
 #endif
 
 } // namespace
-
-namespace sofa::component::constraintset
-{
-    template <class DataTypes>
-    using JointActuator SOFA_ATTRIBUTE_DEPRECATED__RENAME_NAMESPACE_SOFTROBOTS_INVERSE()
-        = softrobotsinverse::constraint::JointActuator<DataTypes>;
-}

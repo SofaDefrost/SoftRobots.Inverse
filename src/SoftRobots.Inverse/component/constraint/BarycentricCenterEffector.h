@@ -32,7 +32,7 @@
 
 namespace softrobotsinverse::constraint
 {
-    using sofa::core::behavior::Effector ;
+    using softrobotsinverse::behavior::Effector ;
     using sofa::core::ConstraintParams ;
     using sofa::linearalgebra::BaseVector ;
     using sofa::core::visual::VisualParams ;
@@ -145,9 +145,3 @@ extern template class SOFA_SOFTROBOTS_INVERSE_API BarycentricCenterEffector<sofa
 
 } // namespace
 
-namespace sofa::component::constraintset
-{
-    template <class DataTypes>
-    using BarycentricCenterEffector SOFA_ATTRIBUTE_DEPRECATED__RENAME_NAMESPACE_SOFTROBOTS_INVERSE()
-        = softrobotsinverse::constraint::BarycentricCenterEffector<DataTypes>;
-}

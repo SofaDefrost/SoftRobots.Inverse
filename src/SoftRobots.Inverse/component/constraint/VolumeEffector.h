@@ -109,10 +109,4 @@ extern template class SOFA_SOFTROBOTS_INVERSE_API VolumeEffector<sofa::defaultty
 
 } // namespace
 
-namespace sofa::component::constraintset
-{
-    template <class DataTypes>
-    using VolumeEffector SOFA_ATTRIBUTE_DEPRECATED__RENAME_NAMESPACE_SOFTROBOTS_INVERSE()
-        = softrobotsinverse::constraint::VolumeEffector<DataTypes>;
-}
 
