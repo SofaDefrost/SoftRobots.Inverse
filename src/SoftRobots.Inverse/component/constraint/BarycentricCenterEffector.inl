@@ -46,6 +46,8 @@ using sofa::type::vector;
 using sofa::type::vector;
 using sofa::type::Vec3;
 
+using sofa::core::objectmodel::ComponentState;
+
 template<class DataTypes>
 BarycentricCenterEffector<DataTypes>::BarycentricCenterEffector(MechanicalState* object)
     : Inherit1(object)
@@ -54,19 +56,17 @@ BarycentricCenterEffector<DataTypes>::BarycentricCenterEffector(MechanicalState*
                       "which you want to solve the effector. If unspecified, the default    \n"
                       "values are {true, true, true})."))
 
-    , d_effectorGoalPosition(initData(&d_effectorGoalPosition,"effectorGoal",
-                                      "The parameter effectorGoal allows to specifiy the desired position of the\n"
-                                      "constraint. If unspecified the default values are {0.0,0.0,0.0}" ))
-
     , d_drawBarycenter(initData(&d_drawBarycenter,false,"drawBarycenter",
                                 "If true, draw the barycenter" ))
 
     , d_barycenter(initData(&d_barycenter,"barycenter",
                             "Position of barycenter." ))
-
-    , d_delta(initData(&d_delta,"delta",
-                            "Distance to target" ))
 {
+    d_axis.setDisplayed(false);
+    d_directions.setDisplayed(false); // inherited from PositionModel but not used here
+    d_indices.setDisplayed(false); // inherited from PositionModel but not used here
+    d_drawBarycenter.setGroup("Visualization");
+    d_barycenter.setReadOnly(true);
 }
 
 template<class DataTypes>
@@ -77,31 +77,27 @@ BarycentricCenterEffector<DataTypes>::~BarycentricCenterEffector()
 template<class DataTypes>
 void BarycentricCenterEffector<DataTypes>::init()
 {
+    // Inherited from PositionEffector
+    // Even though we do not use this data in the component, we initilize the data to avoid the warnings about the wrong usage
+    auto indices = sofa::helper::getWriteAccessor(d_indices);
+    indices.resize(1);
+
     Inherit1::init();
 
-    if(m_state==nullptr)
-        msg_error() << "There is no mechanical state associated with this node. "
-                       "the object is deactivated. "
-                       "To remove this error message fix your scene possibly by "
-                       "adding a MechanicalObject." ;
-    initData();
-
-    d_drawBarycenter.setGroup("Visualization");
-    d_barycenter.setReadOnly(true);
-
-    computeBarycenter();
-}
-
-template<class DataTypes>
-void BarycentricCenterEffector<DataTypes>::reinit()
-{
-    initData();
+    if (d_axis.isSet())
+    {
+        msg_deprecated() << "The data axis is deprecated. To fix your scene please use useDirections instead. It will be remove in v25.06.";
+        auto useDirections = sofa::helper::getWriteAccessor(d_useDirections);
+        const auto& axis = sofa::helper::getReadAccessor(d_axis);
+        useDirections[0] = axis[0];
+        useDirections[1] = axis[1];
+        useDirections[2] = axis[2];
+    }
 }
 
 template<class DataTypes>
 void BarycentricCenterEffector<DataTypes>::reset()
 {
-    computeBarycenter();
 }
 
 template<class DataTypes>
@@ -111,28 +107,10 @@ void BarycentricCenterEffector<DataTypes>::computeBarycenter()
     const unsigned int nbp = m_state->getSize();
     Coord barycenter = Coord();
     for (unsigned int i=0; i<nbp; i++)
-    {
-        barycenter[0] += positions[i][0]/Real(nbp);
-        barycenter[1] += positions[i][1]/Real(nbp);
-        barycenter[2] += positions[i][2]/Real(nbp);
-    }
+        for(sofa::Size j=0; j<DataTypes::Coord::total_size; j++)
+            barycenter[j] += positions[i][j]/Real(nbp);
+
     d_barycenter.setValue(barycenter);
-}
-
-template<class DataTypes>
-void BarycentricCenterEffector<DataTypes>::initData()
-{
-    if(!d_effectorGoalPosition.isSet())
-    {
-        d_effectorGoalPosition.setValue(Coord());
-        msg_warning() << "EffectorGoal is not defined. No target is given. Set default to (0.0,0.0,0.0). ";
-    }
-
-    if(!d_axis.getValue()[0] && !d_axis.getValue()[1] && !d_axis.getValue()[2])
-    {
-        d_axis.setValue(sofa::type::Vec<3,bool>(true,true,true));
-        msg_warning() << "Axis = (0, 0, 0). No direction given. Set default to (1, 1, 1).";
-    }
 }
 
 template<class DataTypes>
@@ -141,47 +119,40 @@ void BarycentricCenterEffector<DataTypes>::buildConstraintMatrix(const Constrain
                                                                  unsigned int &cIndex,
                                                                  const DataVecCoord &x)
 {
+    if(d_componentState.getValue() != ComponentState::Valid)
+        return;
+
     SOFA_UNUSED(cParams);
     SOFA_UNUSED(x);
 
     d_constraintIndex.setValue(cIndex);
     const auto& constraintIndex = sofa::helper::getReadAccessor(d_constraintIndex);
+    const auto& useDirections = sofa::helper::getReadAccessor(d_useDirections);
+    const auto& directions = sofa::helper::getReadAccessor(d_directions);
+    const auto& weight = sofa::helper::getReadAccessor(d_weight);
 
     const unsigned int nbp = m_state->getSize();
 
     MatrixDeriv& matrix = *cMatrix.beginEdit();
 
     unsigned int index = 0;
-
-    if(d_axis.getValue()[0])
+    for(sofa::Size j=0; j<Deriv::total_size; j++)
     {
-        MatrixDerivRowIterator rowIterator = matrix.writeLine(constraintIndex+index);
-        for (unsigned int i=0; i<nbp; i++)
-            rowIterator.setCol(i, Deriv(1.0/Real(nbp), 0, 0));
-        index++;
-    }
-
-    if(d_axis.getValue()[1])
-    {
-        MatrixDerivRowIterator rowIterator = matrix.writeLine(constraintIndex+index);
-        for (unsigned int i=0; i<nbp; i++)
-            rowIterator.setCol(i, Deriv(0, 1.0/Real(nbp), 0));
-        index++;
-    }
-
-    if(d_axis.getValue()[2])
-    {
-        MatrixDerivRowIterator rowIterator = matrix.writeLine(constraintIndex+index);
-        for (unsigned int i=0; i<nbp; i++)
-            rowIterator.setCol(i, Deriv(0, 0, 1.0/Real(nbp)));
-        index++;
+        if(useDirections[j])
+        {
+            MatrixDerivRowIterator rowIterator = matrix.writeLine(constraintIndex+index);
+            for (unsigned int i=0; i<nbp; i++)
+            {
+                rowIterator.setCol(i, directions[j] * weight[j] * 1.0/Real(nbp));
+            }
+            index++;
+        }
     }
 
     cIndex+=index;
 
     cMatrix.endEdit();
     m_nbLines = cIndex - constraintIndex;
-
     computeBarycenter();
 }
 
@@ -190,64 +161,51 @@ void BarycentricCenterEffector<DataTypes>::getConstraintViolation(const Constrai
                                                                   BaseVector *resV,
                                                                   const BaseVector *Jdx)
 {
+    if(d_componentState.getValue() != ComponentState::Valid)
+        return;
+
     SOFA_UNUSED(cParams);
 
-    const unsigned int nbp = m_state->getSize();
     ReadAccessor<sofa::Data<VecCoord> > x = m_state->readPositions();
+    ReadAccessor<sofa::Data<VecCoord> > effectorGoal = d_effectorGoal;
 
-    Coord barycenter = Coord();
-    for (unsigned int i=0; i<nbp; i++)
-    {
-        barycenter[0] += x[i][0]/Real(nbp);
-        barycenter[1] += x[i][1]/Real(nbp);
-        barycenter[2] += x[i][2]/Real(nbp);
-    }
-
-    Coord effectorGoal = getTarget(d_effectorGoalPosition.getValue(), barycenter);
-    Coord dFree = barycenter - effectorGoal;
-    for(unsigned int i=0; i<m_nbLines; i++)
-        dFree[i] += Jdx->element(i);
-
+    const auto& useDirections = sofa::helper::getReadAccessor(d_useDirections);
+    const auto& directions = sofa::helper::getReadAccessor(d_directions);
+    const auto& weight = sofa::helper::getReadAccessor(d_weight);
     const auto& constraintIndex = sofa::helper::getReadAccessor(d_constraintIndex);
 
+    computeBarycenter();
+    const auto& barycenter = sofa::helper::getReadAccessor(d_barycenter);
+
+    Coord target = getTarget(effectorGoal[0], barycenter);
+    Deriv d = DataTypes::coordDifference(barycenter, target);
+
     int index = 0;
-    if(d_axis.getValue()[0])
+    for(sofa::Size j=0; j<DataTypes::Deriv::total_size; j++)
     {
-        resV->set(constraintIndex, dFree[0]);
-        index++;
-    }
-
-    if(d_axis.getValue()[1])
-    {
-        resV->set(constraintIndex+index, dFree[1]);
-        index++;
-    }
-
-    if(d_axis.getValue()[2])
-    {
-        resV->set(constraintIndex+index, dFree[2]);
-        index++;
+        if(useDirections[j])
+        {
+            Real dfree = Jdx->element(index) + d * directions[j] * weight[j];
+            resV->set(constraintIndex+index, dfree);
+            index++;
+        }
     }
 }
-
-
-template<class DataTypes>
-void BarycentricCenterEffector<DataTypes>::storeResults(vector<double> &delta)
-{
-    d_delta.setValue(delta);
-}
-
 
 template<class DataTypes>
 void BarycentricCenterEffector<DataTypes>::draw(const VisualParams* vparams)
 {
-    if (!vparams->displayFlags().getShowInteractionForceFields()) return;
-    if(!d_drawBarycenter.getValue()) return;
+    if(d_componentState.getValue() != ComponentState::Valid)
+        return;
 
-    Coord barycenter = d_barycenter.getValue();
-    vector<Vec3> points;
-    points.push_back(Vec3(barycenter[0], barycenter[1], barycenter[2]));
-    vparams->drawTool()->drawPoints(points, float(5.), RGBAColor(0.0f,0.0f,1.0f,1.0f));
+    if (!vparams->displayFlags().getShowInteractionForceFields())
+        return;
+
+    computeBarycenter();
+    Coord b = d_barycenter.getValue();
+    std::vector<Vec3> positions;
+    positions.push_back(b);
+    vparams->drawTool()->drawPoints(positions, float(5.), RGBAColor(0.0f,0.0f,1.0f,1.0f));
 }
 
 } // namespace

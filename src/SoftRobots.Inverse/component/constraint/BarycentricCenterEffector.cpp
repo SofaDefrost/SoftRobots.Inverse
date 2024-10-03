@@ -38,55 +38,32 @@ using sofa::defaulttype::Vec3Types;
 using sofa::defaulttype::Rigid3Types;
 using sofa::core::RegisterObject ;
 
+template<>
+void BarycentricCenterEffector<Rigid3Types>::draw(const VisualParams* vparams)
+{
+    if(d_componentState.getValue() != ComponentState::Valid)
+        return;
+
+    if (!vparams->displayFlags().getShowInteractionForceFields())
+        return;
+
+    computeBarycenter();
+    Coord barycenter = d_barycenter.getValue();
+    vparams->drawTool()->drawFrame(barycenter.getCenter(), barycenter.getOrientation(), sofa::type::Vec3f(5., 5., 5.));
+}
 
 template<>
-void BarycentricCenterEffector<Rigid3Types>::buildConstraintMatrix(const ConstraintParams* cParams,
-                                                                   DataMatrixDeriv &cMatrix,
-                                                                   unsigned int &cIndex,
-                                                                   const DataVecCoord &x)
+void BarycentricCenterEffector<Rigid3Types>::computeBarycenter()
 {
-    SOFA_UNUSED(cParams);
-    SOFA_UNUSED(x);
-
-    d_constraintIndex.setValue(cIndex);
-    const auto& constraintIndex = sofa::helper::getReadAccessor(d_constraintIndex);
-
+    ReadAccessor<sofa::Data<VecCoord> > positions = m_state->readPositions();
     const unsigned int nbp = m_state->getSize();
-
-    MatrixDeriv& matrix = *cMatrix.beginEdit();
-
-    unsigned int index = 0;
-    const Vec<3, Real> cx(1.0/Real(nbp),0,0), cy(0,1.0/Real(nbp),0), cz(0,0,1.0/Real(nbp));
-    const Vec<3, Real> vZero(0,0,0);
-
-    if(d_axis.getValue()[0])
-    {
-        MatrixDerivRowIterator rowIterator = matrix.writeLine(constraintIndex+index);
-        for (unsigned int i=0; i<nbp; i++)
-            rowIterator.setCol(i, Deriv(cx,vZero));
-        index++;
-    }
-
-    if(d_axis.getValue()[1])
-    {
-        MatrixDerivRowIterator rowIterator = matrix.writeLine(constraintIndex+index);
-        for (unsigned int i=0; i<nbp; i++)
-            rowIterator.setCol(i, Deriv(cy,vZero));
-        index++;
-    }
-
-    if(d_axis.getValue()[2])
-    {
-        MatrixDerivRowIterator rowIterator = matrix.writeLine(constraintIndex+index);
-        for (unsigned int i=0; i<nbp; i++)
-            rowIterator.setCol(i, Deriv(cz,vZero));
-        index++;
-    }
-
-    cIndex+=index;
-
-    cMatrix.endEdit();
-    m_nbLines = cIndex - constraintIndex;
+    Coord barycenter = Coord();
+    barycenter[6] = 0;
+    for (unsigned int i=0; i<nbp; i++)
+        for(sofa::Size j=0; j<Rigid3Types::Coord::total_size; j++)
+            barycenter[j] += positions[i][j]/Real(nbp);
+    barycenter.getOrientation().normalize();
+    d_barycenter.setValue(barycenter);
 }
 
 
