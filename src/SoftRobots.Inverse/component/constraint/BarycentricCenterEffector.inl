@@ -63,7 +63,6 @@ BarycentricCenterEffector<DataTypes>::BarycentricCenterEffector(MechanicalState*
                             "Position of barycenter." ))
 {
     d_axis.setDisplayed(false);
-    d_directions.setDisplayed(false); // inherited from PositionModel but not used here
     d_indices.setDisplayed(false); // inherited from PositionModel but not used here
     d_drawBarycenter.setGroup("Visualization");
     d_barycenter.setReadOnly(true);
@@ -77,8 +76,8 @@ BarycentricCenterEffector<DataTypes>::~BarycentricCenterEffector()
 template<class DataTypes>
 void BarycentricCenterEffector<DataTypes>::init()
 {
-    // Inherited from PositionEffector
-    // Even though we do not use this data in the component, we initilize the data to avoid the warnings about the wrong usage
+    // d_indices is inherited from PositionEffector.
+    // Even though we do not use this data we need to initilize it to avoid warnings
     auto indices = sofa::helper::getWriteAccessor(d_indices);
     indices.resize(1);
 
