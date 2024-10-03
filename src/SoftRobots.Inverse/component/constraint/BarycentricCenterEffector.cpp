@@ -44,7 +44,7 @@ void BarycentricCenterEffector<Rigid3Types>::draw(const VisualParams* vparams)
     if(d_componentState.getValue() != ComponentState::Valid)
         return;
 
-    if (!vparams->displayFlags().getShowInteractionForceFields())
+    if (!d_drawBarycenter.getValue())
         return;
 
     computeBarycenter();
