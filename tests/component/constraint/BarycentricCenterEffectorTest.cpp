@@ -17,26 +17,14 @@ template <typename _DataTypes>
 struct BarycentricCenterEffectorTest : public BaseTest, BarycentricCenterEffector<_DataTypes>
 {
 
-    using BarycentricCenterEffector<_DataTypes>::initData;
     using BarycentricCenterEffector<_DataTypes>::getTarget;
-    using BarycentricCenterEffector<_DataTypes>::d_effectorGoalPosition;
+    using BarycentricCenterEffector<_DataTypes>::d_effectorGoal;
     using BarycentricCenterEffector<_DataTypes>::d_limitShiftToTarget;
     using BarycentricCenterEffector<_DataTypes>::d_maxShiftToTarget;
 
     typedef _DataTypes DataTypes;
     typedef typename DataTypes::Coord Coord;
     typedef typename DataTypes::Real Real;
-
-    void testEffectorGoalDefaultInitialization()
-    {
-        initData();
-        Coord position = d_effectorGoalPosition.getValue();
-        for(int i=0; i<Coord::total_size; i++){
-            if(i<6){
-                EXPECT_EQ(position[i], 0.);
-            }
-        }
-    }
 
     void testTargetLimit()
     {
@@ -60,10 +48,6 @@ Vec3Types,
 Rigid3Types
 > DataTypes;
 TYPED_TEST_SUITE(BarycentricCenterEffectorTest, DataTypes);
-
-TYPED_TEST(BarycentricCenterEffectorTest, EffectorGoalDefaultInitialization) {
-    ASSERT_NO_THROW( this->testEffectorGoalDefaultInitialization() );
-}
 
 TYPED_TEST(BarycentricCenterEffectorTest, TargetLimit) {
     ASSERT_NO_THROW( this->testTargetLimit() );
