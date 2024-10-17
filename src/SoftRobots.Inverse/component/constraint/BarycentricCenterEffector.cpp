@@ -53,21 +53,11 @@ void BarycentricCenterEffector<Rigid3Types>::draw(const VisualParams* vparams)
 }
 
 template<>
-void BarycentricCenterEffector<Rigid3Types>::computeBarycenter()
+void BarycentricCenterEffector<Rigid3Types>::setBarycenter(const Coord& _barycenter)
 {
-    ReadAccessor<sofa::Data<VecCoord> > positions = m_state->readPositions();
-
-    if (const sofa::Size nbp = m_state->getSize())
-    {
-        Coord barycenter = std::accumulate(positions->begin(), positions->end(), Coord{}, std::plus<Coord>()) / nbp;
-        barycenter.getOrientation().normalize();
-        d_barycenter.setValue(barycenter);
-    }
-    else
-    {
-        d_barycenter.setValue(Coord{});
-        msg_error() << "Trying to compute a barycenter from an empty list of positions.";
-    }
+    d_barycenter.setValue(_barycenter);
+    auto barycenter = sofa::helper::getWriteAccessor(d_barycenter);
+    barycenter->getOrientation().normalize();
 }
 
 

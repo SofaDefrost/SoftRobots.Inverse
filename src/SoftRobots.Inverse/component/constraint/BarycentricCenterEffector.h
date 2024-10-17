@@ -123,13 +123,14 @@ protected:
     sofa::Data<Coord >       d_barycenter;
 
     void computeBarycenter();
+    void setBarycenter(const Coord& barycenter){d_barycenter.setValue(barycenter);}
 };
 
 template<> SOFA_SOFTROBOTS_INVERSE_API
 void BarycentricCenterEffector<sofa::defaulttype::Rigid3Types>::draw(const VisualParams* vparams);
 
 template<> SOFA_SOFTROBOTS_INVERSE_API
-void BarycentricCenterEffector<sofa::defaulttype::Rigid3Types>::computeBarycenter();
+void BarycentricCenterEffector<sofa::defaulttype::Rigid3Types>::setBarycenter(const Coord& barycenter);
 
 #if !defined(SOFTROBOTS_INVERSE_BARYCENTRICCENTEREFFECTOR_CPP)
 extern template class SOFA_SOFTROBOTS_INVERSE_API BarycentricCenterEffector<sofa::defaulttype::Vec3Types >;

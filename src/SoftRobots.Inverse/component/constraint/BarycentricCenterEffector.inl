@@ -93,15 +93,14 @@ void BarycentricCenterEffector<DataTypes>::init()
     }
 }
 
-
 template<class DataTypes>
 void BarycentricCenterEffector<DataTypes>::computeBarycenter()
 {
     const ReadAccessor<sofa::Data<VecCoord> > positions = m_state->readPositions();
     if (const sofa::Size nbp = m_state->getSize())
     {
-        const Coord barycenter = std::accumulate(positions->begin(), positions->end(), Coord{}, std::plus<Coord>())  / nbp;
-        d_barycenter.setValue(barycenter);
+        const Coord barycenter = std::accumulate(positions->begin(), positions->end(), Coord{}, std::plus<Coord>()) / nbp;
+        setBarycenter(barycenter);
     }
     else
     {
