@@ -59,9 +59,7 @@ void BarycentricCenterEffector<Rigid3Types>::computeBarycenter()
 
     if (const sofa::Size nbp = m_state->getSize())
     {
-        Coord barycenter = Coord();
-        barycenter[6] = 0;
-        barycenter = std::accumulate(positions->begin(), positions->end(), Coord{}, std::plus<Coord>()) / nbp;
+        Coord barycenter = std::accumulate(positions->begin(), positions->end(), Coord{}, std::plus<Coord>()) / nbp;
         barycenter.getOrientation().normalize();
         d_barycenter.setValue(barycenter);
     }
