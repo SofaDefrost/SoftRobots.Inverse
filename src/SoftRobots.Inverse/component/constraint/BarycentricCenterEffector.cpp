@@ -56,14 +56,20 @@ template<>
 void BarycentricCenterEffector<Rigid3Types>::computeBarycenter()
 {
     ReadAccessor<sofa::Data<VecCoord> > positions = m_state->readPositions();
-    const unsigned int nbp = m_state->getSize();
-    Coord barycenter = Coord();
-    barycenter[6] = 0;
-    for (unsigned int i=0; i<nbp; i++)
-        for(sofa::Size j=0; j<Rigid3Types::Coord::total_size; j++)
-            barycenter[j] += positions[i][j]/Real(nbp);
-    barycenter.getOrientation().normalize();
-    d_barycenter.setValue(barycenter);
+
+    if (const sofa::Size nbp = m_state->getSize())
+    {
+        Coord barycenter = Coord();
+        barycenter[6] = 0;
+        barycenter = std::accumulate(positions->begin(), positions->end(), Coord{}, std::plus<Coord>()) / nbp;
+        barycenter.getOrientation().normalize();
+        d_barycenter.setValue(barycenter);
+    }
+    else
+    {
+        d_barycenter.setValue(Coord{});
+        msg_error() << "Trying to compute a barycenter from an empty list of positions.";
+    }
 }
 
 
