@@ -120,7 +120,7 @@ protected:
     SOFA_ATTRIBUTE_DEPRECATED("v24.12", "v25.06", "Use d_useDirections instead.")
     sofa::Data<Vec<3,bool> > d_axis;
 
-    SOFA_ATTRIBUTE_DISABLED("v24.06", "v24.12", "Use d_effectorGoal instead.")
+    SOFA_ATTRIBUTE_DEPRECATED("v24.12", "v25.06", "Use d_effectorGoal instead.")
     sofa::Data<Coord >       d_effectorGoalPosition;
 
     sofa::Data<bool>         d_drawBarycenter;
