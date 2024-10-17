@@ -64,7 +64,6 @@ BarycentricCenterEffector<DataTypes>::BarycentricCenterEffector(MechanicalState*
 {
     d_axis.setDisplayed(false);
     d_indices.setDisplayed(false); // inherited from PositionModel but not used here
-    d_drawBarycenter.setGroup("Visualization");
     d_barycenter.setReadOnly(true);
 }
 
