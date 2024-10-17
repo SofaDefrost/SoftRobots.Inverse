@@ -75,10 +75,6 @@ public:
     /// traversal of graph creation and modification,
     void init() override;
 
-    /// According to BaseObject::reset
-    /// this method should be used to reset the object in its initial state.
-    void reset() override;
-
     /// According to BaseObject::draw
     /// this method should be used to render internal data of this object,
     /// for debugging purposes.

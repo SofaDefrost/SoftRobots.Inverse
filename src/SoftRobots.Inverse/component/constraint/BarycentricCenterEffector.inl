@@ -94,22 +94,21 @@ void BarycentricCenterEffector<DataTypes>::init()
     }
 }
 
-template<class DataTypes>
-void BarycentricCenterEffector<DataTypes>::reset()
-{
-}
 
 template<class DataTypes>
 void BarycentricCenterEffector<DataTypes>::computeBarycenter()
 {
-    ReadAccessor<sofa::Data<VecCoord> > positions = m_state->readPositions();
-    const unsigned int nbp = m_state->getSize();
-    Coord barycenter = Coord();
-    for (unsigned int i=0; i<nbp; i++)
-        for(sofa::Size j=0; j<DataTypes::Coord::total_size; j++)
-            barycenter[j] += positions[i][j]/Real(nbp);
-
-    d_barycenter.setValue(barycenter);
+    const ReadAccessor<sofa::Data<VecCoord> > positions = m_state->readPositions();
+    if (const sofa::Size nbp = m_state->getSize())
+    {
+        const Coord barycenter = std::accumulate(positions->begin(), positions->end(), Coord{}, std::plus<Coord>())  / nbp;
+        d_barycenter.setValue(barycenter);
+    }
+    else
+    {
+        d_barycenter.setValue(Coord{});
+        msg_error() << "Trying to compute a barycenter from an empty list of positions.";
+    }
 }
 
 template<class DataTypes>
@@ -201,9 +200,8 @@ void BarycentricCenterEffector<DataTypes>::draw(const VisualParams* vparams)
         return;
 
     computeBarycenter();
-    Coord b = d_barycenter.getValue();
-    std::vector<Vec3> positions;
-    positions.push_back(b);
+    const Coord& b = d_barycenter.getValue();
+    std::vector<Vec3> positions(1, b);
     vparams->drawTool()->drawPoints(positions, float(5.), RGBAColor(0.0f,0.0f,1.0f,1.0f));
 }
 
