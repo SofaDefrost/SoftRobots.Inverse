@@ -28,11 +28,11 @@
 ******************************************************************************/
 #pragma once
 
-#include <SoftRobots.Inverse/component/behavior/Effector.h>
+#include <SoftRobots.Inverse/component/constraint/PositionEffector.h>
 
 namespace softrobotsinverse::constraint
 {
-    using softrobotsinverse::behavior::Effector ;
+    using softrobotsinverse::constraint::PositionEffector ;
     using sofa::core::ConstraintParams ;
     using sofa::linearalgebra::BaseVector ;
     using sofa::core::visual::VisualParams ;
@@ -45,11 +45,11 @@ namespace softrobotsinverse::constraint
  * https://softrobotscomponents.readthedocs.io
 */
 template<class DataTypes>
-class BarycentricCenterEffector : public Effector<DataTypes>
+class SOFA_SOFTROBOTS_INVERSE_API BarycentricCenterEffector : public PositionEffector<DataTypes>
 {
 public:
     SOFA_CLASS(SOFA_TEMPLATE(BarycentricCenterEffector,DataTypes),
-               SOFA_TEMPLATE(Effector,DataTypes));
+               SOFA_TEMPLATE(PositionEffector,DataTypes));
 
     typedef typename DataTypes::VecCoord    VecCoord;
     typedef typename DataTypes::VecDeriv    VecDeriv;
@@ -58,7 +58,7 @@ public:
     typedef typename DataTypes::Deriv       Deriv;
     typedef typename Coord::value_type      Real;
 
-    typedef typename sofa::core::behavior::MechanicalState<DataTypes>          MechanicalState;
+    typedef typename sofa::core::behavior::MechanicalState<DataTypes> MechanicalState;
     typedef typename DataTypes::MatrixDeriv::RowIterator MatrixDerivRowIterator;
 
     typedef sofa::Data<VecCoord>		 DataVecCoord;
@@ -74,15 +74,6 @@ public:
     /// this method should be used to initialize the object during the top-down
     /// traversal of graph creation and modification,
     void init() override;
-
-    /// According to BaseObject::reinit
-    /// this method should be used to update the object when the variables used
-    /// in precomputation are modified.
-    void reinit() override;
-
-    /// According to BaseObject::reset
-    /// this method should be used to reset the object in its initial state.
-    void reset() override;
 
     /// According to BaseObject::draw
     /// this method should be used to render internal data of this object,
@@ -101,10 +92,6 @@ public:
                                 const BaseVector *Jdx) override;
     /////////////////////////////////////////////////////////////////////////
 
-    /////////////// Inherited from BaseSoftRobotsConstraint ////////////////
-    void storeResults(sofa::type::vector<double> &delta) override;
-    ///////////////////////////////////////////////////////////////////////////
-
 protected:
 
     ////////////////////////// Inherited attributes ////////////////////////////
@@ -118,24 +105,32 @@ protected:
     using Effector<DataTypes>::d_constraintIndex ;
     using Effector<DataTypes>::f_listening ;
     using Effector<DataTypes>::getTarget ;
+    using PositionEffector<DataTypes>::d_useDirections ;
+    using PositionEffector<DataTypes>::d_directions ;
+    using PositionEffector<DataTypes>::d_effectorGoal ;
+    using PositionEffector<DataTypes>::d_delta ;
+    using PositionEffector<DataTypes>::d_weight ;
+    using PositionEffector<DataTypes>::d_indices ;
+    using PositionEffector<DataTypes>::d_componentState ;
 
+    SOFA_ATTRIBUTE_DEPRECATED("v24.12", "v25.06", "Use d_useDirections instead.")
     sofa::Data<Vec<3,bool> > d_axis;
+
+    SOFA_ATTRIBUTE_DEPRECATED("v24.12", "v25.06", "Use d_effectorGoal instead.")
     sofa::Data<Coord >       d_effectorGoalPosition;
+
     sofa::Data<bool>         d_drawBarycenter;
     sofa::Data<Coord >       d_barycenter;
 
-    sofa::Data<sofa::type::vector<double>> d_delta;
-
-    void initData();
-
     void computeBarycenter();
+    void setBarycenter(const Coord& barycenter){d_barycenter.setValue(barycenter);}
 };
 
 template<> SOFA_SOFTROBOTS_INVERSE_API
-void BarycentricCenterEffector<sofa::defaulttype::Rigid3Types>::buildConstraintMatrix(const ConstraintParams* cParams,
-                                                                                DataMatrixDeriv& cMatrix,
-                                                                                unsigned int& cIndex,
-                                                                                const DataVecCoord& x);
+void BarycentricCenterEffector<sofa::defaulttype::Rigid3Types>::draw(const VisualParams* vparams);
+
+template<> SOFA_SOFTROBOTS_INVERSE_API
+void BarycentricCenterEffector<sofa::defaulttype::Rigid3Types>::setBarycenter(const Coord& barycenter);
 
 #if !defined(SOFTROBOTS_INVERSE_BARYCENTRICCENTEREFFECTOR_CPP)
 extern template class SOFA_SOFTROBOTS_INVERSE_API BarycentricCenterEffector<sofa::defaulttype::Vec3Types >;
