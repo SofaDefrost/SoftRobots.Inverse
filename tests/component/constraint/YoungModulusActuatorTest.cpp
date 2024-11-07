@@ -1,4 +1,5 @@
 #include <string>
+#include <sofa/simpleapi/SimpleApi.h>
 using std::string ;
 #include <sofa/testing/BaseTest.h>
 using sofa::testing::BaseTest ;
@@ -43,6 +44,7 @@ struct YoungModulusActuatorTest : public BaseTest,
     typedef YoungModulusActuator<_DataTypes> ThisClass ;
 
     void simpleScene(){
+        sofa::simpleapi::importPlugin("Sofa.Component.SolidMechanics.FEM.Elastic");
         string scene =
                 "<?xml version='1.0'?>"
                 "<Node 	name='Root' gravity='0 0 0' time='0' animate='0'   > "

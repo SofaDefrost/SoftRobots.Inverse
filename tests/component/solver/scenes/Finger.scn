@@ -20,10 +20,10 @@
                 <!--<RequiredPlugin name="SoftRobots.Inverse"/>  Needed to use components [PositionEffector] -->
   
                 <FreeMotionAnimationLoop/>
-                <DefaultPipeline />
+                <CollisionPipeline />
                 <BruteForceBroadPhase />
                 <BVHNarrowPhase />
-                <DefaultContactManager  response='FrictionContactConstraint'/>
+                <CollisionResponse response='FrictionContactConstraint'/>
                 <LocalMinDistance name="Proximity" alarmDistance='3' contactDistance='0.5'/>
                 <QPInverseProblemSolver name="QPInverseProblemSolver"/>
 
