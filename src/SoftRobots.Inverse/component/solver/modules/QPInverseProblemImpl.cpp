@@ -519,11 +519,18 @@ void QPInverseProblemImpl::solveInverseProblem(double& objective,
         }
     }
 
-    problem.getPrimalSolution(lambda);
+    {
+        const qpOASES::returnValue primalResult = problem.getPrimalSolution(lambda);
+        msg_error_when(primalResult != qpOASES::SUCCESSFUL_RETURN, "QPInverseProblemImpl") << "getPrimalSolution failed";
+    }
+
     objective = problem.getObjVal();
 
     real_t * slack = new real_t[nbVariables+nbConstraints]; // dual solution: slack[0:nV-1] => corresponds to lambda, slack[nV:nC+1] => corresponds to dual variables
-    problem.getDualSolution(slack);
+    {
+        const qpOASES::returnValue dualResult = problem.getDualSolution(slack);
+        msg_error_when(dualResult != qpOASES::SUCCESSFUL_RETURN, "QPInverseProblemImpl") << "getDualSolution failed";
+    }
 
     dual.resize(nbConstraints);
     for (int i=0; i<nbConstraints; i++)
@@ -558,7 +565,7 @@ QProblem QPInverseProblemImpl::getNewQProblem(int& nWSR)
     Options options;
     problem.setOptions(options);
 
-    problem.setPrintLevel(qpOASES::PL_NONE);
+    problem.setPrintLevel(qpOASES::PL_LOW);
 
     nWSR = 500; // problem.init() changes the variable nWSR with the number of working set recalculation it took to solve the problem. So we have to update it.
 
