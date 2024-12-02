@@ -2,6 +2,26 @@ def createScene(rootnode):
     from splib3.animation import animate, AnimationManager
     rootnode.addObject(AnimationManager(rootnode))
     rootnode.addObject('RequiredPlugin', pluginName=['SoftRobots', 'SoftRobots.Inverse', 'SofaPython3'])
+    rootnode.addObject('RequiredPlugin',
+                   name='Sofa.Component.AnimationLoop')  # Needed to use components [FreeMotionAnimationLoop]  
+    rootnode.addObject('RequiredPlugin',
+                   name='Sofa.Component.Constraint.Lagrangian.Correction')  # Needed to use components [GenericConstraintCorrection,UncoupledConstraintCorrection]  
+    rootnode.addObject('RequiredPlugin',
+                   name='Sofa.Component.Constraint.Projective')  # Needed to use components [PartialFixedProjectiveConstraint]  
+    rootnode.addObject('RequiredPlugin', name='Sofa.Component.IO.Mesh')  # Needed to use components [MeshOBJLoader]  
+    rootnode.addObject('RequiredPlugin',
+                   name='Sofa.Component.LinearSolver.Direct')  # Needed to use components [SparseLDLSolver]  
+    rootnode.addObject('RequiredPlugin',
+                   name='Sofa.Component.LinearSolver.Iterative')  # Needed to use components [CGLinearSolver]  
+    rootnode.addObject('RequiredPlugin',
+                   name='Sofa.Component.Mapping.NonLinear')  # Needed to use components [RigidMapping]  
+    rootnode.addObject('RequiredPlugin', name='Sofa.Component.Mass')  # Needed to use components [UniformMass]  
+    rootnode.addObject('RequiredPlugin',
+                   name='Sofa.Component.ODESolver.Backward')  # Needed to use components [EulerImplicitSolver]  
+    rootnode.addObject('RequiredPlugin',
+                   name='Sofa.Component.StateContainer')  # Needed to use components [MechanicalObject]  
+    rootnode.addObject('RequiredPlugin', name='Sofa.GL.Component.Rendering3D')  # Needed to use components [OglModel] 
+    
     rootnode.gravity = [0, 0, 0]
     rootnode.addObject('DefaultVisualManagerLoop')
     rootnode.addObject('FreeMotionAnimationLoop')
@@ -14,8 +34,8 @@ def createScene(rootnode):
     cube.addObject('GenericConstraintCorrection')
     cube.addObject('MechanicalObject', template='Rigid3', position=[-10, 0, 0, 0, 0, 0, 1])
     cube.addObject('UniformMass', totalMass=0.01)
-    # SlidingActuator needs a PartialFixedConstraint to fix the other directions
-    cube.addObject('PartialFixedConstraint', template='Rigid3', fixedDirections=[0, 1, 1, 1, 1, 1])
+    # SlidingActuator needs a PartialFixedProjectiveConstraint to fix the other directions
+    cube.addObject('PartialFixedProjectiveConstraint', template='Rigid3', fixedDirections=[0, 1, 1, 1, 1, 1])
     cube.addObject('SlidingActuator', template='Rigid3', indices=0, direction=[1, 0, 0, 0, 0, 0], maxDispVariation=0.1)
 
     visual = cube.addChild('Visu')
@@ -35,7 +55,7 @@ def createScene(rootnode):
     target.addObject('EulerImplicitSolver', firstOrder=True)
     target.addObject('CGLinearSolver', tolerance=1e-5, iterations=20, threshold=1e-5)
     target.addObject('MechanicalObject', position=[30, 0, 0], showObject=True, drawMode=2, showObjectScale=3)
-    target.addObject('PartialFixedConstraint', fixedDirections=[0, 1, 1])
+    target.addObject('PartialFixedProjectiveConstraint', fixedDirections=[0, 1, 1])
     target.addObject('UniformMass', totalMass=0.1)
     target.addObject('UncoupledConstraintCorrection')
 

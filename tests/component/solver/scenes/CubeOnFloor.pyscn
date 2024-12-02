@@ -12,10 +12,10 @@ def createScene(rootNode):
 
                 rootNode.addObject('FreeMotionAnimationLoop')
                 rootNode.addObject('QPInverseProblemSolver', epsilon=0, maxIterations=1000, tolerance=1e-5)
-                rootNode.addObject('DefaultPipeline')
+                rootNode.addObject('CollisionPipeline')
                 rootNode.addObject('BruteForceBroadPhase')
                 rootNode.addObject('BVHNarrowPhase')
-                rootNode.addObject('DefaultContactManager', response="FrictionContactConstraint", responseParams="mu=0.6")
+                rootNode.addObject('CollisionResponse', response="FrictionContactConstraint", responseParams="mu=0.6")
                 rootNode.addObject('LocalMinDistance', alarmDistance=3, contactDistance=1)
 
                 rootNode.addObject('OglSceneFrame', style="Arrows", alignment="TopRight")

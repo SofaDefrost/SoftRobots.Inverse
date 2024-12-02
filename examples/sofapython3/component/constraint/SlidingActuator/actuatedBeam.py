@@ -10,6 +10,27 @@ def createScene(rootNode):
     rootNode.addObject('RequiredPlugin', name='BeamAdapter')
     rootNode.addObject('RequiredPlugin', name='SoftRobots')
     rootNode.addObject('RequiredPlugin', name='SoftRobots.Inverse')
+    rootNode.addObject('RequiredPlugin',
+                   name='Sofa.Component.AnimationLoop')  # Needed to use components [FreeMotionAnimationLoop]
+    rootNode.addObject('RequiredPlugin',
+                   name='Sofa.Component.Constraint.Lagrangian.Correction')  # Needed to use components [GenericConstraintCorrection,UncoupledConstraintCorrection]
+    rootNode.addObject('RequiredPlugin',
+                   name='Sofa.Component.Constraint.Projective')  # Needed to use components [PartialFixedProjectiveConstraint]
+    rootNode.addObject('RequiredPlugin',
+                   name='Sofa.Component.LinearSolver.Direct')  # Needed to use components [SparseLDLSolver]
+    rootNode.addObject('RequiredPlugin',
+                   name='Sofa.Component.LinearSolver.Iterative')  # Needed to use components [CGLinearSolver]
+    rootNode.addObject('RequiredPlugin',
+                   name='Sofa.Component.Mapping.NonLinear')  # Needed to use components [RigidMapping]
+    rootNode.addObject('RequiredPlugin',
+                   name='Sofa.Component.ODESolver.Backward')  # Needed to use components [EulerImplicitSolver]
+    rootNode.addObject('RequiredPlugin',
+                   name='Sofa.Component.SolidMechanics.Spring')  # Needed to use components [RestShapeSpringsForceField]
+    rootNode.addObject('RequiredPlugin',
+                   name='Sofa.Component.StateContainer')  # Needed to use components [MechanicalObject]
+    rootNode.addObject('RequiredPlugin',
+                   name='Sofa.Component.Topology.Container.Constant')  # Needed to use components [MeshTopology]
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Visual')  # Needed to use components [VisualStyle]
     rootNode.addObject('VisualStyle', displayFlags='showVisualModels showBehaviorModels showCollisionModels '
                                                    'showForceFields showInteractionForceFields')
 
@@ -46,10 +67,10 @@ def createScene(rootNode):
 
     model.addObject('BeamInterpolation', dofsAndBeamsAligned=True, straight=False, defaultYoungModulus=100, radius=0.5)
     model.addObject('AdaptiveBeamForceFieldAndMass', computeMass=True, massDensity=0.000001)
-    # Unfortunatly, the component SlidingActuator needs to be used with a PartialFixedConstraint.
+    # Unfortunatly, the component SlidingActuator needs to be used with a PartialFixedProjectiveConstraint.
     # Ex: if SlidingActuator simulates a single dof (e.g. translation along x),
     # the other dofs must be fixed using this component
-    model.addObject('PartialFixedConstraint', indices=0, fixedDirections=[0, 1, 1, 1, 1, 0])
+    model.addObject('PartialFixedProjectiveConstraint', indices=0, fixedDirections=[0, 1, 1, 1, 1, 0])
     model.addObject('RestShapeSpringsForceField', points=0, angularStiffness=1000, stiffness=1000)
 
     ##########################################

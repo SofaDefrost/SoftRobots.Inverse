@@ -13,6 +13,21 @@ dirPath = os.path.dirname(os.path.abspath(__file__)) + '/'
 def createScene(rootNode):
     rootNode.addObject('RequiredPlugin', name='SoftRobots')
     rootNode.addObject('RequiredPlugin', name='SoftRobots.Inverse')
+    rootNode.addObject('RequiredPlugin', name='ArticulatedSystemPlugin')
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.AnimationLoop')  # Needed to use components [FreeMotionAnimationLoop]
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Constraint.Lagrangian.Correction')  # Needed to use components [UncoupledConstraintCorrection]
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.LinearSolver.Iterative')  # Needed to use components [CGLinearSolver]
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.ODESolver.Backward')  # Needed to use components [EulerImplicitSolver]
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Setting')  # Needed to use components [BackgroundSetting]
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.StateContainer')  # Needed to use components [MechanicalObject]
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Visual')  # Needed to use components [VisualStyle]
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Constraint.Projective')  # Needed to use components [FixedProjectiveConstraint]
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Engine.Generate')  # Needed to use components [GenerateRigidMass]
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.IO.Mesh')  # Needed to use components [MeshSTLLoader]
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Mapping.NonLinear')  # Needed to use components [RigidMapping]
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Mass')  # Needed to use components [UniformMass]
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Topology.Container.Constant')  # Needed to use components [MeshTopology]
+    rootNode.addObject('RequiredPlugin', name='Sofa.GL.Component.Rendering3D')  # Needed to use components [OglModel]
 
     rootNode.dt = 0.1
     rootNode.gravity = [0., -981., 0.]
@@ -24,15 +39,15 @@ def createScene(rootNode):
     # Target position of the end effector
     goal = rootNode.addChild('Goal')
     goal.addObject('EulerImplicitSolver', firstOrder=True)
-    goal.addObject('CGLinearSolver')
-    goal.addObject('MechanicalObject', name='dofs', template='Rigid3', position=[5, 0, 0, 0, 0, 0, 1],
-                   showObject=1, showObjectScale=1, drawMode=1)
+    goal.addObject('CGLinearSolver', iterations=25, tolerance=1e-5, threshold=1e-5)
+    goal.addObject('MechanicalObject', name='dofs', position=[5, 5, 0],
+                   showObject=True, showObjectScale=0.5, drawMode=2)
     goal.addObject('UncoupledConstraintCorrection')
 
     # Simulation node
     simulation = rootNode.addChild('Simulation')
     simulation.addObject('EulerImplicitSolver')
-    simulation.addObject('CGLinearSolver')
+    simulation.addObject('CGLinearSolver', iterations=25, tolerance=1e-5, threshold=1e-5)
 
     object = simulation.addChild('Object')
     object.addObject('MechanicalObject', name='dofs', template='Vec1', position=0.)
@@ -42,10 +57,12 @@ def createScene(rootNode):
     rigid = object.addChild('Rigid')
     rigid.addObject('MechanicalObject', template='Rigid3', name='dofs',
                     position=[[0., 0., 0., 0., 0., 0., 1.], [4.5, 0., 0., 0., 0., 0., 1.]])
-    rigid.addObject('PositionEffector', template='Rigid3', indices=1,
-                    effectorGoal=goal.dofs.findData('position').getLinkPath(), useDirections=[1, 1, 0, 0, 0, 0])
-    rigid.addObject('BeamFEMForceField', name='FEM', radius=0.2, youngModulus=1e3, poissonRatio=0.45)
-    rigid.addObject('MeshTopology', lines=[0, 1])
+
+    effector = rigid.addChild("Effector")
+    effector.addObject("MechanicalObject")
+    effector.addObject('PositionEffector', indices=0, effectorGoal=goal.dofs.findData('position').getLinkPath(),
+                       useDirections=[1, 1, 0])
+    effector.addObject("RigidMapping", index=1)
 
     visual = rigid.addChild('VisualModel')
     visual.addObject('MeshSTLLoader', name='loader', filename=dirPath + 'mesh/arm.stl', translation=[-4.5, 0., 0.],
@@ -55,7 +72,7 @@ def createScene(rootNode):
     visual.addObject('RigidMapping', index=1)
 
     rigid.addObject('GenerateRigidMass', name='mass', density=0.002, src=visual.loader.getLinkPath())
-    rigid.addObject('FixedConstraint', template='Rigid3', indices=0)
+    rigid.addObject('FixedProjectiveConstraint', template='Rigid3', indices=0)
     rigid.addObject('ArticulatedSystemMapping', input1=object.dofs.getLinkPath(), output=rigid.dofs.getLinkPath())
     rigid.addObject('UniformMass', vertexMass=rigid.mass.findData('rigidMass').getLinkPath())
 
