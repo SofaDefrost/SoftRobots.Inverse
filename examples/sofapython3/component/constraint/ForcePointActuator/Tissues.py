@@ -5,6 +5,41 @@ path = os.path.dirname(os.path.abspath(__file__)) + '/mesh/'
 def createScene(rootNode):
     rootNode.addObject('RequiredPlugin', name='SoftRobots')
     rootNode.addObject('RequiredPlugin', name='SoftRobots.Inverse')
+    rootNode.addObject('RequiredPlugin',
+                   name='Sofa.Component.AnimationLoop')  # Needed to use components [FreeMotionAnimationLoop]  
+    rootNode.addObject('RequiredPlugin',
+                   name='Sofa.Component.Collision.Detection.Algorithm')  # Needed to use components [BVHNarrowPhase,BruteForceBroadPhase,CollisionPipeline]  
+    rootNode.addObject('RequiredPlugin',
+                   name='Sofa.Component.Collision.Detection.Intersection')  # Needed to use components [LocalMinDistance]  
+    rootNode.addObject('RequiredPlugin',
+                   name='Sofa.Component.Collision.Geometry')  # Needed to use components [LineCollisionModel,PointCollisionModel,SphereCollisionModel,TriangleCollisionModel]  
+    rootNode.addObject('RequiredPlugin',
+                   name='Sofa.Component.Collision.Response.Contact')  # Needed to use components [CollisionResponse]  
+    rootNode.addObject('RequiredPlugin',
+                   name='Sofa.Component.Constraint.Lagrangian.Correction')  # Needed to use components [LinearSolverConstraintCorrection,UncoupledConstraintCorrection]  
+    rootNode.addObject('RequiredPlugin',
+                   name='Sofa.Component.Constraint.Projective')  # Needed to use components [FixedProjectiveConstraint]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Engine.Select')  # Needed to use components [BoxROI]  
+    rootNode.addObject('RequiredPlugin',
+                   name='Sofa.Component.IO.Mesh')  # Needed to use components [MeshSTLLoader,MeshVTKLoader]  
+    rootNode.addObject('RequiredPlugin',
+                   name='Sofa.Component.LinearSolver.Direct')  # Needed to use components [SparseLDLSolver]  
+    rootNode.addObject('RequiredPlugin',
+                   name='Sofa.Component.LinearSolver.Iterative')  # Needed to use components [CGLinearSolver]  
+    rootNode.addObject('RequiredPlugin',
+                   name='Sofa.Component.Mapping.Linear')  # Needed to use components [BarycentricMapping]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Mass')  # Needed to use components [UniformMass]  
+    rootNode.addObject('RequiredPlugin',
+                   name='Sofa.Component.ODESolver.Backward')  # Needed to use components [EulerImplicitSolver]  
+    rootNode.addObject('RequiredPlugin',
+                   name='Sofa.Component.SolidMechanics.FEM.Elastic')  # Needed to use components [TetrahedronFEMForceField]  
+    rootNode.addObject('RequiredPlugin',
+                   name='Sofa.Component.StateContainer')  # Needed to use components [MechanicalObject]  
+    rootNode.addObject('RequiredPlugin',
+                   name='Sofa.Component.Topology.Container.Constant')  # Needed to use components [MeshTopology]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.Visual')  # Needed to use components [VisualStyle]  
+    rootNode.addObject('RequiredPlugin', name='Sofa.GL.Component.Rendering3D')  # Needed to use components [OglModel]  
+    
     rootNode.addObject('VisualStyle',
                        displayFlags='hideWireframe showVisualModels showBehaviorModels hideCollisionModels '
                                     'hideBoundingCollisionModels hideForceFields showInteractionForceFields')
@@ -14,10 +49,10 @@ def createScene(rootNode):
 
     rootNode.addObject('FreeMotionAnimationLoop')
     rootNode.addObject('QPInverseProblemSolver', printLog=False, epsilon=1e-3, tolerance=1e-4, maxIterations=2500)
-    rootNode.addObject('DefaultPipeline')
+    rootNode.addObject('CollisionPipeline')
     rootNode.addObject('BruteForceBroadPhase')
     rootNode.addObject('BVHNarrowPhase')
-    rootNode.addObject('DefaultContactManager', response="FrictionContactConstraint", responseParams="mu=0")
+    rootNode.addObject('CollisionResponse', response="FrictionContactConstraint", responseParams="mu=0")
     rootNode.addObject('LocalMinDistance', name="Proximity", alarmDistance=5, contactDistance=3)
 
     ##########################################
@@ -26,7 +61,7 @@ def createScene(rootNode):
     goal = rootNode.addChild('goal')
     goal.addObject('VisualStyle', displayFlags='showCollisionModels')
     goal.addObject('EulerImplicitSolver', firstOrder=True)
-    goal.addObject('CGLinearSolver', iterations=100)
+    goal.addObject('CGLinearSolver', iterations=100, tolerance=1e-5, threshold=1e-5)
     goal.addObject('MechanicalObject', name='goalMO', showObject=True, showObjectScale=10, drawMode=1,
                    showColor=[255, 255, 255, 255], position=[40, 30, 30])
     goal.addObject('SphereCollisionModel', radius=10, group=[0, 1, 2])
@@ -44,7 +79,7 @@ def createScene(rootNode):
     model.addObject('UniformMass', totalMass=0.03)
     model.addObject('TetrahedronFEMForceField', poissonRatio=0.3, youngModulus=180)
     model.addObject('BoxROI', name='boxROI', box=[0, 50, -20, 10, 70, 20], drawBoxes=False)
-    model.addObject('FixedConstraint', indices='@boxROI.indices')
+    model.addObject('FixedProjectiveConstraint', indices='@boxROI.indices')
     model.addObject('LinearSolverConstraintCorrection')
 
     ##########################################
@@ -60,8 +95,8 @@ def createScene(rootNode):
     skin.addObject('TetrahedronFEMForceField', poissonRatio=0.3, youngModulus=180)
     skin.addObject('BoxROI', name='boxROI1', box=[-100, -5, -30, -90, 5, 30], drawBoxes=False)
     skin.addObject('BoxROI', name='boxROI2', box=[100, -5, -30, 90, 5, 30], drawBoxes=False)
-    skin.addObject('FixedConstraint', name='fix_1', indices='@boxROI1.indices')
-    skin.addObject('FixedConstraint', name='fix_2', indices='@boxROI2.indices')
+    skin.addObject('FixedProjectiveConstraint', name='fix_1', indices='@boxROI1.indices')
+    skin.addObject('FixedProjectiveConstraint', name='fix_2', indices='@boxROI2.indices')
     skin.addObject('LinearSolverConstraintCorrection')
 
     ##########################################
