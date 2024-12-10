@@ -71,7 +71,7 @@ def createScene(rootNode):
     # Ex: if SlidingActuator simulates a single dof (e.g. translation along x),
     # the other dofs must be fixed using this component
     model.addObject('PartialFixedProjectiveConstraint', indices=0, fixedDirections=[0, 1, 1, 1, 1, 0])
-    model.addObject('RestShapeSpringsForceField', points=0, angularStiffness=1000, stiffness=1000)
+    model.addObject('RestShapeSpringsForceField', indices=0, angularStiffness=1000, stiffness=1000)
 
     ##########################################
     # Actuator                               #

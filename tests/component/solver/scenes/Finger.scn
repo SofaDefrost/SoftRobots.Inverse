@@ -48,8 +48,8 @@
                         <BoxROI name='ROI1' box='-15 0 0 5 10 15' drawBoxes='true'/>
                         <BoxROI name='ROI2' box='-15 0 0 5 10 15' drawBoxes='true'/>
                 
-                        <RestShapeSpringsForceField points='@ROI1.indices' stiffness='1e12'/>
-                        <RestShapeSpringsForceField points='@ROI2.indices' stiffness='1e12'/>
+                        <RestShapeSpringsForceField indices='@ROI1.indices' stiffness='1e12'/>
+                        <RestShapeSpringsForceField indices='@ROI2.indices' stiffness='1e12'/>
 
                         <LinearSolverConstraintCorrection/>
 
