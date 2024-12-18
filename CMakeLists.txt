@@ -77,6 +77,8 @@ set(HEADER_FILES
     ${SRC_DIR}/component/solver/modules/NLCPSolver.h
     ${SRC_DIR}/component/solver/modules/QPInverseProblem.h
     ${SRC_DIR}/component/solver/modules/QPInverseProblemImpl.h
+    ${SRC_DIR}/component/solver/modules/QPInverseProblemQPOases.h
+    ${SRC_DIR}/component/solver/modules/QPInverseProblemProxQP.h
     ${SRC_DIR}/component/solver/modules/QPMechanicalAccumulateConstraint.h
     ${SRC_DIR}/component/solver/modules/QPMechanicalSetConstraint.h
     )
@@ -122,6 +124,8 @@ set(SOURCE_FILES
     ${SRC_DIR}/component/solver/modules/NLCPSolver.cpp
     ${SRC_DIR}/component/solver/modules/QPInverseProblem.cpp
     ${SRC_DIR}/component/solver/modules/QPInverseProblemImpl.cpp
+    ${SRC_DIR}/component/solver/modules/QPInverseProblemQPOases.cpp
+    ${SRC_DIR}/component/solver/modules/QPInverseProblemProxQP.cpp
     ${SRC_DIR}/component/solver/modules/QPMechanicalAccumulateConstraint.cpp
     ${SRC_DIR}/component/solver/modules/QPMechanicalSetConstraint.cpp
     )
