@@ -78,7 +78,6 @@ set(HEADER_FILES
     ${SRC_DIR}/component/solver/modules/QPInverseProblem.h
     ${SRC_DIR}/component/solver/modules/QPInverseProblemImpl.h
     ${SRC_DIR}/component/solver/modules/QPInverseProblemQPOases.h
-    ${SRC_DIR}/component/solver/modules/QPInverseProblemProxQP.h
     ${SRC_DIR}/component/solver/modules/QPMechanicalAccumulateConstraint.h
     ${SRC_DIR}/component/solver/modules/QPMechanicalSetConstraint.h
     )
@@ -125,7 +124,6 @@ set(SOURCE_FILES
     ${SRC_DIR}/component/solver/modules/QPInverseProblem.cpp
     ${SRC_DIR}/component/solver/modules/QPInverseProblemImpl.cpp
     ${SRC_DIR}/component/solver/modules/QPInverseProblemQPOases.cpp
-    ${SRC_DIR}/component/solver/modules/QPInverseProblemProxQP.cpp
     ${SRC_DIR}/component/solver/modules/QPMechanicalAccumulateConstraint.cpp
     ${SRC_DIR}/component/solver/modules/QPMechanicalSetConstraint.cpp
     )
@@ -158,17 +156,29 @@ else()
     add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${DOC_FILES} ${EXAMPLE_FILES} "${SRC_DIR}/component/config.h.in")
 endif()
 
-find_package(proxsuite REQUIRED)
-
 target_link_libraries(${PROJECT_NAME}
     SoftRobots
     Sofa.Component.Constraint.Lagrangian.Solver
     Sofa.Component.Collision.Response.Contact)
 target_link_libraries(${PROJECT_NAME} ${libqpOASES_LIBRARY})
-target_link_libraries(${PROJECT_NAME} proxsuite::proxsuite)
-# XXX proxsuite vectorization support via SIMDE and activated by the compilation options '-march=native' or `-mavx2 -mavx512f`
-# target_link_libraries(${PROJECT_NAME} PUBLIC proxsuite::proxsuite-vectorized)
-# target_compile_options(${PROJECT_NAME}  PUBLIC "-march=native")
+
+option(SOFTROBOTSINVERSE_ENABLE_PROXQP "Build proxQP wrapper for inverse problems" OFF)
+if(SOFTROBOTSINVERSE_ENABLE_PROXQP)
+    find_package(proxsuite REQUIRED)
+
+    list(APPEND HEADER_FILES
+        ${SRC_DIR}/component/solver/modules/QPInverseProblemProxQP.h
+        )
+    list(APPEND SOURCE_FILES
+        ${SRC_DIR}/component/solver/modules/QPInverseProblemProxQP.cpp
+        )
+
+    target_link_libraries(${PROJECT_NAME} proxsuite::proxsuite)
+    # XXX proxsuite vectorization support via SIMDE and activated by the compilation options '-march=native' or `-mavx2 -mavx512f`
+    # target_link_libraries(${PROJECT_NAME} PUBLIC proxsuite::proxsuite-vectorized)
+    # target_compile_options(${PROJECT_NAME}  PUBLIC "-march=native")
+    target_compile_definitions(${PROJECT_NAME} PRIVATE SOFTROBOTSINVERSE_ENABLE_PROXQP)
+endif()
 
 sofa_find_package(Sofa.Component.SolidMechanics.FEM.Elastic)
 target_link_libraries(${PROJECT_NAME} Sofa.Component.SolidMechanics.FEM.Elastic)

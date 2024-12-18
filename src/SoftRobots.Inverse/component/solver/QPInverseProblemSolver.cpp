@@ -53,7 +53,10 @@
 #include <SoftRobots.Inverse/component/solver/modules/QPMechanicalSetConstraint.h>
 #include <SoftRobots.Inverse/component/solver/modules/QPMechanicalAccumulateConstraint.h>
 #include <SoftRobots.Inverse/component/solver/modules/QPInverseProblemQPOases.h>
-#include <SoftRobots.Inverse/component/solver/modules/QPInverseProblemProxQP.h> // TODO
+
+#ifdef SOFTROBOTSINVERSE_ENABLE_PROXQP
+#include <SoftRobots.Inverse/component/solver/modules/QPInverseProblemProxQP.h>
+#endif
 
 using sofa::simulation::mechanicalvisitor::MechanicalProjectJacobianMatrixVisitor;
 using sofa::simulation::mechanicalvisitor::MechanicalResetConstraintVisitor;
@@ -166,13 +169,7 @@ void QPInverseProblemSolver::createProblems()
 {
     switch(d_qpSolver.getValue().getSelectedId())
     {
-    case QPSolverImpl::QPOASES :
-        msg_info() << "Using qpOASES solver";
-        m_CP1 = new module::QPInverseProblemQPOases();
-        m_CP2 = new module::QPInverseProblemQPOases();
-        m_CP3 = new module::QPInverseProblemQPOases();
-        break;
-
+#ifdef SOFTROBOTSINVERSE_ENABLE_PROXQP
     case QPSolverImpl::PROXQP :
         // TODO conditionnal compilation w.r.t. optionnal proxQP dependency
         msg_info() << "Using proxQP solver";
@@ -180,9 +177,12 @@ void QPInverseProblemSolver::createProblems()
         m_CP2 = new module::QPInverseProblemProxQP();
         m_CP3 = new module::QPInverseProblemProxQP();
         break;
-
-    default :
-        // TODO
+#endif
+    default : // QPSolverImpl::QPOASES
+        msg_info() << "Using qpOASES solver";
+        m_CP1 = new module::QPInverseProblemQPOases();
+        m_CP2 = new module::QPInverseProblemQPOases();
+        m_CP3 = new module::QPInverseProblemQPOases();
         break;
     }
 
