@@ -71,7 +71,7 @@ void QPInverseProblemProxQP::solveInverseProblem(double& objective,
     qp.init(H, g, A, b, C, l, u, lbox, ubox, true, rho); // initialize the model
 
     qp.settings.eps_rel = 0.;
-    qp.settings.eps_abs = 1e-9; // default is 1e-5
+    qp.settings.eps_abs = 1e-12; // default is 1e-5
     qp.settings.check_duality_gap = true;
     qp.settings.verbose = false;
     qp.settings.max_iter = 3000;
@@ -84,7 +84,6 @@ void QPInverseProblemProxQP::solveInverseProblem(double& objective,
     switch(qp.results.info.status)
     {
       case proxsuite::proxqp::QPSolverOutput::PROXQP_SOLVED:
-        msg_info("QPInverseProblemImpl") << "Solver status: PROXQP_SOLVED";
       break;
       case proxsuite::proxqp::QPSolverOutput::PROXQP_MAX_ITER_REACHED:
         msg_warning("QPInverseProblemImpl") << "Solver status: PROXQP_MAX_ITER_REACHED";

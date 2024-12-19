@@ -173,7 +173,7 @@ if(SOFTROBOTSINVERSE_ENABLE_PROXQP)
     # XXX proxsuite vectorization support via SIMDE and activated by the compilation options '-march=native' or `-mavx2 -mavx512f`
     # target_link_libraries(${PROJECT_NAME} PUBLIC proxsuite::proxsuite-vectorized)
     # target_compile_options(${PROJECT_NAME}  PUBLIC "-march=native")
-    target_compile_definitions(${PROJECT_NAME} PRIVATE SOFTROBOTSINVERSE_ENABLE_PROXQP)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC SOFTROBOTSINVERSE_ENABLE_PROXQP)
 endif()
 
 target_link_libraries(${PROJECT_NAME}
