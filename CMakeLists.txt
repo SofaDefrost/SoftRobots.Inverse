@@ -149,19 +149,6 @@ include_directories(${libqpOASES_INCLUDE_DIRS})
 set(QPOASES_INCLUDE_DIR ${libqpOASES_INCLUDE_DIRS} CACHE INTERNAL "")
 sofa_install_libraries(PATHS ${libqpOASES_LIBRARY})
 
-option(SOFTROBOTSINVERSE_INSTALL_HEADERS "Install the headers" ON)
-if(SOFTROBOTSINVERSE_INSTALL_HEADERS)
-    add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${DOC_FILES} ${EXAMPLE_FILES} ${HEADER_FILES})
-else()
-    add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${DOC_FILES} ${EXAMPLE_FILES} "${SRC_DIR}/component/config.h.in")
-endif()
-
-target_link_libraries(${PROJECT_NAME}
-    SoftRobots
-    Sofa.Component.Constraint.Lagrangian.Solver
-    Sofa.Component.Collision.Response.Contact)
-target_link_libraries(${PROJECT_NAME} ${libqpOASES_LIBRARY})
-
 option(SOFTROBOTSINVERSE_ENABLE_PROXQP "Build proxQP wrapper for inverse problems" OFF)
 if(SOFTROBOTSINVERSE_ENABLE_PROXQP)
     find_package(proxsuite REQUIRED)
@@ -172,13 +159,28 @@ if(SOFTROBOTSINVERSE_ENABLE_PROXQP)
     list(APPEND SOURCE_FILES
         ${SRC_DIR}/component/solver/modules/QPInverseProblemProxQP.cpp
         )
+endif()
 
+option(SOFTROBOTSINVERSE_INSTALL_HEADERS "Install the headers" ON)
+if(SOFTROBOTSINVERSE_INSTALL_HEADERS)
+    add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${DOC_FILES} ${EXAMPLE_FILES} ${HEADER_FILES})
+else()
+    add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${DOC_FILES} ${EXAMPLE_FILES} "${SRC_DIR}/component/config.h.in")
+endif()
+
+if(SOFTROBOTSINVERSE_ENABLE_PROXQP)
     target_link_libraries(${PROJECT_NAME} proxsuite::proxsuite)
     # XXX proxsuite vectorization support via SIMDE and activated by the compilation options '-march=native' or `-mavx2 -mavx512f`
     # target_link_libraries(${PROJECT_NAME} PUBLIC proxsuite::proxsuite-vectorized)
     # target_compile_options(${PROJECT_NAME}  PUBLIC "-march=native")
     target_compile_definitions(${PROJECT_NAME} PRIVATE SOFTROBOTSINVERSE_ENABLE_PROXQP)
 endif()
+
+target_link_libraries(${PROJECT_NAME}
+    SoftRobots
+    Sofa.Component.Constraint.Lagrangian.Solver
+    Sofa.Component.Collision.Response.Contact)
+target_link_libraries(${PROJECT_NAME} ${libqpOASES_LIBRARY})
 
 sofa_find_package(Sofa.Component.SolidMechanics.FEM.Elastic)
 target_link_libraries(${PROJECT_NAME} Sofa.Component.SolidMechanics.FEM.Elastic)
