@@ -32,6 +32,7 @@
 #include <sofa/core/behavior/BaseConstraint.h>
 #include <sofa/core/behavior/ConstraintSolver.h>
 #include <sofa/core/behavior/BaseConstraintCorrection.h>
+#include <sofa/core/objectmodel/DataCallback.h>
 #include <sofa/core/objectmodel/KeypressedEvent.h>
 #include <sofa/simulation/TaskScheduler.h>
 #include <sofa/simulation/InitTasks.h>
@@ -164,6 +165,7 @@ protected:
     module::QPInverseProblemImpl *m_lastCP, *m_currentCP;
     vector<BaseConstraintCorrection*> m_constraintsCorrections;
     vector<char> m_isConstraintCorrectionActive;
+    sofa::core::objectmodel::DataCallback m_qpSolverCB;
 
     Node *m_context;
 

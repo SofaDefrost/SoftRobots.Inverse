@@ -156,13 +156,23 @@ QPInverseProblemSolver::QPInverseProblemSolver()
     , d_objective(initData(&d_objective, 250.0, "objective", "Erreur between the target and the end effector "))
 
     , m_lastCP(NULL)
+    , m_CP1(nullptr)
+    , m_CP2(nullptr)
+    , m_CP3(nullptr)
 {
-    createProblems();
-    d_graph.setWidget("graph");
-
     sofa::helper::OptionsGroup qpSolvers{"qpOASES" , "proxQP"};
     qpSolvers.setSelectedItem(QPSolverImpl::QPOASES);
     d_qpSolver.setValue(qpSolvers);
+
+    d_graph.setWidget("graph");
+    createProblems();
+
+    m_qpSolverCB.addInput(&d_qpSolver);
+    m_qpSolverCB.addCallback([this]()
+    {
+        deleteProblems();
+        createProblems();
+    });
 }
 
 void QPInverseProblemSolver::createProblems()
@@ -192,9 +202,21 @@ void QPInverseProblemSolver::createProblems()
 
 void QPInverseProblemSolver::deleteProblems()
 {
-    delete m_CP1;
-    delete m_CP2;
-    delete m_CP3;
+    if(m_CP1)
+    {
+      delete m_CP1;
+      m_CP1 = nullptr;
+    }
+     if(m_CP2)
+    {
+      delete m_CP2;
+      m_CP2 = nullptr;
+    }
+     if(m_CP3)
+    {
+      delete m_CP3;
+      m_CP3 = nullptr;
+    }
 }
 
 QPInverseProblemSolver::~QPInverseProblemSolver()
