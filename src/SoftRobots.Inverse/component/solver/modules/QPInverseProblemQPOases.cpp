@@ -64,147 +64,6 @@ void QPInverseProblemQPOases::solveInverseProblem(double& objective,
 
     updateQPMatrices(Q, c, l, u, A, bl, bu);
 
-
-    // // --------------------------------------
-    // std::cout << "-- solveInverseProblemQPOASES --" << std::endl;
-    // std::cout << "H = [";
-    // for(auto i = 0; i < nbVariables; ++i)
-    // {
-    //   std::cout << "[ ";
-    //   for(auto j = 0; j < nbVariables; ++j)
-    //   {
-    //     std::cout << Q[i*nbVariables + j];
-    //     if(j != nbVariables-1)
-    //     {
-    //       std::cout << "; ";
-    //     }
-    //   }
-    //   if(i != nbVariables-1)
-    //   {
-    //     std::cout << "]\n";
-    //   }
-    //   else
-    //   {
-    //     std::cout << "]]\n";
-    //   }
-    // }
-    
-    // std::cout << "g = [";
-    // for(auto i = 0; i < nbVariables; ++i)
-    // {
-    //   std::cout << c[i];
-    //   if(i != nbVariables-1)
-    //   {
-    //     std::cout << "; ";
-    //   }
-    // }
-    // std::cout << "]\n";
-
-    // std::cout << "A = [";
-    // for(auto i = 0; i < AeqSize; ++i)
-    // {
-    //   std::cout << "[ ";
-    //   for(auto j = 0; j < nbVariables; ++j)
-    //   {
-    //     std::cout << A[(i + ASize)*nbVariables + j]; // = A eq
-    //     // std::cout << Aeq[i*nbVariables + j];
-    //     if(j != nbVariables-1)
-    //     {
-    //       std::cout << "; ";
-    //     }
-    //   }
-    //   if(i != AeqSize-1)
-    //   {
-    //     std::cout << "]\n";
-    //   }
-    //   else
-    //   {
-    //     std::cout << "]]\n";
-    //   }
-    // }
-    // std::cout << "\n";
-
-    // std::cout << "b = [";
-    // for(auto i = 0; i < AeqSize; ++i)
-    // {
-    //   std::cout << bu[i + ASize];
-    //   // std::cout << beq[i];
-    //   if(i != AeqSize-1)
-    //   {
-    //     std::cout << "; ";
-    //   }
-    // }
-    // std::cout << "]\n";
-
-    // std::cout << "C = [";
-    // for(auto i = 0; i < ASize; ++i)
-    // {
-    //   std::cout << "[ ";
-    //   for(auto j = 0; j < nbVariables; ++j)
-    //   {
-    //     std::cout << A[i*nbVariables + j];
-    //     if(j != nbVariables-1)
-    //     {
-    //       std::cout << "; ";
-    //     }
-    //   }
-    //   if(i != ASize-1)
-    //   {
-    //     std::cout << "]\n";
-    //   }
-    //   else
-    //   {
-    //     std::cout << "]]\n";
-    //   }
-    // }
-    // std::cout << "\n";
-
-    // std::cout << "l = [";
-    // for(auto i = 0; i < ASize; ++i)
-    // {
-    //   std::cout << bl[i];
-    //   if(i != ASize-1)
-    //   {
-    //     std::cout << "; ";
-    //   }
-    // }
-    // std::cout << "]\n";
-
-    // std::cout << "u = [";
-    // for(auto i = 0; i < ASize; ++i)
-    // {
-    //   std::cout << bu[i];
-    //   if(i != ASize-1)
-    //   {
-    //     std::cout << "; ";
-    //   }
-    // }
-    // std::cout << "]\n";
-
-    // std::cout << "lbox = [";
-    // for(auto i = 0; i < nbVariables; ++i)
-    // {
-    //   std::cout << l[i];
-    //   if(i != nbVariables-1)
-    //   {
-    //     std::cout << "; ";
-    //   }
-    // }
-    // std::cout << "]\n";
-
-    // std::cout << "ubox = [";
-    // for(auto i = 0; i < nbVariables; ++i)
-    // {
-    //   std::cout << u[i];
-    //   if(i != nbVariables-1)
-    //   {
-    //     std::cout << "; ";
-    //   }
-    // }
-    // std::cout << "]\n";
-    // std::cout << "------------" << std::endl;
-    // // --------------------------------------
-
     qpOASES::int_t nWSR = 500;
     //    Eulalie.C (01/19): QProblemB of qpOASES for simply bounded problem does not work (constraints are not satisfied). We should either find why or remove this commented block of code
     //    if(nbConstraints==0)
@@ -222,11 +81,6 @@ void QPInverseProblemQPOases::solveInverseProblem(double& objective,
     qpOASES::QProblem problem = getNewQProblem(nWSR);
 
     problem.init(Q, c, A, l, u, bl, bu, nWSR);
-
-	  // Options options;
-    // options.setToReliable();
-	  // options.terminationTolerance = 1.e-16;
-	  // problem.setOptions( options );
 
     if(problem.isInfeasible())
     {
@@ -269,10 +123,6 @@ void QPInverseProblemQPOases::solveInverseProblem(double& objective,
         msg_error_when(dualResult != qpOASES::SUCCESSFUL_RETURN, "QPInverseProblemImpl") << "getDualSolution failed";
     }
 
-    std::cout << "solveQPOases: nbConstraints = " << nbConstraints << " / nbVariables = " << nbVariables << std::endl;
-    std::cout << "solveQPOases: num Ineq = " << ASize << " / num Eq = " << AeqSize << std::endl;
-    std::cout << "solveQPOases: -> dual size = " <<  nbConstraints << std::endl;
-    std::cout << "solveQPOases: -> primal (result) size = " <<  nbVariables << std::endl;
     dual.resize(nbConstraints);
     for (int i=0; i<nbConstraints; i++)
         dual[i]=slack[nbVariables+i];
