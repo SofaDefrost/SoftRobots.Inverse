@@ -28,7 +28,6 @@
 ******************************************************************************/
 #pragma once
 
-#include <Eigen/Core>
 #include <qpOASES/Types.hpp>
 
 //When the macro is defined by qpOASES/Types.hpp it has side effects on the
@@ -39,10 +38,8 @@
 #endif
 
 #include <qpOASES/QProblem.hpp>
-#include <SoftRobots/component/behavior/SoftRobotsBaseConstraint.h>
 
-#include <SoftRobots.Inverse/component/solver/modules/ConstraintHandler.h>
-#include <SoftRobots.Inverse/component/solver/modules/QPInverseProblem.h>
+#include <SoftRobots.Inverse/component/solver/modules/QPInverseProblemImpl.h>
 
 #include <SoftRobots.Inverse/component/config.h>
 
@@ -54,56 +51,23 @@ using sofa::type::vector;
 using qpOASES::real_t;
 
 
-class SOFA_SOFTROBOTS_INVERSE_API QPInverseProblemImpl : public QPInverseProblem
+class SOFA_SOFTROBOTS_INVERSE_API QPInverseProblemQPOases : public QPInverseProblemImpl
 {
 
 public:
-
-    typedef Eigen::Ref<Eigen::MatrixXd> RefMat;
-    typedef const Eigen::Ref<const Eigen::MatrixXd> ConstRefMat;
-    typedef Eigen::Ref<Eigen::VectorXd> RefVec;
-    typedef const Eigen::Ref<const Eigen::VectorXd> ConstRefVec;
-
-    QPInverseProblemImpl();
-    virtual ~QPInverseProblemImpl();
-
-    void init();
-    void solve(double &objective, int &iterations);
-    void setMinContactForces(const double& minContactForces) {m_qpCParams->minContactForces = minContactForces; m_qpCParams->hasMinContactForces = true;}
-    void setMaxContactForces(const double& maxContactForces) {m_qpCParams->maxContactForces = maxContactForces; m_qpCParams->hasMaxContactForces = true;}
+    QPInverseProblemQPOases() = default;
+    virtual ~QPInverseProblemQPOases() = default;
 
 protected:
-
-    ConstraintHandler* m_constraintHandler;
-    ConstraintHandler::QPConstraintParams* m_qpCParams;
-
-    // Utils to prevent cycling in pivot algorithm
-    vector<int>   m_currentSequence;
-    vector<int>   m_previousSequence;
-    vector<int>   m_sequence;
-
-    int m_iteration{0};
-    int m_step{0};
-
-    // must be reimplemented in each qp solver specific child class
     virtual void solveInverseProblem(double &objective,
                              vector<double> &result,
-                             vector<double> &dual) = 0;
+                             vector<double> &dual) override;
 
-    void computeEnergyWeight(double& weight);
-    void buildQPMatrices();
+private:
+    void updateQPMatrices(real_t * Q, real_t * c, real_t * l, real_t * u,
+                          real_t * A, real_t * bl, real_t * bu);
 
-    void solveWithContact(vector<double>& result, double &objective, int &iterations);
-    void solveContacts(vector<double>& res);
-
-    void updateLambda(const vector<double>& x);
-    bool isFeasible(const vector<double>& x);
-
-    bool checkAndUpdatePivot(const vector<double>&result, const vector<double>&dual);
-    bool isCycling(const int pivot);
-    double getDelta(const vector<double> &result, const int& index);
-    bool isIn(const vector<int> list, const int elem);
-    std::string getContactsState();
+    qpOASES::QProblem getNewQProblem(int &nWSR);
 };
 
 } //namespace
