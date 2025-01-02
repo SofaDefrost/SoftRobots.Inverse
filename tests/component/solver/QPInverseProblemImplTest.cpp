@@ -19,6 +19,10 @@ struct QPInverseProblemImplTest : public BaseTest, QPInverseProblemImpl
     typedef QPInverseProblemImpl ThisClass ;
     typedef _DataTypes DataTypes;
 
+    void solveInverseProblem(double &objective,
+                            sofa::type::vector<double> &result,
+                            sofa::type::vector<double> &dual) override {}
+
     void isInTest()
     {
         vector<int> list;

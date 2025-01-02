@@ -77,6 +77,7 @@ set(HEADER_FILES
     ${SRC_DIR}/component/solver/modules/NLCPSolver.h
     ${SRC_DIR}/component/solver/modules/QPInverseProblem.h
     ${SRC_DIR}/component/solver/modules/QPInverseProblemImpl.h
+    ${SRC_DIR}/component/solver/modules/QPInverseProblemQPOases.h
     ${SRC_DIR}/component/solver/modules/QPMechanicalAccumulateConstraint.h
     ${SRC_DIR}/component/solver/modules/QPMechanicalSetConstraint.h
     )
@@ -122,6 +123,7 @@ set(SOURCE_FILES
     ${SRC_DIR}/component/solver/modules/NLCPSolver.cpp
     ${SRC_DIR}/component/solver/modules/QPInverseProblem.cpp
     ${SRC_DIR}/component/solver/modules/QPInverseProblemImpl.cpp
+    ${SRC_DIR}/component/solver/modules/QPInverseProblemQPOases.cpp
     ${SRC_DIR}/component/solver/modules/QPMechanicalAccumulateConstraint.cpp
     ${SRC_DIR}/component/solver/modules/QPMechanicalSetConstraint.cpp
     )
@@ -147,6 +149,53 @@ include_directories(${libqpOASES_INCLUDE_DIRS})
 set(QPOASES_INCLUDE_DIR ${libqpOASES_INCLUDE_DIRS} CACHE INTERNAL "")
 sofa_install_libraries(PATHS ${libqpOASES_LIBRARY})
 
+option(SOFTROBOTSINVERSE_ENABLE_PROXQP "Build proxQP wrapper for inverse problems" OFF)
+if(SOFTROBOTSINVERSE_ENABLE_PROXQP)
+    find_package(proxsuite QUIET)
+
+    if(proxsuite_FOUND)
+        message("Sofa.SoftRobots.Inverse: proxsuite FOUND. Will build with proxsuite support.")
+    elseif(NOT proxsuite_FOUND AND SOFA_ALLOW_FETCH_DEPENDENCIES)
+        message("Sofa.SoftRobots.Inverse: DEPENDENCY proxsuite NOT FOUND. SOFA_ALLOW_FETCH_DEPENDENCIES is ON, fetching proxsuite...")
+
+        include(FetchContent)
+        FetchContent_Declare(proxsuite
+                GIT_REPOSITORY https://github.com/Simple-Robotics/proxsuite
+                GIT_TAG        v0.6.7
+                GIT_PROGRESS   TRUE
+                GIT_SUBMODULES cmake-module
+                GIT_SHALLOW ON
+        )
+
+        # FetchContent_MakeAvailable(proxsuite)
+        FetchContent_GetProperties(proxsuite)
+        if(NOT proxsuite_POPULATED)
+            FetchContent_Populate(proxsuite)
+
+            set(BUILD_PYTHON_INTERFACE OFF CACHE INTERNAL "")
+            set(BUILD_TESTING OFF CACHE INTERNAL "")
+            set(BUILD_WITH_VECTORIZATION_SUPPORT OFF CACHE INTERNAL "")
+            message("Sofa.SoftRobots.Inverse: adding subdirectory ${proxsuite_SOURCE_DIR}")
+
+            add_subdirectory(${proxsuite_SOURCE_DIR} ${proxsuite_BINARY_DIR})
+        endif()
+        add_library(proxsuite::proxsuite ALIAS proxsuite)
+        install(
+          TARGETS proxsuite
+          EXPORT proxsuiteTargets
+        )
+    elseif(NOT proxsuite_FOUND)
+        message(FATAL_ERROR "Sofa.SoftRobots.Inverse: DEPENDENCY proxsuite NOT FOUND. SOFA_ALLOW_FETCH_DEPENDENCIES is OFF and thus cannot be fetched. Install proxsuite, or enable SOFA_ALLOW_FETCH_DEPENDENCIES to fix this issue.")
+    endif()
+
+    list(APPEND HEADER_FILES
+        ${SRC_DIR}/component/solver/modules/QPInverseProblemProxQP.h
+        )
+    list(APPEND SOURCE_FILES
+        ${SRC_DIR}/component/solver/modules/QPInverseProblemProxQP.cpp
+        )
+endif()
+
 option(SOFTROBOTSINVERSE_INSTALL_HEADERS "Install the headers" ON)
 if(SOFTROBOTSINVERSE_INSTALL_HEADERS)
     add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${DOC_FILES} ${EXAMPLE_FILES} ${HEADER_FILES})
@@ -154,14 +203,23 @@ else()
     add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${DOC_FILES} ${EXAMPLE_FILES} "${SRC_DIR}/component/config.h.in")
 endif()
 
-target_link_libraries(${PROJECT_NAME}
+if(SOFTROBOTSINVERSE_ENABLE_PROXQP)
+    target_link_libraries(${PROJECT_NAME} PUBLIC proxsuite::proxsuite)
+    # XXX proxsuite vectorization support via SIMDE and activated by the compilation options '-march=native' or `-mavx2 -mavx512f`
+    # This will not be available if proxsuite has been fetched
+    # target_link_libraries(${PROJECT_NAME} PUBLIC proxsuite::proxsuite-vectorized)
+    # target_compile_options(${PROJECT_NAME}  PUBLIC "-march=native")
+    target_compile_definitions(${PROJECT_NAME} PUBLIC SOFTROBOTSINVERSE_ENABLE_PROXQP)
+endif()
+
+target_link_libraries(${PROJECT_NAME} PUBLIC
     SoftRobots
     Sofa.Component.Constraint.Lagrangian.Solver
     Sofa.Component.Collision.Response.Contact)
-target_link_libraries(${PROJECT_NAME} ${libqpOASES_LIBRARY})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${libqpOASES_LIBRARY})
 
 sofa_find_package(Sofa.Component.SolidMechanics.FEM.Elastic)
-target_link_libraries(${PROJECT_NAME} Sofa.Component.SolidMechanics.FEM.Elastic)
+target_link_libraries(${PROJECT_NAME} PUBLIC Sofa.Component.SolidMechanics.FEM.Elastic)
 
 find_package(SofaPython3 QUIET)
 if(SofaPython3_FOUND)
