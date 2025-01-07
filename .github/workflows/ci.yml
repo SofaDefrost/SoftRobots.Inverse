@@ -20,6 +20,7 @@ jobs:
       matrix:
         os: [ubuntu-22.04, macos-13, windows-2022]
         sofa_branch: [master]
+        qp_solver: [qpoases, proxsuite]
 
     steps:
             
@@ -58,8 +59,13 @@ jobs:
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX="$WORKSPACE_INSTALL_PATH" \
             -DCMAKE_PREFIX_PATH="$SOFA_ROOT/lib/cmake" \
-            -DSOFTROBOTSINVERSE_ENABLE_PROXQP=ON \
             "
+          if [[ "${{ matrix.qp_solver }}" == "qpoases" ]]; then
+          cmake_options="$cmake_options \
+            -DSOFTROBOTSINVERSE_ENABLE_PROXQP=ON \
+            -DSOFA_ALLOW_FETCH_DEPENDENCIES=ON \
+            "
+          fi
           if [ -e "$(command -v ccache)" ]; then
             cmake_options="$cmake_options -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
           fi
