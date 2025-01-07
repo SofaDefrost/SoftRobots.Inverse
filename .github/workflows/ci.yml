@@ -13,7 +13,7 @@ on:
 
 jobs:
   build-and-test:
-    name: Run on ${{ matrix.os }} with SOFA ${{ matrix.sofa_branch }}
+    name: Run on ${{ matrix.os }} with SOFA ${{ matrix.sofa_branch }} and QP solver ${{ matrix.qp_solver }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
