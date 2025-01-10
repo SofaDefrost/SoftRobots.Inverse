@@ -151,42 +151,8 @@ sofa_install_libraries(PATHS ${libqpOASES_LIBRARY})
 
 option(SOFTROBOTSINVERSE_ENABLE_PROXQP "Build proxQP wrapper for inverse problems" OFF)
 if(SOFTROBOTSINVERSE_ENABLE_PROXQP)
-    find_package(proxsuite QUIET)
-
-    if(proxsuite_FOUND)
-        message("Sofa.SoftRobots.Inverse: proxsuite FOUND. Will build with proxsuite support.")
-    elseif(NOT proxsuite_FOUND AND SOFA_ALLOW_FETCH_DEPENDENCIES)
-        message("Sofa.SoftRobots.Inverse: DEPENDENCY proxsuite NOT FOUND. SOFA_ALLOW_FETCH_DEPENDENCIES is ON, fetching proxsuite...")
-
-        include(FetchContent)
-        FetchContent_Declare(proxsuite
-                GIT_REPOSITORY https://github.com/Simple-Robotics/proxsuite
-                GIT_TAG        v0.6.7
-                GIT_PROGRESS   TRUE
-                GIT_SUBMODULES cmake-module
-                GIT_SHALLOW ON
-        )
-
-        # FetchContent_MakeAvailable(proxsuite)
-        FetchContent_GetProperties(proxsuite)
-        if(NOT proxsuite_POPULATED)
-            FetchContent_Populate(proxsuite)
-
-            set(BUILD_PYTHON_INTERFACE OFF CACHE INTERNAL "")
-            set(BUILD_TESTING OFF CACHE INTERNAL "")
-            set(BUILD_WITH_VECTORIZATION_SUPPORT OFF CACHE INTERNAL "")
-            message("Sofa.SoftRobots.Inverse: adding subdirectory ${proxsuite_SOURCE_DIR}")
-
-            add_subdirectory(${proxsuite_SOURCE_DIR} ${proxsuite_BINARY_DIR})
-        endif()
-        add_library(proxsuite::proxsuite ALIAS proxsuite)
-        install(
-          TARGETS proxsuite
-          EXPORT proxsuiteTargets
-        )
-    elseif(NOT proxsuite_FOUND)
-        message(FATAL_ERROR "Sofa.SoftRobots.Inverse: DEPENDENCY proxsuite NOT FOUND. SOFA_ALLOW_FETCH_DEPENDENCIES is OFF and thus cannot be fetched. Install proxsuite, or enable SOFA_ALLOW_FETCH_DEPENDENCIES to fix this issue.")
-    endif()
+    find_package(proxsuite REQUIRED)
+    message("Sofa.SoftRobots.Inverse: proxsuite FOUND. Will build with proxsuite support.")
 
     list(APPEND HEADER_FILES
         ${SRC_DIR}/component/solver/modules/QPInverseProblemProxQP.h
