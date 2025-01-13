@@ -13,13 +13,14 @@ on:
 
 jobs:
   build-and-test:
-    name: Run on ${{ matrix.os }} with SOFA ${{ matrix.sofa_branch }}
+    name: Run on ${{ matrix.os }} with SOFA ${{ matrix.sofa_branch }} and QP solver ${{ matrix.qp_solver }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-22.04, macos-13, windows-2022]
         sofa_branch: [master]
+        qp_solver: [qpoases, proxqp]
 
     steps:
             
@@ -59,6 +60,12 @@ jobs:
             -DCMAKE_INSTALL_PREFIX="$WORKSPACE_INSTALL_PATH" \
             -DCMAKE_PREFIX_PATH="$SOFA_ROOT/lib/cmake" \
             "
+          if [[ "${{ matrix.qp_solver }}" == "proxqp" ]]; then
+          cmake_options="$cmake_options \
+            -DSOFTROBOTSINVERSE_ENABLE_PROXQP=ON \
+            -DSOFA_ALLOW_FETCH_DEPENDENCIES=ON \
+            "
+          fi
           if [ -e "$(command -v ccache)" ]; then
             cmake_options="$cmake_options -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
           fi
@@ -94,7 +101,7 @@ jobs:
         # This sanitization prevents errors in artifact creation and retrieval
         shell: pwsh
         run: |
-          $originalName = "SoftRobots.Inverse_${{ steps.sofa.outputs.run_branch }}_for-SOFA-${{ steps.sofa.outputs.sofa_version }}_${{ runner.os }}"
+          $originalName = "SoftRobots.Inverse_${{ steps.sofa.outputs.run_branch }}_for-SOFA-${{ steps.sofa.outputs.sofa_version }}_${{ runner.os }}_${{ matrix.qp_solver }}"
           $artifact_name = $originalName -replace '[":;<>|*?\r\n\\/]', '' -replace ' ', '_'
           echo "artifact_name=$artifact_name" >> $env:GITHUB_OUTPUT
 
