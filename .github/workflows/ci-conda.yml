@@ -1,0 +1,97 @@
+name: CI - Linux/OSX/Windows - Conda
+
+on:
+  workflow_dispatch:
+  push:
+  pull_request:
+
+jobs:
+  build-with-conda-and-test:
+    name: Run on ${{ matrix.os }} using Conda with SOFA ${{ matrix.sofa_branch }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, macos-13, windows-2022]
+        python_version: ["3.10", "3.11", "3.12", "3.13"]
+        build_type: ["Release"]
+
+    steps:
+    - name: Install miniconda [Linux & macOS & Windows]
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        activate-environment: sofa
+        auto-update-conda: true
+        miniforge-version: latest
+        python-version: ${{ matrix.python_version }}
+        channels: conda-forge
+        conda-remove-defaults: "true"
+
+    - name: Checkout source code
+      uses: actions/checkout@v4
+
+    - name: Install SOFA from nightly packages [Conda]
+      shell: bash -l {0}
+      run: |
+        conda install sofa-devel sofa-python3 sofa-stlib sofa-softrobots -c sofa-framework-nightly
+
+    - name: Install openGL dependencies [Conda / Linux x64]
+      if: contains(matrix.os, 'ubuntu')
+      shell: bash -l {0}
+      run: |
+        conda install mesa-libgl-devel-cos7-x86_64
+
+    - name: Install dependencies [Conda]
+      shell: bash -l {0}
+      run: |
+        # Compilation related dependencies
+        conda install cmake compilers make pkg-config doxygen ninja
+        # Build dependencies
+        conda install eigen libboost-headers pybind11 cxxopts
+
+    - name: Print environment [Conda]
+      shell: bash -l {0}
+      run: |
+        conda info
+        conda list
+        env
+
+    # TODO enable TUs
+    - name: Configure [Conda / Linux & macOS]
+      if: contains(matrix.os, 'macos') || contains(matrix.os, 'ubuntu')
+      shell: bash -l {0}
+      run: |
+        mkdir build
+        cd build
+        cmake .. -GNinja \
+         -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} \
+         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+         -DPython_EXECUTABLE:PATH=${CONDA_PREFIX}/bin/python \
+         -DSOFTROBOTSINVERSE_BUILD_TESTS:BOOL=OFF
+
+    - name: Configure [Conda / Windows]
+      if: contains(matrix.os, 'windows')
+      shell: bash -l {0}
+      run: |
+        mkdir build
+        cd build
+        cmake .. -G"Visual Studio 17 2022" -T "v143"  \
+         -DCMAKE_GENERATOR_PLATFORM=x64 \
+         -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} \
+         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+         -DPython_EXECUTABLE:PATH=${CONDA_PREFIX}/python.exe \
+         -DSOFTROBOTSINVERSE_BUILD_TESTS:BOOL=OFF
+
+    - name: Build [Conda]
+      shell: bash -l {0}
+      run: |
+        cd build
+        cmake --build . --config ${{ matrix.build_type }} -v -j 2
+
+    - name: Install [Conda]
+      shell: bash -l {0}
+      run: |
+        cd build
+        cmake --install . --config ${{ matrix.build_type }}
+
+      # TODO: testing
