@@ -66,7 +66,7 @@ struct QPInverseProblemSolverTest : public BaseTest,
     }
 
 
-    void SetUp()
+    void doSetUp() override
     {
         /// Load the scene
         string sceneName = "Finger.scn";
