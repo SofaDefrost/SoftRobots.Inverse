@@ -77,7 +77,6 @@ set(HEADER_FILES
     ${SRC_DIR}/component/solver/modules/NLCPSolver.h
     ${SRC_DIR}/component/solver/modules/QPInverseProblem.h
     ${SRC_DIR}/component/solver/modules/QPInverseProblemImpl.h
-    ${SRC_DIR}/component/solver/modules/QPInverseProblemQPOases.h
     ${SRC_DIR}/component/solver/modules/QPMechanicalAccumulateConstraint.h
     ${SRC_DIR}/component/solver/modules/QPMechanicalSetConstraint.h
     )
@@ -123,7 +122,6 @@ set(SOURCE_FILES
     ${SRC_DIR}/component/solver/modules/NLCPSolver.cpp
     ${SRC_DIR}/component/solver/modules/QPInverseProblem.cpp
     ${SRC_DIR}/component/solver/modules/QPInverseProblemImpl.cpp
-    ${SRC_DIR}/component/solver/modules/QPInverseProblemQPOases.cpp
     ${SRC_DIR}/component/solver/modules/QPMechanicalAccumulateConstraint.cpp
     ${SRC_DIR}/component/solver/modules/QPMechanicalSetConstraint.cpp
     )
@@ -149,6 +147,12 @@ else()
 endif()
 
 option(SOFTROBOTSINVERSE_ENABLE_PROXQP "Build proxQP wrapper for inverse problems" OFF)
+option(SOFTROBOTSINVERSE_ENABLE_QPOASES "Build qpOASES wrapper for inverse problems" ON)
+
+if(NOT SOFTROBOTSINVERSE_ENABLE_PROXQP AND NOT SOFTROBOTSINVERSE_ENABLE_QPOASES)
+    message(FATAL_ERROR "Both proxQP and qpOASES solvers are disabled. Please enable at least one solver.")
+endif()
+
 if(SOFTROBOTSINVERSE_ENABLE_PROXQP)
     find_package(proxsuite REQUIRED)
     message("Sofa.SoftRobots.Inverse: proxsuite FOUND. Will build with proxsuite support.")
@@ -159,31 +163,38 @@ if(SOFTROBOTSINVERSE_ENABLE_PROXQP)
     list(APPEND SOURCE_FILES
         ${SRC_DIR}/component/solver/modules/QPInverseProblemProxQP.cpp
         )
-endif()
-
-find_package(qpOASES)
-if(qpOASES_FOUND)
-  include_directories(${qpOASES_INCLUDE_DIRS})
-  target_link_libraries(${PROJECT_NAME} PUBLIC ${qpOASES_LIBRARIES})
-  set(QPOASES_INCLUDE_DIR ${qpOASES_INCLUDE_DIRS} CACHE INTERNAL "")
-else()
-  message("External package qpOASES not found, using embedded version...")
-  set(OASES_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/extlibs/qpOASES-3.2.0/")
-  add_subdirectory(${OASES_LIBRARY_DIRECTORY} extlibs/libqpOASES)
-  find_package(libqpOASES REQUIRED)
-  include_directories(${libqpOASES_INCLUDE_DIRS})
-  set(QPOASES_INCLUDE_DIR ${libqpOASES_INCLUDE_DIRS} CACHE INTERNAL "")
-  sofa_install_libraries(PATHS ${libqpOASES_LIBRARY})
-  target_link_libraries(${PROJECT_NAME} PUBLIC ${libqpOASES_LIBRARY})
-endif()
-
-if(SOFTROBOTSINVERSE_ENABLE_PROXQP)
     target_link_libraries(${PROJECT_NAME} PUBLIC proxsuite::proxsuite)
     # XXX proxsuite vectorization support via SIMDE and activated by the compilation options '-march=native' or `-mavx2 -mavx512f`
     # This will not be available if proxsuite has been fetched
     # target_link_libraries(${PROJECT_NAME} PUBLIC proxsuite::proxsuite-vectorized)
     # target_compile_options(${PROJECT_NAME}  PUBLIC "-march=native")
     target_compile_definitions(${PROJECT_NAME} PUBLIC SOFTROBOTSINVERSE_ENABLE_PROXQP)
+endif()
+
+if(SOFTROBOTSINVERSE_ENABLE_QPOASES)
+    find_package(qpOASES QUIET)
+
+    list(APPEND HEADER_FILES
+        ${SRC_DIR}/component/solver/modules/QPInverseProblemQPOases.h
+        )
+      list(APPEND SOURCE_FILES
+        ${SRC_DIR}/component/solver/modules/QPInverseProblemQPOases.cpp
+        )
+
+    if(qpOASES_FOUND)
+        include_directories(${qpOASES_INCLUDE_DIRS})
+        target_link_libraries(${PROJECT_NAME} PUBLIC ${qpOASES_LIBRARIES})
+        set(QPOASES_INCLUDE_DIR ${qpOASES_INCLUDE_DIRS} CACHE INTERNAL "")
+    else()
+        message("External package qpOASES not found, using embedded version...")
+        set(OASES_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/extlibs/qpOASES-3.2.0/")
+        add_subdirectory(${OASES_LIBRARY_DIRECTORY} extlibs/libqpOASES)
+        find_package(libqpOASES REQUIRED)
+        include_directories(${libqpOASES_INCLUDE_DIRS})
+        set(QPOASES_INCLUDE_DIR ${libqpOASES_INCLUDE_DIRS} CACHE INTERNAL "")
+        sofa_install_libraries(PATHS ${libqpOASES_LIBRARY})
+        target_link_libraries(${PROJECT_NAME} PUBLIC ${libqpOASES_LIBRARY})
+    endif()
 endif()
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
