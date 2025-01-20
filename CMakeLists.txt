@@ -195,7 +195,8 @@ if(SOFTROBOTSINVERSE_ENABLE_QPOASES)
         sofa_install_libraries(PATHS ${libqpOASES_LIBRARY})
         target_link_libraries(${PROJECT_NAME} PUBLIC ${libqpOASES_LIBRARY})
     endif()
-endif()
+    target_compile_definitions(${PROJECT_NAME} PUBLIC SOFTROBOTSINVERSE_ENABLE_QPOASES)
+  endif()
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
     SoftRobots

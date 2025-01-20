@@ -224,6 +224,7 @@ TYPED_TEST(QPInverseProblemSolverTest, normalTests) {
     ASSERT_NO_THROW( this->normalTests() );
 }
 
+#ifdef SOFTROBOTSINVERSE_ENABLE_QPOASES
 TYPED_TEST(QPInverseProblemSolverTest, regressionTestsQpOASES) {
     ASSERT_NO_THROW( this->regressionTests("qpOASES") );
 }
@@ -231,6 +232,7 @@ TYPED_TEST(QPInverseProblemSolverTest, regressionTestsQpOASES) {
 TYPED_TEST(QPInverseProblemSolverTest, behaviorTestsQpOASES) {
     ASSERT_NO_THROW( this->behaviorTests("qpOASES") );
 }
+#endif
 
 #ifdef SOFTROBOTSINVERSE_ENABLE_PROXQP
 TYPED_TEST(QPInverseProblemSolverTest, regressionTestsProxQP) {

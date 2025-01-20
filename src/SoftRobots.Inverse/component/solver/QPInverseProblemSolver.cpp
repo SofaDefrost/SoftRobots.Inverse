@@ -52,7 +52,10 @@
 #include <SoftRobots.Inverse/component/solver/QPInverseProblemSolver.h>
 #include <SoftRobots.Inverse/component/solver/modules/QPMechanicalSetConstraint.h>
 #include <SoftRobots.Inverse/component/solver/modules/QPMechanicalAccumulateConstraint.h>
+
+#ifdef SOFTROBOTSINVERSE_ENABLE_QPOASES
 #include <SoftRobots.Inverse/component/solver/modules/QPInverseProblemQPOases.h>
+#endif
 
 #ifdef SOFTROBOTSINVERSE_ENABLE_PROXQP
 #include <SoftRobots.Inverse/component/solver/modules/QPInverseProblemProxQP.h>
@@ -181,18 +184,23 @@ void QPInverseProblemSolver::createProblems()
     {
 #ifdef SOFTROBOTSINVERSE_ENABLE_PROXQP
     case QPSolverImpl::PROXQP :
-        // TODO conditionnal compilation w.r.t. optionnal proxQP dependency
         msg_info() << "Using proxQP solver";
         m_CP1 = new module::QPInverseProblemProxQP();
         m_CP2 = new module::QPInverseProblemProxQP();
         m_CP3 = new module::QPInverseProblemProxQP();
         break;
 #endif
-    default : // QPSolverImpl::QPOASES
+#ifdef SOFTROBOTSINVERSE_ENABLE_QPOASES
+    case QPSolverImpl::QPOASES :
         msg_info() << "Using qpOASES solver";
         m_CP1 = new module::QPInverseProblemQPOases();
         m_CP2 = new module::QPInverseProblemQPOases();
         m_CP3 = new module::QPInverseProblemQPOases();
+        break;
+#endif
+    default :
+        msg_error() << "Unkown specified solved: " << d_qpSolver.getValue();
+        sofa::core::objectmodel::BaseObject::d_componentState.setValue(sofa::core::objectmodel::ComponentState::Invalid);
         break;
     }
 
