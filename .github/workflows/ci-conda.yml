@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-with-conda-and-test:
-    name: "[conda:${{ matrix.os }}:py${{ matrix.python_version }}]"
+    name: "[conda:${{ matrix.os }}:py${{ matrix.python_version }}:${{ matrix.qp_solver }}]"
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -15,6 +15,7 @@ jobs:
         os: [ubuntu-22.04, macos-13, macos-14, windows-2022]
         python_version: ["3.13"]
         build_type: ["Release"]
+        qp_solver: ["qpOases", "proxQP"]
 
     steps:
     - name: Install miniconda [Linux & macOS & Windows]
@@ -57,7 +58,21 @@ jobs:
     - name: Install dependencies [Conda]
       shell: bash -l {0}
       run: |
-        conda install eigen libboost-headers pybind11 cxxopts  
+        conda install eigen libboost-headers pybind11 cxxopts
+
+    - name: Install QP solver dependencies [Conda / proxQP]
+      if: contains(matrix.qp_solver, 'proxQP')
+      shell: bash -l {0}
+      run: |
+        conda install proxsuite
+        echo "CMAKE_OPTS_QPSOLVER=-DSOFTROBOTSINVERSE_ENABLE_PROXQP=ON -DSOFTROBOTSINVERSE_ENABLE_QPOASES=OFF" >> "$GITHUB_ENV"
+
+    - name: Install QP solver dependencies [Conda / qpOases]
+      if: contains(matrix.qp_solver, 'qpOases')
+      shell: bash -l {0}
+      run: |
+        conda install qpoases
+        echo "CMAKE_OPTS_QPSOLVER=-DSOFTROBOTSINVERSE_ENABLE_PROXQP=OFF -DSOFTROBOTSINVERSE_ENABLE_QPOASES=ON" >> "$GITHUB_ENV"        
 
     - name: Print environment [Conda]
       shell: bash -l {0}
@@ -72,7 +87,7 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake .. -GNinja \
+        cmake .. -GNinja $CMAKE_OPTS_QPSOLVER \
          -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} \
          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
          -DPython_EXECUTABLE:PATH=${CONDA_PREFIX}/bin/python \
@@ -84,7 +99,7 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake .. -G"Visual Studio 17 2022" -T "v143"  \
+        cmake .. -G"Visual Studio 17 2022" -T "v143" $CMAKE_OPTS_QPSOLVER  \
          -DCMAKE_GENERATOR_PLATFORM=x64 \
          -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} \
          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
