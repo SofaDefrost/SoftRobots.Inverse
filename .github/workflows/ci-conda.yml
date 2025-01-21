@@ -67,11 +67,18 @@ jobs:
         conda install proxsuite
         echo "CMAKE_OPTS_QPSOLVER=-DSOFTROBOTSINVERSE_ENABLE_PROXQP=ON -DSOFTROBOTSINVERSE_ENABLE_QPOASES=OFF" >> "$GITHUB_ENV"
 
-    - name: Install QP solver dependencies [Conda / qpOases]
-      if: contains(matrix.qp_solver, 'qpOases')
+    - name: Install QP solver dependencies [Conda / qpOases & not osx-arm64]
+      if: contains(matrix.qp_solver, 'qpOases') && !contains(matrix.os, 'macos-14')
       shell: bash -l {0}
       run: |
         conda install qpoases
+        echo "CMAKE_OPTS_QPSOLVER=-DSOFTROBOTSINVERSE_ENABLE_PROXQP=OFF -DSOFTROBOTSINVERSE_ENABLE_QPOASES=ON" >> "$GITHUB_ENV"        
+
+      # Use embedded qpOases version as its conda package for python>3.10 under osx-arm64 platform is not supported anymore
+    - name: Install QP solver dependencies [Conda / qpOases & osx-arm64]
+      if: contains(matrix.qp_solver, 'qpOases') && contains(matrix.os, 'macos-14')
+      shell: bash -l {0}
+      run: |
         echo "CMAKE_OPTS_QPSOLVER=-DSOFTROBOTSINVERSE_ENABLE_PROXQP=OFF -DSOFTROBOTSINVERSE_ENABLE_QPOASES=ON" >> "$GITHUB_ENV"        
 
     - name: Print environment [Conda]
