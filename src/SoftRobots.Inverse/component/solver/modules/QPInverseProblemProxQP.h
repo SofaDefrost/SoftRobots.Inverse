@@ -44,7 +44,7 @@ class SOFA_SOFTROBOTS_INVERSE_API QPInverseProblemProxQP : public QPInverseProbl
 {
 
 public:
-    QPInverseProblemProxQP() = default;
+    QPInverseProblemProxQP();
     virtual ~QPInverseProblemProxQP() = default;
 
 protected:

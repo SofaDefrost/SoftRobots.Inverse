@@ -28,46 +28,24 @@
 ******************************************************************************/
 #pragma once
 
-#include <qpOASES/Types.hpp>
+#include <SoftRobots.Inverse/component/solver/modules/LCPQPSolver.h>
 
-//When the macro is defined by qpOASES/Types.hpp it has side effects on the
-//rest of the code, in particular in boost (source_location). This macro is
-//no longer necessary if a modern compiler is used.
-#ifdef snprintf
-    #undef snprintf
-#endif
+#include <SoftRobots.Inverse/component/solver/modules/LCPQPSolverQPOases.h>
 
-#include <qpOASES/QProblem.hpp>
+// LCP solver using qpOASES QP solver
+// QP formulation for solving a LCP with a symmetric matrix M.
 
-#include <SoftRobots.Inverse/component/solver/modules/QPInverseProblemImpl.h>
+namespace softrobotsinverse::solver::module {
 
-#include <SoftRobots.Inverse/component/config.h>
-
-
-namespace softrobotsinverse::solver::module
-{
-
-using sofa::type::vector;
-using qpOASES::real_t;
-
-
-class SOFA_SOFTROBOTS_INVERSE_API QPInverseProblemQPOases : public QPInverseProblemImpl
+class LCPQPSolverQPOases: public LCPQPSolver
 {
 
 public:
-    QPInverseProblemQPOases();
-    virtual ~QPInverseProblemQPOases() = default;
+    LCPQPSolverQPOases() = default;
+    virtual ~LCPQPSolverQPOases() = default;
 
-protected:
-    virtual void solveInverseProblem(double &objective,
-                             vector<double> &result,
-                             vector<double> &dual) override;
-
-private:
-    void updateQPMatrices(real_t * Q, real_t * c, real_t * l, real_t * u,
-                          real_t * A, real_t * bl, real_t * bu);
-
-    qpOASES::QProblem getNewQProblem(int &nWSR);
+    void solve(int dim, double*q, double**M, double*res) override;
 };
 
-} //namespace
+} // namespace
+

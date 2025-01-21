@@ -34,6 +34,7 @@
 
 #include <SoftRobots.Inverse/component/solver/modules/ConstraintHandler.h>
 #include <SoftRobots.Inverse/component/solver/modules/QPInverseProblem.h>
+#include <SoftRobots.Inverse/component/solver/modules/LCPQPSolver.h>
 
 #include <SoftRobots.Inverse/component/config.h>
 
@@ -66,6 +67,7 @@ protected:
 
     ConstraintHandler* m_constraintHandler;
     ConstraintHandler::QPConstraintParams* m_qpCParams;
+    std::unique_ptr<LCPQPSolver> m_lcpQpSolver;
 
     // Utils to prevent cycling in pivot algorithm
     vector<int>   m_currentSequence;

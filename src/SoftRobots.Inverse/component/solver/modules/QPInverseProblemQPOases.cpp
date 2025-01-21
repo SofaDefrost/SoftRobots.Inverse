@@ -32,6 +32,7 @@
 
 #include <SoftRobots.Inverse/component/solver/modules/QPInverseProblemQPOases.h>
 
+#include <SoftRobots.Inverse/component/solver/modules/LCPQPSolverQPOases.h>
 #include <sofa/helper/AdvancedTimer.h>
 #include <qpOASES.hpp>
 
@@ -39,6 +40,12 @@ namespace softrobotsinverse::solver::module
 {
 
 using sofa::helper::AdvancedTimer;
+
+QPInverseProblemQPOases::QPInverseProblemQPOases() :
+  QPInverseProblemImpl()
+{
+  m_lcpQpSolver = std::make_unique<LCPQPSolverQPOases>();
+}
 
 void QPInverseProblemQPOases::solveInverseProblem(double& objective,
                                                vector<double> &result,

@@ -164,7 +164,12 @@ QPInverseProblemSolver::QPInverseProblemSolver()
     , m_CP3(nullptr)
 {
     sofa::helper::OptionsGroup qpSolvers{"qpOASES" , "proxQP"};
+#if defined SOFTROBOTSINVERSE_ENABLE_PROXQP && !defined SOFTROBOTSINVERSE_ENABLE_QPOASES
+    qpSolvers.setSelectedItem(QPSolverImpl::PROXQP);
+#else
     qpSolvers.setSelectedItem(QPSolverImpl::QPOASES);
+#endif
+
     d_qpSolver.setValue(qpSolvers);
 
     d_graph.setWidget("graph");
