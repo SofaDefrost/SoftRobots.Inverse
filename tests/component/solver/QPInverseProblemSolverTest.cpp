@@ -88,8 +88,6 @@ struct QPInverseProblemSolverTest : public BaseTest,
     {
         helper::system::TemporaryLocale locale(LC_NUMERIC, "C");
 
-        SetUp();
-
         sofa::simulation::node::initRoot(m_root.get());
 
         int nbTimeStep = 10;
@@ -134,8 +132,6 @@ struct QPInverseProblemSolverTest : public BaseTest,
 
     void regressionTests(const std::string& qpSolver)
     {
-        SetUp();
-
         sofa::simulation::node::initRoot(m_root.get());
         string deltaString, lambdaString;
 
