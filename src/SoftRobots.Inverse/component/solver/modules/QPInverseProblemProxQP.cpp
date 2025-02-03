@@ -34,12 +34,19 @@
 
 #include <sofa/helper/AdvancedTimer.h>
 
+#include <SoftRobots.Inverse/component/solver/modules/LCPQPSolverProxQP.h>
 #include <proxsuite/proxqp/dense/dense.hpp>
 
 namespace softrobotsinverse::solver::module
 {
 
 using sofa::helper::AdvancedTimer;
+
+QPInverseProblemProxQP::QPInverseProblemProxQP() :
+  QPInverseProblemImpl()
+{
+  m_lcpQpSolver = std::make_unique<LCPQPSolverProxQP>();
+}
 
 void QPInverseProblemProxQP::solveInverseProblem(double& objective,
                                                vector<double> &result,

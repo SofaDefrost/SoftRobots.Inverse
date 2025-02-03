@@ -29,20 +29,12 @@
 #pragma once
 
 #include <Eigen/Core>
-#include <qpOASES/Types.hpp>
 
-//When the macro is defined by qpOASES/Types.hpp it has side effects on the
-//rest of the code, in particular in boost (source_location). This macro is
-//no longer necessary if a modern compiler is used.
-#ifdef snprintf
-    #undef snprintf
-#endif
-
-#include <qpOASES/QProblem.hpp>
 #include <SoftRobots/component/behavior/SoftRobotsBaseConstraint.h>
 
 #include <SoftRobots.Inverse/component/solver/modules/ConstraintHandler.h>
 #include <SoftRobots.Inverse/component/solver/modules/QPInverseProblem.h>
+#include <SoftRobots.Inverse/component/solver/modules/LCPQPSolver.h>
 
 #include <SoftRobots.Inverse/component/config.h>
 
@@ -51,7 +43,6 @@ namespace softrobotsinverse::solver::module
 {
 
 using sofa::type::vector;
-using qpOASES::real_t;
 
 
 class SOFA_SOFTROBOTS_INVERSE_API QPInverseProblemImpl : public QPInverseProblem
@@ -76,6 +67,7 @@ protected:
 
     ConstraintHandler* m_constraintHandler;
     ConstraintHandler::QPConstraintParams* m_qpCParams;
+    std::unique_ptr<LCPQPSolver> m_lcpQpSolver;
 
     // Utils to prevent cycling in pivot algorithm
     vector<int>   m_currentSequence;

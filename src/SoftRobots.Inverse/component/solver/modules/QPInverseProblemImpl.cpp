@@ -32,7 +32,6 @@
 
 #include <SoftRobots.Inverse/component/solver/modules/QPInverseProblemImpl.h>
 #include <SoftRobots.Inverse/component/solver/modules/NLCPSolver.h>
-#include <SoftRobots.Inverse/component/solver/modules/LCPQPSolver.h>
 
 #include <sofa/helper/AdvancedTimer.h>
 #include <sofa/component/collision/response/contact/CollisionResponse.h>
@@ -57,13 +56,6 @@ using sofa::component::collision::response::contact::CollisionResponse;
 using sofa::core::objectmodel::BaseContext;
 using sofa::core::behavior::BaseConstraint;
 
-using qpOASES::QProblemB;
-using qpOASES::QProblem;
-
-using qpOASES::Options;
-using qpOASES::real_t;
-using qpOASES::int_t;
-
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 using Eigen::LDLT;
@@ -72,7 +64,8 @@ using sofa::helper::AdvancedTimer;
 
 
 QPInverseProblemImpl::QPInverseProblemImpl()
-    :    QPInverseProblem()
+    :    QPInverseProblem(),
+    m_lcpQpSolver{nullptr}
 {
     m_currentSequence.clear();
     m_previousSequence.clear();
@@ -434,11 +427,10 @@ void QPInverseProblemImpl::solveContacts(vector<double>& res)
     }
     else
     {
-        LCPQPSolver* lcpSolver = new LCPQPSolver();
         x.clear();
         x.resize(nbContactRows);
-        lcpSolver->solve(nbContactRows, q.ptr(), M.lptr(), x.ptr());
-        delete lcpSolver;
+        // will use overrided solve depending on its solver implementation
+        m_lcpQpSolver->solve(nbContactRows, q.ptr(), M.lptr(), x.ptr());
 
         for (unsigned int i=0; i<nbContactRows; i++)
             res[i+nbActuatorRows]=x[i];

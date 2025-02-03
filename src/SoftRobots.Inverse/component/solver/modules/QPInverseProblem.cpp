@@ -33,7 +33,6 @@
 #include <SoftRobots.Inverse/component/solver/modules/QPInverseProblemImpl.h>
 
 #include <sofa/helper/LCPcalc.h>
-#include <qpOASES.hpp>
 #include <fstream>
 
 #include <iomanip>
@@ -51,12 +50,6 @@ using std::ceil;
 
 using sofa::linearalgebra::FullVector;
 using sofa::linearalgebra::LPtrFullMatrix;
-
-
-using qpOASES::QProblem;
-using qpOASES::Options;
-using qpOASES::real_t;
-using qpOASES::int_t;
 
 using sofa::helper::logging::Message;
 using sofa::core::objectmodel::Base;
