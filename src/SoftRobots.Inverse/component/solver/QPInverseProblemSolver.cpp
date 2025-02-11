@@ -204,7 +204,7 @@ void QPInverseProblemSolver::createProblems()
         break;
 #endif
     default :
-        msg_error() << "Unkown specified solved: " << d_qpSolver.getValue();
+        msg_error() << "Unkown specified solver: " << d_qpSolver.getValue();
         sofa::core::objectmodel::BaseObject::d_componentState.setValue(sofa::core::objectmodel::ComponentState::Invalid);
         break;
     }
