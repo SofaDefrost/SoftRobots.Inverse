@@ -28,24 +28,17 @@
 ******************************************************************************/
 #pragma once
 
-#include <sofa/type/vector.h>
-
 // LCP solver using qpOASES QP solver
 // QP formulation for solving a LCP with a symmetric matrix M.
 
 namespace softrobotsinverse::solver::module {
 
-using sofa::type::vector;
-
 class LCPQPSolver
 {
-
 public:
+    virtual ~LCPQPSolver() = default;
 
-    LCPQPSolver(){}
-    ~LCPQPSolver(){}
-
-    void solve(int dim, double*q, double**M, double*res);
+    virtual void solve(int dim, double*q, double**M, double*res) = 0;
 };
 
 } // namespace

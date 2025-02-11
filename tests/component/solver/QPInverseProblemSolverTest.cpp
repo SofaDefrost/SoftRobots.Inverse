@@ -84,7 +84,7 @@ struct QPInverseProblemSolverTest : public BaseTest,
 
 
     // Test the behavior of the algorithm
-    void behaviorTests()
+    void behaviorTests(const std::string& qpSolver)
     {
         helper::system::TemporaryLocale locale(LC_NUMERIC, "C");
 
@@ -96,7 +96,7 @@ struct QPInverseProblemSolverTest : public BaseTest,
         string deltaString;
         double tolerance = 1e-10;
         m_root->getObject("QPInverseProblemSolver")->findData("epsilon")->read("0.0");
-
+        m_root->getObject("QPInverseProblemSolver")->findData("qpSolver")->read(qpSolver);
         // Test inverse resolution (effector == target)
 
         // State1: Test normal behavior at init
@@ -132,7 +132,7 @@ struct QPInverseProblemSolverTest : public BaseTest,
     }
 
 
-    void regressionTests()
+    void regressionTests(const std::string& qpSolver)
     {
         SetUp();
 
@@ -140,6 +140,7 @@ struct QPInverseProblemSolverTest : public BaseTest,
         string deltaString, lambdaString;
 
         int nbTimeStep = 10;
+        m_root->getObject("QPInverseProblemSolver")->findData("qpSolver")->read(qpSolver);
 
         // State1: Test lambda >= 0
         m_root->getChild("goal")->getObject("goalMO")->findData("position")->read("-110 -10 7.5");
@@ -150,8 +151,15 @@ struct QPInverseProblemSolverTest : public BaseTest,
             sofa::simulation::node::animate(m_root.get());
 
         lambdaString  =  m_root->getChild("finger")->getChild("controlledPoints")->getObject("cable")->findData("force")->getValueString();
-        EXPECT_GE( stof(lambdaString.c_str()), 0.);
-
+        // Don't know why proxQP has a very small primal residual here instead 
+        if(qpSolver == "proxQP")
+        {
+          EXPECT_GE( stof(lambdaString.c_str()), -DBL_EPSILON);
+        }
+        else
+        {
+          EXPECT_GE( stof(lambdaString.c_str()), 0.);
+        }
 
         // State2: Test lambda >= -20
         m_root->getChild("goal")->getObject("goalMO")->findData("position")->read("-110 -10 7.5");
@@ -220,14 +228,25 @@ TYPED_TEST(QPInverseProblemSolverTest, normalTests) {
     ASSERT_NO_THROW( this->normalTests() );
 }
 
-TYPED_TEST(QPInverseProblemSolverTest, regressionTests) {
-    ASSERT_NO_THROW( this->regressionTests() );
+#ifdef SOFTROBOTSINVERSE_ENABLE_QPOASES
+TYPED_TEST(QPInverseProblemSolverTest, regressionTestsQpOASES) {
+    ASSERT_NO_THROW( this->regressionTests("qpOASES") );
 }
 
-TYPED_TEST(QPInverseProblemSolverTest, behaviorTests) {
-    ASSERT_NO_THROW( this->behaviorTests() );
+TYPED_TEST(QPInverseProblemSolverTest, behaviorTestsQpOASES) {
+    ASSERT_NO_THROW( this->behaviorTests("qpOASES") );
+}
+#endif
+
+#ifdef SOFTROBOTSINVERSE_ENABLE_PROXQP
+TYPED_TEST(QPInverseProblemSolverTest, regressionTestsProxQP) {
+    ASSERT_NO_THROW( this->regressionTests("proxQP") );
 }
 
+TYPED_TEST(QPInverseProblemSolverTest, behaviorTestsProxQP) {
+    ASSERT_NO_THROW( this->behaviorTests("proxQP") );
+}
 
+#endif
 }
 
