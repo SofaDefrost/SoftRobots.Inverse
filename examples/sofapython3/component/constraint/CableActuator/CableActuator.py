@@ -29,7 +29,7 @@ def createScene(rootNode):
     bunny.addObject('UniformMass', totalMass=0.5)
     bunny.addObject('TetrahedronFEMForceField', poissonRatio=0.3, youngModulus=18000)
     bunny.addObject('BoxROI', name='boxROI', box=[-5, -6, -5,  5, -4.5, 5], drawBoxes=True)
-    bunny.addObject('RestShapeSpringsForceField', indices='@boxROI.indices', stiffness=1e12)
+    bunny.addObject('FixedWeakConstraint', indices='@boxROI.indices', stiffness=1e12)
     bunny.addObject('LinearSolverConstraintCorrection')
 
     # bunny/constraints

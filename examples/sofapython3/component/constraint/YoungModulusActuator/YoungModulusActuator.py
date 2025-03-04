@@ -36,7 +36,7 @@ def createScene(rootNode):
                                                        [-2, 2, -2, 1, 6, 1]], drawBoxes=True)
     bunny.addObject('ComplementaryROI', name="outROI", template="Vec3", position="@loader.position", nbSet=1,
                     setIndices1="@boxROIFixed.indices")
-    bunny.addObject('RestShapeSpringsForceField', indices='@outROI.indices', stiffness=1e12)
+    bunny.addObject('FixedWeakConstraint', indices='@outROI.indices', stiffness=1e12)
     bunny.addObject('BoxROI', name='boxROI1', box=[-4.5, 2, -5, -2.5, 6, -1], drawBoxes=True)
     bunny.addObject('BoxROI', name='boxROI2', box=[-2, 2, -2, 1, 6, 1], drawBoxes=True)
     bunny.addObject('LinearSolverConstraintCorrection', linearSolver=bunny.SparseLDLSolver.getLinkPath())
