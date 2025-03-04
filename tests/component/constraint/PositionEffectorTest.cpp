@@ -50,7 +50,7 @@ struct PositionEffectorTest : public BaseTest, PositionEffector<_DataTypes>
 
     typedef sofa::core::topology::BaseMeshTopology::Quad Quad;
 
-    void SetUp()
+    void doSetUp() override
     {
         this->d_componentState = ComponentState::Valid;
     }
