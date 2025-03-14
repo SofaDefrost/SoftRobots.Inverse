@@ -572,7 +572,7 @@ bool QPInverseProblemSolver::applyCorrection(const ConstraintParams *cParams, Mu
 {
     AdvancedTimer::stepBegin("Compute And Apply Motion Correction");
 
-    if (cParams->constOrder() == ConstraintParams::POS_AND_VEL)
+    if (cParams->constOrder() == sofa::core::ConstraintOrder::POS_AND_VEL)
     {
         MultiVecCoordId xId(res1);
         MultiVecDerivId vId(res2);
@@ -589,7 +589,7 @@ bool QPInverseProblemSolver::applyCorrection(const ConstraintParams *cParams, Mu
             cc->applyMotionCorrection(cParams, xId, vId, cParams->dx(), getDx());
         }
     }
-    else if (cParams->constOrder() == ConstraintParams::POS)
+    else if (cParams->constOrder() == sofa::core::ConstraintOrder::POS)
     {
         MultiVecCoordId xId(res1);
         for (unsigned int i = 0; i < m_constraintsCorrections.size(); i++)
@@ -605,7 +605,7 @@ bool QPInverseProblemSolver::applyCorrection(const ConstraintParams *cParams, Mu
             cc->applyPositionCorrection(cParams, xId, cParams->dx(), getDx());
         }
     }
-    else if (cParams->constOrder() == ConstraintParams::VEL)
+    else if (cParams->constOrder() == sofa::core::ConstraintOrder::VEL)
     {
         MultiVecDerivId vId(res1);
         for (unsigned int i = 0; i < m_constraintsCorrections.size(); i++)
