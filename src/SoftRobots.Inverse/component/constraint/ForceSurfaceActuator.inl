@@ -482,7 +482,7 @@ void ForceSurfaceActuator<DataTypes>::computeNormals()
     ReadAccessor<sofa::Data<vector<Quad> > >      quads     = d_quads;
     ReadAccessor<sofa::Data<VecCoord>>            centers   = d_centers;
     WriteAccessor<sofa::Data<VecDeriv>>           directions= d_directions;
-    ReadAccessor<sofa::Data<VecCoord> >           positions = *m_state->read(ConstVecCoordId::position());
+    ReadAccessor<sofa::Data<VecCoord> >           positions = *m_state->read(sofa::core::vec_id::read_access::position);
 
     directions.resize(centers.size());
 
