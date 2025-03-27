@@ -374,12 +374,12 @@ inline void QPInverseProblemSolver::accumulateConstraint(const ConstraintParams 
     m_currentCP->clearProblem();
 
     module::QPMechanicalSetConstraint(cParams,
-                              MatrixDerivId::constraintJacobian(),
+                              sofa::core::vec_id::write_access::constraintJacobian,
                               nbLinesTotal,
                               m_currentCP).execute(m_context);
 
     module::QPMechanicalAccumulateConstraint(cParams,
-                                     MatrixDerivId::constraintJacobian(),
+                                     sofa::core::vec_id::write_access::constraintJacobian,
                                      d_reverseAccumulateOrder.getValue()).execute(m_context);
 
     MechanicalParams mparams = MechanicalParams(*cParams);
