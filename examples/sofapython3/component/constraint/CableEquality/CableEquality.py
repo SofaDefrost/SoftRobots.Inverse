@@ -32,7 +32,7 @@ def createScene(rootNode):
     model.addObject('UniformMass', totalMass=0.1)
     model.addObject('TetrahedronFEMForceField', poissonRatio=Const.PoissonRation, youngModulus=Const.YoungsModulus)
     model.addObject('BoxROI', name='BoxROI1', box=Const.FixedBoxCoordsBack, drawBoxes=True)
-    model.addObject('RestShapeSpringsForceField', points='@BoxROI1.indices', stiffness=1e12)
+    model.addObject('FixedWeakConstraint', indices='@BoxROI1.indices', stiffness=1e12)
     model.addObject('LinearSolverConstraintCorrection')
 
     ##########################################
