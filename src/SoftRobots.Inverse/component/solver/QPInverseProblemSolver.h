@@ -71,12 +71,6 @@ using sofa::core::MultiVecDerivId;
 class SOFA_SOFTROBOTS_INVERSE_API QPInverseProblemSolver : public sofa::component::constraint::lagrangian::solver::ConstraintSolverImpl
 {
 public:
-    // List of availables QP solvers used to solve the inverse problem
-    enum QPSolverImpl
-    {
-        QPOASES = 0,
-        PROXQP
-    };
 
     SOFA_CLASS(QPInverseProblemSolver, ConstraintSolverImpl);
 
@@ -146,6 +140,7 @@ public:
     sofa::Data<int>       d_maxIterations;
     sofa::Data<double>    d_tolerance;
     sofa::Data<double>    d_responseFriction;
+
     sofa::Data<sofa::helper::OptionsGroup> d_qpSolver;
 
     sofa::Data<double>    d_epsilon;
@@ -178,7 +173,6 @@ protected:
 
     virtual void createProblems();
     void deleteProblems();
-
 
 private:
     void accumulateConstraint(const ConstraintParams *cParams, unsigned int & nbLinesTotal);
