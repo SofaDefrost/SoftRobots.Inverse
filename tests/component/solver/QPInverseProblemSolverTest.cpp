@@ -6,7 +6,6 @@ using sofa::testing::BaseTest ;
 #include <sofa/helper/system/Locale.h>
 #include <sofa/component/statecontainer/MechanicalObject.h>
 
-
 using sofa::helper::WriteAccessor ;
 using sofa::defaulttype::Vec3Types ;
 
@@ -49,11 +48,7 @@ struct QPInverseProblemSolverTest : public BaseTest,
     void normalTests()
     {
         Node::SPtr node = sofa::simulation::getSimulation()->createNewGraph("root");
-        typename MechanicalObject<DataTypes>::SPtr mecaobject = New<MechanicalObject<DataTypes> >() ;
         typename ThisClass::SPtr thisobject = New<ThisClass >() ;
-        mecaobject->init() ;
-
-        node->addObject(mecaobject) ;
         node->addObject(thisobject) ;
 
         thisobject->setName("myname") ;
@@ -69,9 +64,7 @@ struct QPInverseProblemSolverTest : public BaseTest,
     {
         /// Load the scene
         string sceneName = "Finger.scn";
-
         string fileName  = string(SOFTROBOTSINVERSE_TEST_DIR) + "/component/solver/scenes/" + sceneName;
-
         m_root = core::objectmodel::SPtr_dynamic_cast<simulation::Node>( sofa::simulation::node::load(fileName.c_str()));
 
         /// Test if load has succeededls
@@ -223,7 +216,9 @@ TYPED_TEST(QPInverseProblemSolverTest, normalTests) {
     ASSERT_NO_THROW( this->normalTests() );
 }
 
-#ifdef SOFTROBOTSINVERSE_ENABLE_QPOASES
+// We should always install at least one solver
+// and the scene should not crash if we have selected an uninstalled solver
+
 TYPED_TEST(QPInverseProblemSolverTest, regressionTestsQpOASES) {
     ASSERT_NO_THROW( this->regressionTests("qpOASES") );
 }
@@ -231,9 +226,7 @@ TYPED_TEST(QPInverseProblemSolverTest, regressionTestsQpOASES) {
 TYPED_TEST(QPInverseProblemSolverTest, behaviorTestsQpOASES) {
     ASSERT_NO_THROW( this->behaviorTests("qpOASES") );
 }
-#endif
 
-#ifdef SOFTROBOTSINVERSE_ENABLE_PROXQP
 TYPED_TEST(QPInverseProblemSolverTest, regressionTestsProxQP) {
     ASSERT_NO_THROW( this->regressionTests("proxQP") );
 }
@@ -242,6 +235,5 @@ TYPED_TEST(QPInverseProblemSolverTest, behaviorTestsProxQP) {
     ASSERT_NO_THROW( this->behaviorTests("proxQP") );
 }
 
-#endif
 }
 
