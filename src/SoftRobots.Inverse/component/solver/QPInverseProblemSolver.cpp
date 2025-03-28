@@ -158,10 +158,12 @@ QPInverseProblemSolver::QPInverseProblemSolver()
 
     , d_objective(initData(&d_objective, 250.0, "objective", "Erreur between the target and the end effector "))
 
-    , m_lastCP(NULL)
     , m_CP1(nullptr)
     , m_CP2(nullptr)
     , m_CP3(nullptr)
+    , m_lastCP(nullptr)
+    , m_currentCP(nullptr)
+    , m_context(nullptr)
 {
     sofa::helper::OptionsGroup qpSolvers{"qpOASES" , "proxQP"};
 #if defined SOFTROBOTSINVERSE_ENABLE_PROXQP && !defined SOFTROBOTSINVERSE_ENABLE_QPOASES
@@ -208,7 +210,6 @@ void QPInverseProblemSolver::createProblems()
         sofa::core::objectmodel::BaseObject::d_componentState.setValue(sofa::core::objectmodel::ComponentState::Invalid);
         break;
     }
-
 
     m_currentCP = m_CP1;
 }
