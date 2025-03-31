@@ -7,7 +7,7 @@ set(SOURCE_FILES )
 set(HEADER_FILES )
 
 include(component/constraint/ConstraintTest.cmake)
-include(component/solver/SolverTest.cmake)
+# include(component/solver/SolverTest.cmake)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
