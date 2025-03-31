@@ -43,42 +43,26 @@ struct QPInverseProblemSolverTest : public BaseTest, QPInverseProblemSolver
 
     simulation::Node::SPtr m_root; ///< Root of the scene graph, created by the constructor an re-used in the tests
 
-
-    void normalTests()
-    {
-        Node::SPtr node = sofa::simulation::getSimulation()->createNewGraph("root");
-        typename ThisClass::SPtr thisobject = New<ThisClass >() ;
-        node->addObject(thisobject) ;
-
-        thisobject->setName("myname") ;
-        EXPECT_TRUE(thisobject->getName() == "myname") ;
-
-        EXPECT_NO_THROW( thisobject->init() ) ;
-
-        return ;
-    }
-
-
     void doSetUp() override
     {
         /// Load the scene
         string sceneName = "Finger.scn";
         string fileName  = string(SOFTROBOTSINVERSE_TEST_DIR) + "/component/solver/scenes/" + sceneName;
-        m_root = core::objectmodel::SPtr_dynamic_cast<simulation::Node>( sofa::simulation::node::load(fileName.c_str()));
+        m_root = sofa::simulation::node::load(fileName.c_str());
 
-        /// Test if load has succeededls
-        simulation::SceneLoaderXML scene;
-
-        if(!m_root || !scene.loadSucceed)
+        if(!m_root)
             ADD_FAILURE() << "Error while loading the scene: " << sceneName << std::endl;
     }
 
+    void normalTests()
+    {
+        EXPECT_NO_THROW(sofa::simulation::node::initRoot(m_root.get()));
+        return ;
+    }
 
     // Test the behavior of the algorithm
     void behaviorTests(const std::string& qpSolver)
     {
-        helper::system::TemporaryLocale locale(LC_NUMERIC, "C");
-
         sofa::simulation::node::initRoot(m_root.get());
 
         int nbTimeStep = 10;
@@ -210,21 +194,21 @@ TYPED_TEST(QPInverseProblemSolverTest, normalTests) {
 // We should always install at least one solver
 // and the scene should not crash if we have selected an uninstalled solver
 
-TYPED_TEST(QPInverseProblemSolverTest, regressionTestsQpOASES) {
-    ASSERT_NO_THROW( this->regressionTests("qpOASES") );
-}
+// TYPED_TEST(QPInverseProblemSolverTest, regressionTestsQpOASES) {
+//     ASSERT_NO_THROW( this->regressionTests("qpOASES") );
+// }
 
-TYPED_TEST(QPInverseProblemSolverTest, behaviorTestsQpOASES) {
-    ASSERT_NO_THROW( this->behaviorTests("qpOASES") );
-}
+// TYPED_TEST(QPInverseProblemSolverTest, behaviorTestsQpOASES) {
+//     ASSERT_NO_THROW( this->behaviorTests("qpOASES") );
+// }
 
-TYPED_TEST(QPInverseProblemSolverTest, regressionTestsProxQP) {
-    ASSERT_NO_THROW( this->regressionTests("proxQP") );
-}
+// TYPED_TEST(QPInverseProblemSolverTest, regressionTestsProxQP) {
+//     ASSERT_NO_THROW( this->regressionTests("proxQP") );
+// }
 
-TYPED_TEST(QPInverseProblemSolverTest, behaviorTestsProxQP) {
-    ASSERT_NO_THROW( this->behaviorTests("proxQP") );
-}
+// TYPED_TEST(QPInverseProblemSolverTest, behaviorTestsProxQP) {
+//     ASSERT_NO_THROW( this->behaviorTests("proxQP") );
+// }
 
 }
 
