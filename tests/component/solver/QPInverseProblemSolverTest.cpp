@@ -1,7 +1,7 @@
 #include <string>
 using std::string ;
-#include <sofa/testing/BaseTest.h>
-using sofa::testing::BaseTest ;
+
+#include <gtest/gtest.h>
 #include <sofa/helper/BackTrace.h>
 #include <sofa/helper/system/Locale.h>
 #include <sofa/component/statecontainer/MechanicalObject.h>
@@ -31,19 +31,13 @@ using std::stof;
 namespace sofa
 {
 
-template <typename _DataTypes>
-struct QPInverseProblemSolverTest : public BaseTest, QPInverseProblemSolver
+struct QPInverseProblemSolverTest : public ::testing::Test, QPInverseProblemSolver
 {
     typedef QPInverseProblemSolver ThisClass ;
-    typedef _DataTypes DataTypes;
-    typedef typename DataTypes::Coord Coord;
-    typedef typename DataTypes::VecCoord VecCoord;
-    typedef typename DataTypes::Real Real;
-
 
     simulation::Node::SPtr m_root; ///< Root of the scene graph, created by the constructor an re-used in the tests
 
-    void doSetUp() override
+    void SetUp()
     {
         /// Load the scene
         string sceneName = "Finger.scn";
@@ -180,35 +174,28 @@ struct QPInverseProblemSolverTest : public BaseTest, QPInverseProblemSolver
 
 };
 
-
-
-using ::testing::Types;
-typedef Types<Vec3Types> DataTypes;
-
-TYPED_TEST_SUITE(QPInverseProblemSolverTest, DataTypes);
-
-TYPED_TEST(QPInverseProblemSolverTest, normalTests) {
+TEST_F(QPInverseProblemSolverTest, normalTests) {
     ASSERT_NO_THROW( this->normalTests() );
 }
 
 // We should always install at least one solver
 // and the scene should not crash if we have selected an uninstalled solver
 
-// TYPED_TEST(QPInverseProblemSolverTest, regressionTestsQpOASES) {
-//     ASSERT_NO_THROW( this->regressionTests("qpOASES") );
-// }
+TEST_F(QPInverseProblemSolverTest, regressionTestsQpOASES) {
+    ASSERT_NO_THROW( this->regressionTests("qpOASES") );
+}
 
-// TYPED_TEST(QPInverseProblemSolverTest, behaviorTestsQpOASES) {
-//     ASSERT_NO_THROW( this->behaviorTests("qpOASES") );
-// }
+TEST_F(QPInverseProblemSolverTest, behaviorTestsQpOASES) {
+    ASSERT_NO_THROW( this->behaviorTests("qpOASES") );
+}
 
-// TYPED_TEST(QPInverseProblemSolverTest, regressionTestsProxQP) {
-//     ASSERT_NO_THROW( this->regressionTests("proxQP") );
-// }
+TEST_F(QPInverseProblemSolverTest, regressionTestsProxQP) {
+    ASSERT_NO_THROW( this->regressionTests("proxQP") );
+}
 
-// TYPED_TEST(QPInverseProblemSolverTest, behaviorTestsProxQP) {
-//     ASSERT_NO_THROW( this->behaviorTests("proxQP") );
-// }
+TEST_F(QPInverseProblemSolverTest, behaviorTestsProxQP) {
+    ASSERT_NO_THROW( this->behaviorTests("proxQP") );
+}
 
 }
 

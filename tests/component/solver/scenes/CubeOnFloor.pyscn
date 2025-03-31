@@ -4,7 +4,14 @@ def createScene(rootNode):
 
     rootNode.addObject('RequiredPlugin', pluginName='SoftRobots')
     rootNode.addObject('RequiredPlugin', pluginName='SoftRobots.Inverse')
-    rootNode.addObject('RequiredPlugin', pluginName=['Sofa.Component.Visual', 'Sofa.GL.Component.Rendering3D', 'Sofa.Component.Topology.Container.Grid', 'Sofa.Component.Topology.Container.Constant'])
+    rootNode.addObject('RequiredPlugin', pluginName=['Sofa.Component.Visual', 'Sofa.GL.Component.Rendering3D', 
+                                                     'Sofa.Component.Topology.Container.Grid', 'Sofa.Component.Topology.Container.Constant',
+                                                       'Sofa.Component.AnimationLoop', 'Sofa.Component.Collision.Response.Contact', 
+                                                       'Sofa.Component.Collision.Detection.Algorithm', 'Sofa.Component.ODESolver.Backward',
+                                                       'Sofa.Component.LinearSolver.Direct', 'Sofa.Component.Mass', 
+                                                       'Sofa.Component.Constraint.Lagrangian.Correction', 'Sofa.Component.Mapping.Linear',
+                                                       'Sofa.Component.IO.Mesh', 'Sofa.Component.Collision.Geometry',
+                                                       'Sofa.Component.Collision.Detection.Intersection',])
 
     rootNode.addObject('VisualStyle', displayFlags='showWireframe showVisualModels showBehaviorModels showCollisionModels hideBoundingCollisionModels showForceFields showInteractionForceFields')
 
@@ -16,7 +23,7 @@ def createScene(rootNode):
     rootNode.addObject('CollisionPipeline')
     rootNode.addObject('BruteForceBroadPhase')
     rootNode.addObject('BVHNarrowPhase')
-    rootNode.addObject('CollisionResponse', response="FrictionContactConstraint", responseParams="mu=0.6")
+    rootNode.addObject('RuleBasedContactManager', response="FrictionContactConstraint", responseParams="mu=0.6")
     rootNode.addObject('LocalMinDistance', alarmDistance=3, contactDistance=1)
 
     rootNode.addObject('OglSceneFrame', style="Arrows", alignment="TopRight")
@@ -34,7 +41,7 @@ def createScene(rootNode):
     ##########################################
     model = rootNode.addChild('model')
     model.addObject('EulerImplicitSolver')
-    model.addObject('SparseLDLSolver')
+    model.addObject('SparseLDLSolver', template="CompressedRowSparseMatrixd")
     model.addObject('RegularGridTopology', name='loader', n=[6, 6, 6], min=[-10, -10, -10], max=[10, 10, 10])
     model.addObject('MechanicalObject', name='tetras', template='Vec3', showIndices=False, showIndicesScale=4e-5)
     model.addObject('UniformMass', totalMass=0.005)

@@ -19,11 +19,6 @@ using sofa::core::objectmodel::BaseData ;
 #include <SoftRobots.Inverse/component/solver/QPInverseProblemSolver.h>
 using softrobotsinverse::solver::QPInverseProblemSolver;
 
-using sofa::type::vector;
-using sofa::helper::rabs;
-using std::stof;
-using std::istringstream;
-
 
 namespace sofa
 {
@@ -42,7 +37,7 @@ protected:
 
         // sofa init
         static const string scenePath  = string(SOFTROBOTSINVERSE_TEST_DIR) + std::string("/component/solver/scenes/CubeOnFloor.pyscn");
-        m_root = core::objectmodel::SPtr_dynamic_cast<simulation::Node>( sofa::simulation::node::load(scenePath.c_str()));
+        m_root = sofa::simulation::node::load(scenePath.c_str());
 
         sofa::simulation::node::initRoot(m_root.get());
 
@@ -58,9 +53,8 @@ protected:
 
         int nbTimeStep = 10;
         m_root->getObject("QPInverseProblemSolver")->findData("epsilon")->read("0.0");
-        m_root->getObject("CollisionResponse")->findData("responseParams")->read("mu=0.0");
+        m_root->getObject("RuleBasedContactManager")->findData("responseParams")->read("mu=0.0");
         m_root->getObject("QPInverseProblemSolver")->findData("responseFriction")->read("0.0");
-
 
         //The floor should stop the cube from falling (gravity allong -y direction)
         m_root->getChild("goal")->getObject("goalMO")->findData("position")->read("10 0 0");
@@ -82,7 +76,7 @@ protected:
 
         int nbTimeStep = 10;
         m_root->getObject("QPInverseProblemSolver")->findData("epsilon")->read("0.0");
-        m_root->getObject("CollisionResponse")->findData("responseParams")->read("mu=0.6");
+        m_root->getObject("RuleBasedContactManager")->findData("responseParams")->read("mu=0.6");
         m_root->getObject("QPInverseProblemSolver")->findData("responseFriction")->read("0.6");
 
         //The floor should stop the cube from falling (gravity allong -y direction)
@@ -107,7 +101,7 @@ protected:
 
         //The force required to move the cube should be higher with friction
         m_root->getChild("goal")->getObject("goalMO")->findData("position")->read("11 0 0");
-        m_root->getObject("CollisionResponse")->findData("responseParams")->read("mu=0.0");
+        m_root->getObject("RuleBasedContactManager")->findData("responseParams")->read("mu=0.0");
         m_root->getObject("QPInverseProblemSolver")->findData("responseFriction")->read("0.0");
 
 
@@ -117,7 +111,7 @@ protected:
 
         sofa::simulation::node::reset(m_root.get());
         m_root->getChild("goal")->getObject("goalMO")->findData("position")->read("11 0 0");
-        m_root->getObject("CollisionResponse")->findData("responseParams")->read("mu=0.5");
+        m_root->getObject("RuleBasedContactManager")->findData("responseParams")->read("mu=0.5");
         m_root->getObject("QPInverseProblemSolver")->findData("responseFriction")->read("0.5");
 
 
@@ -127,7 +121,7 @@ protected:
 
         sofa::simulation::node::reset(m_root.get());
         m_root->getChild("goal")->getObject("goalMO")->findData("position")->read("11 0 0");
-        m_root->getObject("CollisionResponse")->findData("responseParams")->read("mu=1.");
+        m_root->getObject("RuleBasedContactManager")->findData("responseParams")->read("mu=1.");
         m_root->getObject("QPInverseProblemSolver")->findData("responseFriction")->read("1.");
 
 
@@ -147,7 +141,7 @@ protected:
 
         sofa::simulation::node::reset(m_root.get());
         m_root->getObject("QPInverseProblemSolver")->findData("allowSliding")->read("1"); // Enable sliding
-        m_root->getObject("CollisionResponse")->findData("responseParams")->read("mu=0.8");
+        m_root->getObject("RuleBasedContactManager")->findData("responseParams")->read("mu=0.8");
         m_root->getObject("QPInverseProblemSolver")->findData("responseFriction")->read("0.8");
 
 
@@ -167,7 +161,7 @@ protected:
         sofa::simulation::node::reset(m_root.get());
         m_root->getObject("QPInverseProblemSolver")->findData("allowSliding")->read("0"); // Disable sliding
         m_root->getChild("goal")->getObject("goalMO")->findData("position")->read("12 0 0");
-        m_root->getObject("CollisionResponse")->findData("responseParams")->read("mu=0.8");
+        m_root->getObject("RuleBasedContactManager")->findData("responseParams")->read("mu=0.8");
         m_root->getObject("QPInverseProblemSolver")->findData("responseFriction")->read("0.8");
 
 
@@ -184,8 +178,8 @@ protected:
 
     void getValueFromString(const string positionStr, float& x, float& y, float& z)
     {
-        istringstream iss(positionStr);
-        string xStr, yStr, zStr;
+        std::istringstream iss(positionStr);
+        std::string xStr, yStr, zStr;
         iss >> xStr;
         iss >> yStr;
         iss >> zStr;
