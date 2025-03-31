@@ -29,7 +29,7 @@
 ##     Date:      2007-2015
 ##
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.12)
 
 project(libqpOASES VERSION 1.0)
 SET(PACKAGE_NAME "libqpOASES")
