@@ -32,8 +32,7 @@ namespace sofa
 {
 
 template <typename _DataTypes>
-struct QPInverseProblemSolverTest : public BaseTest,
-        QPInverseProblemSolver
+struct QPInverseProblemSolverTest : public BaseTest, QPInverseProblemSolver
 {
     typedef QPInverseProblemSolver ThisClass ;
     typedef _DataTypes DataTypes;

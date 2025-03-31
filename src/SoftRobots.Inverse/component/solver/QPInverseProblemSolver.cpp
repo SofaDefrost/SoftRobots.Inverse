@@ -137,11 +137,11 @@ QPInverseProblemSolver::QPInverseProblemSolver()
 
     , d_qpSolver(initData(&d_qpSolver,
 #if defined SOFTROBOTSINVERSE_ENABLE_PROXQP && !defined SOFTROBOTSINVERSE_ENABLE_QPOASES
-                          {PROXQP_OPT , QPOASES_OPT},
+                          {PROXQP_OPT , QPOASES_OPT}, // in that case, set proxQP as the default solver
 #else
                           {QPOASES_OPT , PROXQP_OPT}, // let the user know about both options, even if only one is installed
 #endif
-                          "qpSolver", "QP solver implementation to be used"))
+                          "qpSolver", "QP solver implementation to be used."))
 
     , d_epsilon(initData(&d_epsilon, 1e-3, "epsilon",
                          "An energy term is added in the minimization process. \n"
@@ -363,6 +363,9 @@ bool QPInverseProblemSolver::prepareStates(const ConstraintParams *cParams, Mult
 
 bool QPInverseProblemSolver::buildSystem(const ConstraintParams *cParams, MultiVecId res1, MultiVecId res2)
 {
+    if (sofa::core::objectmodel::BaseObject::d_componentState.getValue() == sofa::core::objectmodel::ComponentState::Invalid)
+        return false;
+
     SOFA_UNUSED(res1);
     SOFA_UNUSED(res2);
 
@@ -506,6 +509,8 @@ bool QPInverseProblemSolver::solveSystem(const ConstraintParams * cParams,
                                          MultiVecId res1,
                                          MultiVecId res2)
 {
+    if (sofa::core::objectmodel::BaseObject::d_componentState.getValue() == sofa::core::objectmodel::ComponentState::Invalid)
+        return false;
 
     SOFA_UNUSED(cParams);
     SOFA_UNUSED(res1);
@@ -586,6 +591,9 @@ bool QPInverseProblemSolver::solveSystem(const ConstraintParams * cParams,
 
 void QPInverseProblemSolver::computeResidual(const ExecParams* eparam)
 {
+    if (sofa::core::objectmodel::BaseObject::d_componentState.getValue() == sofa::core::objectmodel::ComponentState::Invalid)
+        return;
+
     for (unsigned int i=0; i<m_constraintsCorrections.size(); i++)
     {
         BaseConstraintCorrection* CC = m_constraintsCorrections[i];
@@ -595,6 +603,9 @@ void QPInverseProblemSolver::computeResidual(const ExecParams* eparam)
 
 bool QPInverseProblemSolver::applyCorrection(const ConstraintParams *cParams, MultiVecId res1, MultiVecId res2)
 {
+    if (sofa::core::objectmodel::BaseObject::d_componentState.getValue() == sofa::core::objectmodel::ComponentState::Invalid)
+        return false;
+
     AdvancedTimer::stepBegin("Compute And Apply Motion Correction");
 
     if (cParams->constOrder() == sofa::core::ConstraintOrder::POS_AND_VEL)
