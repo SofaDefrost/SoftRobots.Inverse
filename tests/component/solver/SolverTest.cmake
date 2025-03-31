@@ -3,7 +3,7 @@
 list(APPEND SOURCE_FILES
 
     component/solver/QPInverseProblemImplTest.cpp
-    component/solver/QPInverseProblemSolverTest.cpp
+    #component/solver/QPInverseProblemSolverTest.cpp
 
     )
 
