@@ -21,7 +21,12 @@ struct QPInverseProblemImplTest : public BaseTest, QPInverseProblemImpl
 
     void solveInverseProblem(double &objective,
                             sofa::type::vector<double> &result,
-                            sofa::type::vector<double> &dual) override {}
+                            sofa::type::vector<double> &dual) override
+    {
+        SOFA_UNUSED(objective);
+        SOFA_UNUSED(result);
+        SOFA_UNUSED(dual);
+    }
 
     void isInTest()
     {

@@ -42,7 +42,7 @@ struct QPInverseProblemSolverTest : public BaseTest,
     typedef typename DataTypes::Real Real;
 
 
-    simulation::Node::SPtr m_root;                 ///< Root of the scene graph, created by the constructor an re-used in the tests
+    simulation::Node::SPtr m_root; ///< Root of the scene graph, created by the constructor an re-used in the tests
 
 
     void normalTests()
@@ -139,15 +139,7 @@ struct QPInverseProblemSolverTest : public BaseTest,
             sofa::simulation::node::animate(m_root.get());
 
         lambdaString  =  m_root->getChild("finger")->getChild("controlledPoints")->getObject("cable")->findData("force")->getValueString();
-        // Don't know why proxQP has a very small primal residual here instead 
-        if(qpSolver == "proxQP")
-        {
-          EXPECT_GE( stof(lambdaString.c_str()), -DBL_EPSILON);
-        }
-        else
-        {
-          EXPECT_GE( stof(lambdaString.c_str()), 0.);
-        }
+        EXPECT_GE( stof(lambdaString.c_str()), -DBL_EPSILON);
 
         // State2: Test lambda >= -20
         m_root->getChild("goal")->getObject("goalMO")->findData("position")->read("-110 -10 7.5");
