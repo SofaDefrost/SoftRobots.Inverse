@@ -29,8 +29,22 @@ jobs:
         with:
           sofa_root: ${{ github.workspace }}/sofa
           sofa_version: ${{ matrix.sofa_branch }}
-          sofa_scope: 'full'
+          sofa_scope: 'standard'
           sofa_with_sofapython3: 'true'
+
+      - name: Install SoftRobots
+        shell: bash
+        run: |
+          SoftRobots_ROOT="$GITHUB_WORKSPACE/SoftRobots"
+          mkdir -p "${{ runner.temp }}/sp3_tmp/zip" "${{ runner.temp }}/sp3_tmp/binaries" "$SoftRobots_ROOT"
+          url="https://github.com/SofaDefrost/SoftRobots/releases/download"
+          url="${url}/release-${{ matrix.sofa_branch }}/SoftRobots_${{ matrix.sofa_branch }}_for-SOFA-${{ matrix.sofa_branch }}_${{ runner.os }}.zip"
+          echo "Getting SoftRobots from $url"
+          curl --output "${{ runner.temp }}/sp3_tmp/SoftRobots.zip" -L $url
+          unzip -qq "${{ runner.temp }}/sp3_tmp/SoftRobots.zip" -d "${{ runner.temp }}/sp3_tmp/binaries"
+          mv "${{ runner.temp }}"/sp3_tmp/binaries/SoftRobots_*/* "$SoftRobots_ROOT"
+          echo "SoftRobots_ROOT=$SoftRobots_ROOT" | tee -a $GITHUB_ENV
+          echo "SoftRobots_DIR=$SoftRobots_ROOT/lib/cmake/SoftRobots" | tee -a $GITHUB_ENV
 
       - name: Checkout source code
         uses: actions/checkout@v2
@@ -103,6 +117,7 @@ jobs:
           if [[ "$RUNNER_OS" == "Windows" ]]; then
             echo "$(cd $WORKSPACE_ARTIFACT_PATH/lib && pwd -W)" >> $GITHUB_PATH
             echo "$(cd $WORKSPACE_ARTIFACT_PATH/bin && pwd -W)" >> $GITHUB_PATH
+            echo "$(cd $SoftRobots_ROOT/bin && pwd -W)" >> $GITHUB_PATH
           elif [[ "$RUNNER_OS" == "macOS" ]]; then
             echo "DYLD_LIBRARY_PATH=$WORKSPACE_ARTIFACT_PATH/lib:$SOFA_ROOT/lib:$DYLD_LIBRARY_PATH" | tee -a $GITHUB_ENV
           fi
