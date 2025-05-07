@@ -197,6 +197,7 @@ jobs:
           tag_name: ${{ env.RELEASE_TAGNAME }}
           fail_on_unmatched_files: false
           target_commitish: ${{ github.sha }}
+          draft: false
           body: |
             Last updated on ${{ env.RELEASE_DATE }}
           files: |
