@@ -29,7 +29,7 @@ def createScene(rootNode):
     finger.addObject('UniformMass', totalMass=0.075)
     finger.addObject('TetrahedronFEMForceField', poissonRatio=0.3, youngModulus=600)
     finger.addObject('BoxROI', name='ROI1', box=[-15, 0, 0, 5, 10, 15], drawBoxes=True)
-    finger.addObject('RestShapeSpringsForceField', points='@ROI1.indices', stiffness=1e12)
+    finger.addObject('FixedWeakConstraint', indices='@ROI1.indices', stiffness=1e12)
     finger.addObject('LinearSolverConstraintCorrection')
 
     ##########################################
