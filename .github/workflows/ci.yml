@@ -152,7 +152,7 @@ jobs:
           ./bin/SoftRobots.Inverse_test${{ steps.sofa.outputs.exe }}
 
       - name: Notify dashboard
-        if: always() && startsWith(github.repository, 'SofaDefrost') && startsWith(github.ref, 'refs/heads/master') # we are not on a fork and on master
+        if: always() && startsWith(github.repository, 'SofaDefrost') && startsWith(github.ref, 'refs/heads/main') # we are not on a fork and on main
         env:
           DASH_AUTH: ${{ secrets.PLUGIN_DASH }}
         shell: bash
