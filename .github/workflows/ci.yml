@@ -28,6 +28,7 @@ jobs:
           sofa_version: ${{ matrix.sofa_branch }}
           sofa_scope: 'standard'
           sofa_with_sofapython3: 'true'
+          pybind11_version: "${{ runner.os == 'Windows' && '2.9.1' || '2.12.0' }}" # Matches the version used to build SOFA binaries, required for the python bindings of the plugin 
 
       - name: Install SoftRobots
         shell: bash
