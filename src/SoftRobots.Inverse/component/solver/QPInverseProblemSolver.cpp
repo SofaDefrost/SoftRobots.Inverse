@@ -664,15 +664,16 @@ void QPInverseProblemSolver::lockConstraintProblem(sofa::core::objectmodel::Base
 
 
 ////////////////////////////////////////////// FACTORY /////////////////////////////////////////////////
-// Registering the component
-// see: http://wiki.sofa-framework.org/wiki/ObjectFactory
-// 1-SOFA_DECL_CLASS(componentName) : Set the class name of the component
-// 2-RegisterObject("description") + .add<> : Register the component
-SOFA_DECL_CLASS(QPInverseProblemSolver)
 
-int QPInverseProblemSolverClass = RegisterObject("An inverse problem solver using the "
-                                                 "Quadratic Programing formulation")
-        .add< QPInverseProblemSolver >();
+using namespace sofa::core;
+
+void registerQPInverseProblemSolver(ObjectFactory* factory)
+{
+    factory->registerObjects(ObjectRegistrationData("An inverse problem solver using the "
+                                                    "Quadratic Programing formulation")
+                                 .add< QPInverseProblemSolver >(true));
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 } // namespace

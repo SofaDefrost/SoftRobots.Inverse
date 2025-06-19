@@ -31,6 +31,29 @@
 namespace softrobotsinverse
 {
 
+namespace constraint {
+    extern void registerBarycentricCenterEffector(sofa::core::ObjectFactory* factory);
+    extern void registerCableActuator(sofa::core::ObjectFactory* factory);
+    extern void registerCableEffector(sofa::core::ObjectFactory* factory);
+    extern void registerCableEquality(sofa::core::ObjectFactory* factory);
+    extern void registerCableSensor(sofa::core::ObjectFactory* factory);
+    extern void registerForcePointActuator(sofa::core::ObjectFactory* factory);
+    extern void registerForceSurfaceActuator(sofa::core::ObjectFactory* factory);
+    extern void registerJointActuator(sofa::core::ObjectFactory* factory);
+    extern void registerPositionEffector(sofa::core::ObjectFactory* factory);
+    extern void registerPositionEquality(sofa::core::ObjectFactory* factory);
+    extern void registerSlidingActuator(sofa::core::ObjectFactory* factory);
+    extern void registerSurfacePressureActuator(sofa::core::ObjectFactory* factory);
+    extern void registerSurfacePressureEquality(sofa::core::ObjectFactory* factory);
+    extern void registerSurfacePressureSensor(sofa::core::ObjectFactory* factory);
+    extern void registerVolumeEffector(sofa::core::ObjectFactory* factory);
+    extern void registerYoungModulusActuator(sofa::core::ObjectFactory* factory);
+}
+
+namespace solver {
+    extern void registerQPInverseProblemSolver(sofa::core::ObjectFactory* factory);
+}
+
 //Here are just several convenient functions to help users know what the plugin contains
 
 extern "C" {
@@ -40,6 +63,7 @@ extern "C" {
     SOFA_SOFTROBOTS_INVERSE_API const char* getModuleLicense();
     SOFA_SOFTROBOTS_INVERSE_API const char* getModuleDescription();
     SOFA_SOFTROBOTS_INVERSE_API const char* getModuleComponentList();
+    SOFA_SOFTROBOTS_INVERSE_API void registerObjects(sofa::core::ObjectFactory* factory);
 }
 
 void initExternalModule()
@@ -60,7 +84,7 @@ const char* getModuleName()
 
 const char* getModuleVersion()
 {
-    return "1.0";
+    return MODULE_VERSION;
 }
 
 const char* getModuleLicense()
@@ -80,26 +104,27 @@ const char* getModuleComponentList()
     return classes.c_str();
 }
 
+void registerObjects(sofa::core::ObjectFactory* factory)
+{
+    constraint::registerBarycentricCenterEffector(factory);
+    constraint::registerCableActuator(factory);
+    constraint::registerCableEffector(factory);
+    constraint::registerCableEquality(factory);
+    constraint::registerCableSensor(factory);
+    constraint::registerForcePointActuator(factory);
+    constraint::registerForceSurfaceActuator(factory);
+    constraint::registerJointActuator(factory);
+    constraint::registerPositionEffector(factory);
+    constraint::registerPositionEquality(factory);
+    constraint::registerSlidingActuator(factory);
+    constraint::registerSurfacePressureActuator(factory);
+    constraint::registerSurfacePressureEquality(factory);
+    constraint::registerSurfacePressureSensor(factory);
+    constraint::registerVolumeEffector(factory);
+    constraint::registerYoungModulusActuator(factory);
+    solver::registerQPInverseProblemSolver(factory);
 }
 
-SOFA_LINK_CLASS(AnimationEditor)
-SOFA_LINK_CLASS(BarycentricCenterEffector)
-SOFA_LINK_CLASS(CableActuator)
-SOFA_LINK_CLASS(CableEffector)
-SOFA_LINK_CLASS(CableSensor)
-SOFA_LINK_CLASS(CableEquality)
-SOFA_LINK_CLASS(ForcePointActuator)
-SOFA_LINK_CLASS(PartialRigidificationConstraint)
-SOFA_LINK_CLASS(PartialRigidificationForceField)
-SOFA_LINK_CLASS(PREquivalentStiffnessForceField)
-SOFA_LINK_CLASS(PositionEffector)
-SOFA_LINK_CLASS(QPInverseProblemSolver)
-SOFA_LINK_CLASS(SurfacePressureConstraint)
-SOFA_LINK_CLASS(SurfacePressureActuator)
-SOFA_LINK_CLASS(SurfacePressureEquality)
-SOFA_LINK_CLASS(YoungModulusActuator)
-SOFA_LINK_CLASS(InteractiveControl)
-SOFA_LINK_CLASS(UnilateralPlaneConstraint)
-SOFA_LINK_CLASS(VolumeFromTriangles)
-SOFA_LINK_CLASS(VolumeFromTetrahedrons)
+} // namespace softrobotsinverse
+
 

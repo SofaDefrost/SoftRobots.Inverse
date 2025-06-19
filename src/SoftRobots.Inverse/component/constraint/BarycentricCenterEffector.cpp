@@ -36,7 +36,6 @@ namespace softrobotsinverse::constraint
 {
 using sofa::defaulttype::Vec3Types;
 using sofa::defaulttype::Rigid3Types;
-using sofa::core::RegisterObject ;
 
 template<>
 void BarycentricCenterEffector<Rigid3Types>::draw(const VisualParams* vparams)
@@ -62,12 +61,13 @@ void BarycentricCenterEffector<Rigid3Types>::setBarycenter(const Coord& _barycen
 
 
 ////////////////////////////////////////////    FACTORY    //////////////////////////////////////////////
-int BarycentricCenterEffectorClass = RegisterObject("This component is used to describe one or several desired trajectories "
-                                                    "for the barycenter of a model, that will be reached by acting on chosen actuator(s).")
-        .add< BarycentricCenterEffector<Vec3Types> >(true)
-        .add< BarycentricCenterEffector<Rigid3Types> >()
-
-        ;
+void registerBarycentricCenterEffector(sofa::core::ObjectFactory* factory)
+{
+    factory->registerObjects(sofa::core::ObjectRegistrationData("This component is used to describe one or several desired trajectories "
+                                                                "for the barycenter of a model, that will be reached by acting on chosen actuator(s).")
+                                 .add< BarycentricCenterEffector<Vec3Types> >(true)
+                                 .add< BarycentricCenterEffector<Rigid3Types> >());
+}
 
 template class SOFA_SOFTROBOTS_INVERSE_API BarycentricCenterEffector<Vec3Types>;
 template class SOFA_SOFTROBOTS_INVERSE_API BarycentricCenterEffector<Rigid3Types>;

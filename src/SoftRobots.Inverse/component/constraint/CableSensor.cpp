@@ -38,10 +38,11 @@ using namespace sofa::defaulttype;
 using namespace sofa::helper;
 using namespace sofa::core;
 
-int CableSensorClass = RegisterObject("This component simulates a cable sensor that measures its length.")
-.add< CableSensor<Vec3Types> >(true)
-
-;
+void registerCableSensor(ObjectFactory* factory)
+{
+    factory->registerObjects(ObjectRegistrationData("This component simulates a cable sensor that measures its length.")
+                                 .add< CableSensor<Vec3Types> >(true));
+}
 
 template class CableSensor<Vec3Types>;
 

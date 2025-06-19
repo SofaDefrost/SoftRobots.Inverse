@@ -38,10 +38,12 @@ using namespace sofa::defaulttype;
 using namespace sofa::helper;
 using namespace sofa::core;
 
-int JointActuatorClass = RegisterObject("This component is used to solve an inverse problem by applying force on a joint (Vec1)")
-.add< JointActuator<Vec1Types> >(true)
+void registerJointActuator(ObjectFactory* factory)
+{
+    factory->registerObjects(ObjectRegistrationData("This component is used to solve an inverse problem by applying force on a joint (Vec1)")
+                                 .add< JointActuator<Vec1Types> >(true));
+}
 
-;
 template class SOFA_SOFTROBOTS_INVERSE_API JointActuator<Vec1Types>;
 
 
