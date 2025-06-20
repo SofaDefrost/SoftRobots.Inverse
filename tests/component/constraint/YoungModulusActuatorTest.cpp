@@ -45,6 +45,7 @@ struct YoungModulusActuatorTest : public BaseTest,
 
     void simpleScene(){
         sofa::simpleapi::importPlugin("Sofa.Component.SolidMechanics.FEM.Elastic");
+        sofa::simpleapi::importPlugin("SoftRobots");
         sofa::simpleapi::importPlugin("SoftRobots.Inverse");
         string scene =
                 "<?xml version='1.0'?>"
