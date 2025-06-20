@@ -25,6 +25,9 @@
 #include <SoftRobots.Inverse/component/config.h>
 
 #include <sofa/core/ObjectFactory.h>
+#include <sofa/helper/system/PluginManager.h>
+using sofa::helper::system::PluginManager;
+
 #include <SoftRobots/component/initSoftRobots.h>
 
 
@@ -74,6 +77,9 @@ void initExternalModule()
         softrobots::init();
         first = false;
     }
+
+    // make sure that this plugin is registered into the PluginManager
+    PluginManager::getInstance().registerPlugin(MODULE_NAME);
 
 }
 
