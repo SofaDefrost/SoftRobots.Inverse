@@ -41,9 +41,11 @@ using namespace sofa::core;
 namespace softrobotsinverse::constraint
 {
 
-int CableEffectorClass = RegisterObject("Simulate cable sensor to measure lengths.")
-.add< CableEffector<Vec3Types> >(true)
-;
+void registerCableEffector(ObjectFactory* factory)
+{
+    factory->registerObjects(ObjectRegistrationData("Simulate cable sensor to measure lengths.")
+                                 .add< CableEffector<Vec3Types> >(true));
+}
 
 template class CableEffector<Vec3Types>;
 

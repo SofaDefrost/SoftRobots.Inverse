@@ -40,11 +40,13 @@ using namespace sofa::core;
 namespace softrobotsinverse::constraint
 {
 
-int PositionEqualityClass = RegisterObject("In an inverse problem, constrains the given positions on chosen directions.")
-.add< PositionEquality<Vec3Types> >(true)
-.add< PositionEquality<Vec2Types> >()
-.add< PositionEquality<Rigid3Types> >()
-;
+void registerPositionEquality(ObjectFactory* factory)
+{
+    factory->registerObjects(ObjectRegistrationData("In an inverse problem, constrains the given positions on chosen directions.")
+                                 .add< PositionEquality<Vec2Types> >()
+                                 .add< PositionEquality<Vec3Types> >(true)
+                                 .add< PositionEquality<Rigid3Types> >());
+}
 
 template class SOFA_SOFTROBOTS_INVERSE_API PositionEquality<Vec3Types>;
 template class SOFA_SOFTROBOTS_INVERSE_API PositionEquality<Vec2Types>;

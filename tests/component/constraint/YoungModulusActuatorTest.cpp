@@ -30,10 +30,10 @@ using sofa::component::statecontainer::MechanicalObject ;
 using sofa::component::solidmechanics::fem::elastic::TetrahedronFEMForceField ;
 
 #include <SoftRobots.Inverse/component/constraint/YoungModulusActuator.h>
-using sofa::component::constraintset::YoungModulusActuator ;
+using softrobotsinverse::constraint::YoungModulusActuator ;
 
 
-namespace sofa
+namespace softrobotsinverse
 {
 
 template <typename _DataTypes>
@@ -45,6 +45,7 @@ struct YoungModulusActuatorTest : public BaseTest,
 
     void simpleScene(){
         sofa::simpleapi::importPlugin("Sofa.Component.SolidMechanics.FEM.Elastic");
+        sofa::simpleapi::importPlugin("SoftRobots.Inverse");
         string scene =
                 "<?xml version='1.0'?>"
                 "<Node 	name='Root' gravity='0 0 0' time='0' animate='0'   > "

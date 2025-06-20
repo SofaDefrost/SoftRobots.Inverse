@@ -68,14 +68,14 @@ void SlidingActuator<Rigid3Types>::initData()
     d_force.setValue(d_initForce.getValue());
 }
 
-
-int SlidingActuatorClass = RegisterObject("This component simulates a force exerted along a given direction to solve an inverse problem. \n"
-                                          "In case of Rigid template, it additionally simulates a force in rotation: the size of 'direction' is equal to 6,\n"
-                                          "the three first component give the direction in translation and the three last the axe of rotation.")
-.add< SlidingActuator<Vec3Types> >(true)
-.add< SlidingActuator<Rigid3Types> >()
-
-;
+void registerSlidingActuator(ObjectFactory* factory)
+{
+    factory->registerObjects(ObjectRegistrationData("This component simulates a force exerted along a given direction to solve an inverse problem. \n"
+                                                    "In case of Rigid template, it additionally simulates a force in rotation: the size of 'direction' is equal to 6,\n"
+                                                    "the three first component give the direction in translation and the three last the axe of rotation.")
+                                 .add< SlidingActuator<Vec3Types> >(true)
+                                 .add< SlidingActuator<Rigid3Types> >());
+}
 
 template class SOFA_SOFTROBOTS_INVERSE_API SlidingActuator<Vec3Types>;
 template class SOFA_SOFTROBOTS_INVERSE_API SlidingActuator<Rigid3Types>;
