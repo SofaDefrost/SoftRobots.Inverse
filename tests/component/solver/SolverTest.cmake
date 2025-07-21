@@ -7,7 +7,7 @@ list(APPEND SOURCE_FILES
 
     )
 
-if(PLUGIN_SOFAPYTHON)
+if(PLUGIN_SOFAPYTHON3)
   list(APPEND SOURCE_FILES
       component/solver/QPInverseProblemSolverWithContactTest.cpp
   )
