@@ -37,11 +37,11 @@ using namespace sofa::defaulttype;
 using namespace sofa::helper;
 using namespace sofa::core;
 
-
-int SurfacePressureSensorClass = RegisterObject("This component simulates a surface pressure sensor that measures its volume growth.")
-.add< SurfacePressureSensor<Vec3Types> >(true)
-
-;
+void registerSurfacePressureSensor(ObjectFactory* factory)
+{
+    factory->registerObjects(ObjectRegistrationData("This component simulates a surface pressure sensor that measures its volume growth.")
+                                 .add< SurfacePressureSensor<Vec3Types> >(true));
+}
 
 template class SurfacePressureSensor<Vec3Types>;
 

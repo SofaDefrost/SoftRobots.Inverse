@@ -28,14 +28,14 @@
 ******************************************************************************/
 #pragma once
 
-#include "YoungModulusActuator.h"
+#include <SoftRobots.Inverse/component/constraint/YoungModulusActuator.h>
 
 
-namespace sofa::component::constraintset
+namespace softrobotsinverse::constraint
 {
 
-using type::vector;
-using core::objectmodel::BaseContext;
+using sofa::type::vector;
+using sofa::core::objectmodel::BaseContext;
 using sofa::core::objectmodel::ComponentState;
 
 template<class DataTypes>

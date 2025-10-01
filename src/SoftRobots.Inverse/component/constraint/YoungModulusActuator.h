@@ -34,7 +34,7 @@
 #include <SoftRobots.Inverse/component/config.h>
 
 
-namespace sofa::component::constraintset
+namespace softrobotsinverse::constraint
 {
     using sofa::core::visual::VisualParams ;
     using sofa::linearalgebra::BaseVector ;
@@ -60,12 +60,12 @@ public:
     typedef typename DataTypes::Deriv           Deriv;
     typedef typename DataTypes::MatrixDeriv     MatrixDeriv;
     typedef typename Coord::value_type          Real;
-    typedef typename core::behavior::MechanicalState<DataTypes> MechanicalState;
+    typedef typename sofa::core::behavior::MechanicalState<DataTypes> MechanicalState;
 
     typedef typename DataTypes::MatrixDeriv::RowIterator MatrixDerivRowIterator;
-    typedef Data<VecCoord>		DataVecCoord;
-    typedef Data<VecDeriv>		DataVecDeriv;
-    typedef Data<MatrixDeriv>    DataMatrixDeriv;
+    typedef sofa::Data<VecCoord>		DataVecCoord;
+    typedef sofa::Data<VecDeriv>		DataVecDeriv;
+    typedef sofa::Data<MatrixDeriv>    DataMatrixDeriv;
 
 public:
     YoungModulusActuator(MechanicalState* object = nullptr);
@@ -93,16 +93,16 @@ public:
 
 
     ///////////////// Inherited from BaseSoftRobotsConstraint ///////////////////////////
-    void storeResults(type::vector<double> &lambda,
-                      type::vector<double> &delta) override;
+    void storeResults(sofa::type::vector<double> &lambda,
+                      sofa::type::vector<double> &delta) override;
     /////////////////////////////////////////////////////////////////////
 
 protected:
 
-    Data<Real> d_minYoung;
-    Data<Real> d_maxYoung;
-    Data<Real> d_maxYoungVariationRatio;
-    Data<bool> d_hasVolumeOptimization;
+    sofa::Data<Real> d_minYoung;
+    sofa::Data<Real> d_maxYoung;
+    sofa::Data<Real> d_maxYoungVariationRatio;
+    sofa::Data<bool> d_hasVolumeOptimization;
 
     double m_previousYoungValue;
     Real   m_previousVolumeValue;
@@ -145,7 +145,7 @@ private:
 extern template class SOFA_SOFTROBOTS_INVERSE_API YoungModulusActuator<sofa::defaulttype::Vec3Types>;
 #endif
 
-} // namespace sofa::component::constraintset
+} // namespace
 
 
 

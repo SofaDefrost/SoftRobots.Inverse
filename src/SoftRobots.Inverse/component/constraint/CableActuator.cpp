@@ -42,9 +42,11 @@ using namespace sofa::defaulttype;
 using namespace sofa::helper;
 using namespace sofa::core;
 
-int CableActuatorClass = RegisterObject("Simulate cable actuation to solve effector constraint.")
-.add< CableActuator<Vec3Types> >(true)
-;
+void registerCableActuator(ObjectFactory* factory)
+{
+    factory->registerObjects(ObjectRegistrationData("Simulate cable actuation to solve effector constraint.")
+                                 .add< CableActuator<Vec3Types> >(true));
+}
 
 template class SOFA_SOFTROBOTS_INVERSE_API CableActuator<Vec3Types>;
 
