@@ -22,13 +22,11 @@
 *                                                                             *
 * Contact information: contact@sofa-framework.org                             *
 ******************************************************************************/
-#include <SoftRobots.Inverse/component/config.h>
-
 #include <sofa/core/ObjectFactory.h>
 #include <sofa/helper/system/PluginManager.h>
 using sofa::helper::system::PluginManager;
 
-#include <SoftRobots/component/initSoftRobots.h>
+#include <SoftRobots.Inverse/component/initSoftRobotsInverse.h>
 
 
 namespace softrobotsinverse
@@ -69,18 +67,26 @@ extern "C" {
     SOFA_SOFTROBOTS_INVERSE_API void registerObjects(sofa::core::ObjectFactory* factory);
 }
 
-void initExternalModule()
+
+void init()
 {
     static bool first = true;
     if (first)
     {
-        softrobots::init();
         first = false;
     }
 
     // make sure that this plugin is registered into the PluginManager
     PluginManager::getInstance().registerPlugin(MODULE_NAME);
+    if( !PluginManager::getInstance().findPlugin("STLIB").empty() )
+    {
+        PluginManager::getInstance().loadPlugin("STLIB") ;
+    }
+}
 
+void initExternalModule()
+{
+    init();
 }
 
 const char* getModuleName()
