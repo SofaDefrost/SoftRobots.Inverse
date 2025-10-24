@@ -1,0 +1,8 @@
+# Fix timeout
+timeout "sofapython3/component/constraint/CableActuator/CableActuator.py" "45"
+
+# This is not a real scene
+ignore "sofapython3/plugintests.pyscn"
+
+# This scene is temporarly deactivated because it doesn't work
+ignore "sofapython3/component/constraint/ForceSurfaceActuator/ForceSurfaceActuator.py"

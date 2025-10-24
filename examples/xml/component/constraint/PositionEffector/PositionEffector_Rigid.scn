@@ -24,7 +24,7 @@
     <BruteForceBroadPhase />
     <BVHNarrowPhase/>
     <MinProximityIntersection name="Proximity" alarmDistance="0.03" contactDistance="0.02" />
-    <CollisionResponse/>
+    <CollisionResponse  response="FrictionContactConstraint"/>
     <FreeMotionAnimationLoop/>
     <QPInverseProblemSolver printLog='0'/>
 

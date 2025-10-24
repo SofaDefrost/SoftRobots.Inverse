@@ -42,7 +42,7 @@ def createScene(rootNode):
                     position=model.MechanicalObject.position.linkpath,
                     tetrahedra=model.container.tetrahedra.linkpath)
     model.addObject('BoxROI', name='boxROISubTopo', box=[-175, 22.5, -8, -19, 28, 8], drawBoxes=False,
-                    position="@tetras.rest_position", tetrahedra=model.container.tetrahedra.linkpath)
+                    position=model.MechanicalObject.position.linkpath, tetrahedra=model.container.tetrahedra.linkpath)
     model.addObject('RestShapeSpringsForceField', points=model.boxROI.indices.linkpath, stiffness=1e12)
     model.addObject('LinearSolverConstraintCorrection')
 
