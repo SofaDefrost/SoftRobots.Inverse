@@ -45,7 +45,8 @@ def createScene(rootNode):
     goal.addObject('CGLinearSolver', iterations=100, tolerance=1e-5, threshold=1e-4)
     goal.addObject('MechanicalObject', name='dofs', template='Rigid3', showObject=True, drawMode=2, showObjectScale=1,
                    position=[30.0, 0.0, 0.0, 0, 0, 0, 1])
-    goal.addObject('UncoupledConstraintCorrection',  compliance="1 1 0 0 1 0 1")
+    goal.addObject('UncoupledConstraintCorrection',  compliance=[1, 1, 0, 0, 1, 0, 1])
+
 
     ##########################################
     # Beam Model                             #
