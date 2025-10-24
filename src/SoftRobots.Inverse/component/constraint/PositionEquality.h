@@ -122,7 +122,9 @@ protected:
 };
 
 #ifndef SOFTROBOTSINVERSE_CONSTRAINT_POSITIONEQUALITY_CPP
+extern template class SOFA_SOFTROBOTS_INVERSE_API PositionEquality<sofa::defaulttype::Vec2Types>;
 extern template class SOFA_SOFTROBOTS_INVERSE_API PositionEquality<sofa::defaulttype::Vec3Types>;
+extern template class SOFA_SOFTROBOTS_INVERSE_API PositionEquality<sofa::defaulttype::Rigid3Types>;
 #endif // SOFTROBOTSINVERSE_CONSTRAINT_POSITIONEQUALITY_CPP
 
 } // namespace

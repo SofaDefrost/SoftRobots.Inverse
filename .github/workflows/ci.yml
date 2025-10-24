@@ -119,10 +119,17 @@ jobs:
             echo "$(cd $WORKSPACE_ARTIFACT_PATH/lib && pwd -W)" >> $GITHUB_PATH
             echo "$(cd $WORKSPACE_ARTIFACT_PATH/bin && pwd -W)" >> $GITHUB_PATH
             echo "$(cd $SoftRobots_ROOT/bin && pwd -W)" >> $GITHUB_PATH
-          elif [[ "$RUNNER_OS" == "macOS" ]]; then
-            echo "DYLD_LIBRARY_PATH=$WORKSPACE_ARTIFACT_PATH/lib:$SOFA_ROOT/lib:$DYLD_LIBRARY_PATH" | tee -a $GITHUB_ENV
+            echo "SOFA_PLUGIN_PATH=$SoftRobots_ROOT/lib;$WORKSPACE_ARTIFACT_PATH/lib" | tee -a $GITHUB_ENV
+
+          else
+            echo "LD_LIBRARY_PATH=$SoftRobots_ROOT/lib:$WORKSPACE_ARTIFACT_PATH/lib:$SOFA_ROOT/lib:$LD_LIBRARY_PATH" | tee -a $GITHUB_ENV
+            echo "SOFA_PLUGIN_PATH=$SoftRobots_ROOT/lib:$WORKSPACE_ARTIFACT_PATH/lib" | tee -a $GITHUB_ENV
+          
+            if [[ "$RUNNER_OS" == "macOS" ]]; then
+              echo "DYLD_LIBRARY_PATH=$WORKSPACE_ARTIFACT_PATH/lib:$SOFA_ROOT/lib:$DYLD_LIBRARY_PATH" | tee -a $GITHUB_ENV
+            fi
           fi
-          echo "LD_LIBRARY_PATH=$WORKSPACE_ARTIFACT_PATH/lib:$SOFA_ROOT/lib:$LD_LIBRARY_PATH" | tee -a $GITHUB_ENV
+
           # Add execution right on the tests
           chmod +x $WORKSPACE_BUILD_PATH/bin/*_test${{ steps.sofa.outputs.exe }}
           

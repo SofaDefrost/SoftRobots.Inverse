@@ -38,11 +38,13 @@ using namespace sofa::defaulttype;
 using namespace sofa::helper;
 using namespace sofa::core;
 
-int SurfacePressureActuatorClass = RegisterObject("This component is used to solve effector constraint "
-                                                   "by applying pressure on surfaces (for exemple cavities)")
-.add< SurfacePressureActuator<Vec3Types> >(true)
+void registerSurfacePressureActuator(ObjectFactory* factory)
+{
+    factory->registerObjects(ObjectRegistrationData("This component is used to solve effector constraint "
+                                                    "by applying pressure on surfaces (for exemple cavities)")
+                                 .add< SurfacePressureActuator<Vec3Types> >(true));
+}
 
-;
 template class SOFA_SOFTROBOTS_INVERSE_API SurfacePressureActuator<Vec3Types>;
 
 

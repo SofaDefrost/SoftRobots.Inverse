@@ -40,12 +40,12 @@ using namespace sofa::core;
 namespace softrobotsinverse::constraint
 {
 
-SOFA_DECL_CLASS(VolumeEffector)
+void registerVolumeEffector(ObjectFactory* factory)
+{
+    factory->registerObjects(ObjectRegistrationData("Simulate behavior of a volume effector to solve an inverse problem.")
+                                 .add< VolumeEffector<Vec3Types> >(true));
+}
 
-int VolumeEffectorClass = RegisterObject("Simulate behavior of a volume effector to solve an inverse problem.")
-.add< VolumeEffector<Vec3Types> >(true)
-
-;
 template class VolumeEffector<Vec3Types>;
 
 } // namespace

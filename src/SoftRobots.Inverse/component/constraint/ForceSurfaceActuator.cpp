@@ -38,11 +38,12 @@ using namespace sofa::defaulttype;
 using namespace sofa::helper;
 using namespace sofa::core;
 
+void registerForceSurfaceActuator(ObjectFactory* factory)
+{
+    factory->registerObjects(ObjectRegistrationData("This component is used to solve an inverse problem by applying a force on a given surface of a model.")
+                                 .add< ForceSurfaceActuator<Vec3Types> >(true));
+}
 
-int ForceSurfaceActuatorClass = RegisterObject("This component is used to solve an inverse problem by applying a force on a given surface of a model.")
-.add< ForceSurfaceActuator<Vec3Types> >(true)
-
-;
 template class SOFA_SOFTROBOTS_INVERSE_API ForceSurfaceActuator<Vec3Types>;
 
 
