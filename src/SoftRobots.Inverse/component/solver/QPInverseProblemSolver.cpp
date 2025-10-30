@@ -267,6 +267,11 @@ void QPInverseProblemSolver::init()
 
     if(d_multithreading.getValue())
         sofa::simulation::MainTaskSchedulerFactory::createInRegistry()->init();
+
+    for (const auto& constraintCorrection : m_constraintsCorrections)
+    {
+        constraintCorrection->addConstraintSolver(this);
+    }
 }
 
 void QPInverseProblemSolver::reinit()
