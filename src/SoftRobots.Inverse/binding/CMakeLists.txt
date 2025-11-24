@@ -21,6 +21,6 @@ SP3_add_python_module(
     DESTINATION  Sofa
     SOURCES      ${SOURCE_FILES}
     HEADERS      ${HEADER_FILES}
-    DEPENDS      SofaPython3::Plugin SofaPython3::Bindings.Sofa Sofa.GL SoftRobots.Inverse
+    DEPENDS      SofaPython3::Plugin SofaPython3::Bindings.Sofa.Core Sofa.GL SoftRobots.Inverse
 )
 message("-- SofaPython3 bindings for SoftRobots.Inverse will be created.")

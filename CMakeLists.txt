@@ -9,6 +9,7 @@ project(SoftRobots.Inverse VERSION 1.0)
 include(cmake/environment.cmake)
 
 find_package(Sofa.Config REQUIRED)
+sofa_find_package(Sofa.Core REQUIRED)
 sofa_find_package(SoftRobots REQUIRED)
 sofa_find_package(Sofa.Component.Constraint.Lagrangian.Solver REQUIRED)
 sofa_find_package(Sofa.Component.Collision.Response.Contact REQUIRED)
@@ -210,6 +211,7 @@ if(SOFTROBOTSINVERSE_ENABLE_QPOASES)
   endif()
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
+    Sofa.Core
     SoftRobots
     Sofa.Component.Constraint.Lagrangian.Solver
     Sofa.Component.Collision.Response.Contact)
