@@ -1,13 +1,10 @@
 name: CI
 
 on:
+  # This is used to automatically publish nightlies at UTC nighttime
+  schedule:
+    - cron: '0 2 * * *' # run at 2 AM UTC
   workflow_dispatch:
-    inputs:
-      is_nightly:
-        description: 'Is this a nightly build?'
-        required: false
-        default: false
-        type: boolean
   pull_request:
   push:
 
@@ -31,6 +28,7 @@ jobs:
           sofa_version: ${{ matrix.sofa_branch }}
           sofa_scope: 'standard'
           sofa_with_sofapython3: 'true'
+          pybind11_version: "${{ runner.os == 'Windows' && '2.9.1' || '2.12.0' }}" # Matches the version used to build SOFA binaries, required for the python bindings of the plugin 
 
       - name: Install SoftRobots
         shell: bash
@@ -52,6 +50,7 @@ jobs:
           path: ${{ env.WORKSPACE_SRC_PATH }}
 
       - name: Build and install
+        id: build-and-install
         shell: bash
         run: |
           cmake_options="-GNinja \
@@ -99,12 +98,14 @@ jobs:
           echo "artifact_name=$artifact_name" >> $env:GITHUB_OUTPUT
 
       - name: Create artifact
+        id: create-artifact
         uses: actions/upload-artifact@v4.4.0
         with:
           name: ${{ steps.sanitize.outputs.artifact_name }}
           path: ${{ env.WORKSPACE_INSTALL_PATH }}
 
       - name: Install artifact
+        id: install-artifact
         uses: actions/download-artifact@v4.1.7
         with:
           name: ${{ steps.sanitize.outputs.artifact_name }}
@@ -118,10 +119,17 @@ jobs:
             echo "$(cd $WORKSPACE_ARTIFACT_PATH/lib && pwd -W)" >> $GITHUB_PATH
             echo "$(cd $WORKSPACE_ARTIFACT_PATH/bin && pwd -W)" >> $GITHUB_PATH
             echo "$(cd $SoftRobots_ROOT/bin && pwd -W)" >> $GITHUB_PATH
-          elif [[ "$RUNNER_OS" == "macOS" ]]; then
-            echo "DYLD_LIBRARY_PATH=$WORKSPACE_ARTIFACT_PATH/lib:$SOFA_ROOT/lib:$DYLD_LIBRARY_PATH" | tee -a $GITHUB_ENV
+            echo "SOFA_PLUGIN_PATH=$SoftRobots_ROOT/lib;$WORKSPACE_ARTIFACT_PATH/lib" | tee -a $GITHUB_ENV
+
+          else
+            echo "LD_LIBRARY_PATH=$SoftRobots_ROOT/lib:$WORKSPACE_ARTIFACT_PATH/lib:$SOFA_ROOT/lib:$LD_LIBRARY_PATH" | tee -a $GITHUB_ENV
+            echo "SOFA_PLUGIN_PATH=$SoftRobots_ROOT/lib:$WORKSPACE_ARTIFACT_PATH/lib" | tee -a $GITHUB_ENV
+          
+            if [[ "$RUNNER_OS" == "macOS" ]]; then
+              echo "DYLD_LIBRARY_PATH=$WORKSPACE_ARTIFACT_PATH/lib:$SOFA_ROOT/lib:$DYLD_LIBRARY_PATH" | tee -a $GITHUB_ENV
+            fi
           fi
-          echo "LD_LIBRARY_PATH=$WORKSPACE_ARTIFACT_PATH/lib:$SOFA_ROOT/lib:$LD_LIBRARY_PATH" | tee -a $GITHUB_ENV
+
           # Add execution right on the tests
           chmod +x $WORKSPACE_BUILD_PATH/bin/*_test${{ steps.sofa.outputs.exe }}
           
@@ -144,11 +152,42 @@ jobs:
           python -c "import sys; print('sys.version = ' + str(sys.version)); print('sys.path = ' + str(sys.path))"
 
       - name: Run tests
+        id: unit-tests
         if: always()
         shell: bash
         run: |
           cd $WORKSPACE_BUILD_PATH
           ./bin/SoftRobots.Inverse_test${{ steps.sofa.outputs.exe }}
+
+      - name: Notify dashboard
+        if: always() && startsWith(github.repository, 'SofaDefrost') && startsWith(github.ref, 'refs/heads/main') # we are not on a fork and on main
+        env:
+          DASH_AUTH: ${{ secrets.PLUGIN_DASH }}
+        shell: bash
+        run: |
+          os=$(echo "${{ matrix.os }}" | awk -F- '{ print $1 }')
+
+          test_status=$([ '${{ steps.unit-tests.outcome }}' == 'success' ] && \
+                        echo 'true' || echo 'false')
+
+          build_status=$([ '${{ steps.build-and-install.outcome }}' == 'success' ] && \
+                         echo 'true' || echo 'false')
+
+          binary_status=$([ '${{ steps.create-artifact.outcome }}' == 'success' ] && \
+                         [ '${{ steps.install-artifact.outcome }}' == 'success' ] && \
+                         [ '${{ steps.sanitize.outcome }}' == 'success' ] && \
+                         echo 'true' || echo 'false')
+
+
+          curl -X POST -H "X-API-KEY: $DASH_AUTH" -H "Content-Type: application/json" -d \
+          "{\"id\":\"$(echo "${{ github.repository }}" | awk -F/ '{ print $2 }')\",\
+           \"github_ref\":\"${{ github.sha }}\",\
+           \"url\":\"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\",\
+           \"os\":\"$os\",\
+           \"build\":$build_status,\
+           \"tests\":$test_status,\
+           \"binary\":$binary_status}"\
+           https://sofa-framework.org:5000/api/v1/plugins
 
   deploy:
     name: Deploy artifacts
@@ -200,6 +239,7 @@ jobs:
           tag_name: ${{ env.RELEASE_TAGNAME }}
           fail_on_unmatched_files: false
           target_commitish: ${{ github.sha }}
+          draft: false
           body: |
             Last updated on ${{ env.RELEASE_DATE }}
           files: |

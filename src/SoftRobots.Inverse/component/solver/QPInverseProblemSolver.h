@@ -29,7 +29,7 @@
 #pragma once
 
 #include <sofa/component/constraint/lagrangian/solver/ConstraintSolverImpl.h>
-#include <sofa/core/behavior/BaseConstraint.h>
+#include <sofa/core/behavior/BaseLagrangianConstraint.h>
 #include <sofa/core/behavior/ConstraintSolver.h>
 #include <sofa/core/behavior/BaseConstraintCorrection.h>
 #include <sofa/core/objectmodel/DataCallback.h>

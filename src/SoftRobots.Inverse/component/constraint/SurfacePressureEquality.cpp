@@ -37,11 +37,14 @@ namespace softrobotsinverse::constraint
 using namespace sofa::defaulttype;
 using namespace sofa::helper;
 using namespace sofa::core;
-int SurfacePressureEqualityClass = RegisterObject("This component is used to solve inverse problem "
-                                                   "by applying an imposed pressure on surfaces (for exemple cavities)")
-.add< SurfacePressureEquality<Vec3Types> >(true)
 
-;
+void registerSurfacePressureEquality(ObjectFactory* factory)
+{
+    factory->registerObjects(ObjectRegistrationData("This component is used to solve inverse problem "
+                                                    "by applying an imposed pressure on surfaces (for exemple cavities)")
+                                 .add< SurfacePressureEquality<Vec3Types> >(true));
+}
+
 template class SOFA_SOFTROBOTS_INVERSE_API SurfacePressureEquality<Vec3Types>;
 
 } // namespace
