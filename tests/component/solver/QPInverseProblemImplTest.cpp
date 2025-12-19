@@ -1,31 +1,28 @@
-#include <sofa/testing/BaseTest.h>
-using sofa::testing::BaseTest ;
+#include <gtest/gtest.h>
 
 #include <SoftRobots.Inverse/component/solver/modules/QPInverseProblemImpl.h>
 using softrobotsinverse::solver::module::QPInverseProblemImpl ;
-
-#include <sofa/defaulttype/VecTypes.h>
-using sofa::defaulttype::Vec3Types;
-
-using std::vector;
 
 
 namespace softrobotsinverse::test
 {
 
-template <typename _DataTypes>
-struct QPInverseProblemImplTest : public BaseTest, QPInverseProblemImpl
+struct QPInverseProblemImplTest : public ::testing::Test, QPInverseProblemImpl
 {
     typedef QPInverseProblemImpl ThisClass ;
-    typedef _DataTypes DataTypes;
 
     void solveInverseProblem(double &objective,
                             sofa::type::vector<double> &result,
-                            sofa::type::vector<double> &dual) override {}
+                            sofa::type::vector<double> &dual) override
+    {
+        SOFA_UNUSED(objective);
+        SOFA_UNUSED(result);
+        SOFA_UNUSED(dual);
+    }
 
     void isInTest()
     {
-        vector<int> list;
+        std::vector<int> list;
         list.push_back(1);
         list.push_back(3);
 
@@ -146,35 +143,29 @@ struct QPInverseProblemImplTest : public BaseTest, QPInverseProblemImpl
 
 };
 
-
-using ::testing::Types;
-typedef Types<Vec3Types> DataTypes;
-
-TYPED_TEST_SUITE(QPInverseProblemImplTest, DataTypes);
-
-TYPED_TEST(QPInverseProblemImplTest, isInTest) {
+TEST_F(QPInverseProblemImplTest, isInTest) {
     ASSERT_NO_THROW( this->isInTest() );
 }
 
-TYPED_TEST(QPInverseProblemImplTest, isCyclingOnPivotTest) {
+TEST_F(QPInverseProblemImplTest, isCyclingOnPivotTest) {
     ASSERT_NO_THROW( this->isCyclingOnPivotTest() );
 }
 
-TYPED_TEST(QPInverseProblemImplTest, isCyclingOnSequenceTest) {
+TEST_F(QPInverseProblemImplTest, isCyclingOnSequenceTest) {
     ASSERT_NO_THROW( this->isCyclingOnSequenceTest1() );
     ASSERT_NO_THROW( this->isCyclingOnSequenceTest2() );
     ASSERT_NO_THROW( this->isCyclingOnSequenceTest3() );
 }
 
-TYPED_TEST(QPInverseProblemImplTest, leaveSequenceUnchangedTest) {
+TEST_F(QPInverseProblemImplTest, leaveSequenceUnchangedTest) {
     ASSERT_NO_THROW( this->leaveSequenceUnchangedTest() );
 }
 
-TYPED_TEST(QPInverseProblemImplTest, leaveCurrentSequenceUnchangedTest) {
+TEST_F(QPInverseProblemImplTest, leaveCurrentSequenceUnchangedTest) {
     ASSERT_NO_THROW( this->leaveCurrentSequenceUnchangedTest() );
 }
 
-TYPED_TEST(QPInverseProblemImplTest, updateLambdaTest) {
+TEST_F(QPInverseProblemImplTest, updateLambdaTest) {
     ASSERT_NO_THROW( this->updateLambdaTest() );
 }
 

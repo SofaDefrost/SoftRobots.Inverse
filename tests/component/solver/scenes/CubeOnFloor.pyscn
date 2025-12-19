@@ -2,79 +2,87 @@ import Sofa
 
 def createScene(rootNode):
 
-                rootNode.addObject('RequiredPlugin', pluginName='SoftRobots')
-                rootNode.addObject('RequiredPlugin', pluginName='SoftRobots.Inverse')
-                rootNode.addObject('RequiredPlugin', pluginName='SofaSparseSolver')
-                rootNode.addObject('VisualStyle', displayFlags='showWireframe showVisualModels showBehaviorModels showCollisionModels hideBoundingCollisionModels showForceFields showInteractionForceFields')
+    rootNode.addObject('RequiredPlugin', pluginName='SoftRobots')
+    rootNode.addObject('RequiredPlugin', pluginName='SoftRobots.Inverse')
+    rootNode.addObject('RequiredPlugin', pluginName=['Sofa.Component.Visual', 'Sofa.GL.Component.Rendering3D', 
+                                                     'Sofa.Component.Topology.Container.Grid', 'Sofa.Component.Topology.Container.Constant',
+                                                       'Sofa.Component.AnimationLoop', 'Sofa.Component.Collision.Response.Contact', 
+                                                       'Sofa.Component.Collision.Detection.Algorithm', 'Sofa.Component.ODESolver.Backward',
+                                                       'Sofa.Component.LinearSolver.Direct', 'Sofa.Component.Mass', 
+                                                       'Sofa.Component.Constraint.Lagrangian.Correction', 'Sofa.Component.Mapping.Linear',
+                                                       'Sofa.Component.IO.Mesh', 'Sofa.Component.Collision.Geometry',
+                                                       'Sofa.Component.Collision.Detection.Intersection',])
 
-                rootNode.findData('gravity').value = [0, -9180, 0]
-                rootNode.findData('dt').value = 0.01
+    rootNode.addObject('VisualStyle', displayFlags='showWireframe showVisualModels showBehaviorModels showCollisionModels hideBoundingCollisionModels showForceFields showInteractionForceFields')
 
-                rootNode.addObject('FreeMotionAnimationLoop')
-                rootNode.addObject('QPInverseProblemSolver', epsilon=0, maxIterations=1000, tolerance=1e-5)
-                rootNode.addObject('CollisionPipeline')
-                rootNode.addObject('BruteForceBroadPhase')
-                rootNode.addObject('BVHNarrowPhase')
-                rootNode.addObject('CollisionResponse', response="FrictionContactConstraint", responseParams="mu=0.6")
-                rootNode.addObject('LocalMinDistance', alarmDistance=3, contactDistance=1)
+    rootNode.findData('gravity').value = [0, -9180, 0]
+    rootNode.findData('dt').value = 0.01
 
-                rootNode.addObject('OglSceneFrame', style="Arrows", alignment="TopRight")
+    rootNode.addObject('FreeMotionAnimationLoop')
+    rootNode.addObject('QPInverseProblemSolver', epsilon=0, maxIterations=1000, tolerance=1e-5)
+    rootNode.addObject('CollisionPipeline')
+    rootNode.addObject('BruteForceBroadPhase')
+    rootNode.addObject('BVHNarrowPhase')
+    rootNode.addObject('RuleBasedContactManager', response="FrictionContactConstraint", responseParams="mu=0.6")
+    rootNode.addObject('LocalMinDistance', alarmDistance=3, contactDistance=1)
 
-
-                ##########################################
-                # Effector goal for interactive control  #
-                ##########################################
-                goal = rootNode.addChild('goal')
-                goal.addObject('MechanicalObject', name='goalMO', showObject=True, showObjectScale=5, drawMode=1, position=[10, 0, 0])
-
-
-                ##########################################
-                # FEM Model                              #
-                ##########################################
-                model = rootNode.addChild('model')
-                model.addObject('EulerImplicitSolver')
-                model.addObject('SparseLDLSolver')
-                model.addObject('RegularGridTopology', name='loader', n=[6, 6, 6], min=[-10, -10, -10], max=[10, 10, 10])
-                model.addObject('MechanicalObject', name='tetras', template='Vec3', showIndices=False, showIndicesScale=4e-5)
-                model.addObject('UniformMass', totalMass=0.005)
-
-                model.addObject('ForcePointActuator', name="act", template='Vec3', showForce=True, visuScale=100, direction=[1, 0, 0], indices=[90, 126, 84, 120], minForce=0, maxForce=0.5)
-
-                model.addObject('HexahedronFEMForceField', template='Vec3', name='FEM', method='large', poissonRatio=0.49,  youngModulus=600)
-                model.addObject('LinearSolverConstraintCorrection')
+    rootNode.addObject('OglSceneFrame', style="Arrows", alignment="TopRight")
 
 
-                ##########################################
-                # Effector                               #
-                ##########################################
-                effector = model.addChild('effector')
-                effector.addObject('MechanicalObject', name="effectorPoint", position=[10, 0, 0])
-                effector.addObject('PositionEffector', template='Vec3', indices=[0], effectorGoal=goal.goalMO.position.linkpath)
-                effector.addObject('BarycentricMapping', mapForces=False, mapMasses=False)
+    ##########################################
+    # Effector goal for interactive control  #
+    ##########################################
+    goal = rootNode.addChild('goal')
+    goal.addObject('MechanicalObject', name='goalMO', showObject=True, showObjectScale=5, drawMode=1, position=[10, 0, 0])
 
 
-                ##########################################
-                # Contact                                #
-                ##########################################
-                modelContact = model.addChild('contact')
-                modelContact.addObject('MeshObjLoader', name='loader', filename='mesh/cube.obj', scale=10)
-                modelContact.addObject('MeshTopology', src='@loader', name='topo')
-                modelContact.addObject('MechanicalObject')
-                modelContact.addObject('TriangleCollisionModel', group=1)
-                modelContact.addObject('LineCollisionModel', group=1)
-                modelContact.addObject('PointCollisionModel', group=1)
-                modelContact.addObject('BarycentricMapping')
+    ##########################################
+    # FEM Model                              #
+    ##########################################
+    model = rootNode.addChild('model')
+    model.addObject('EulerImplicitSolver')
+    model.addObject('SparseLDLSolver', template="CompressedRowSparseMatrixd")
+    model.addObject('RegularGridTopology', name='loader', n=[6, 6, 6], min=[-10, -10, -10], max=[10, 10, 10])
+    model.addObject('MechanicalObject', name='tetras', template='Vec3', showIndices=False, showIndicesScale=4e-5)
+    model.addObject('UniformMass', totalMass=0.005)
+
+    model.addObject('ForcePointActuator', name="act", template='Vec3', showForce=True, visuScale=100, direction=[1, 0, 0], indices=[90, 126, 84, 120], minForce=0, maxForce=0.5)
+
+    model.addObject('HexahedronFEMForceField', template='Vec3', name='FEM', method='large', poissonRatio=0.49,  youngModulus=600)
+    model.addObject('LinearSolverConstraintCorrection')
 
 
-                ##########################################
-                # Contact                                #
-                ##########################################
-                floorContact = rootNode.addChild('floorContact')
-                floorContact.addObject('MeshObjLoader', name='loader', filename='mesh/square1.obj', scale=200, rotation=[90, 0, 180], translation=[100, -11, -100])
-                floorContact.addObject('MeshTopology', src='@loader', name='topo')
-                floorContact.addObject('MechanicalObject')
-                floorContact.addObject('TriangleCollisionModel', group=2)
-                floorContact.addObject('LineCollisionModel', group=2)
-                floorContact.addObject('PointCollisionModel', group=2)
+    ##########################################
+    # Effector                               #
+    ##########################################
+    effector = model.addChild('effector')
+    effector.addObject('MechanicalObject', name="effectorPoint", position=[10, 0, 0])
+    effector.addObject('PositionEffector', template='Vec3', indices=[0], effectorGoal=goal.goalMO.position.linkpath)
+    effector.addObject('BarycentricMapping', mapForces=False, mapMasses=False)
 
-                return rootNode
+
+    ##########################################
+    # Contact                                #
+    ##########################################
+    modelContact = model.addChild('contact')
+    modelContact.addObject('MeshOBJLoader', name='loader', filename='mesh/cube.obj', scale=10)
+    modelContact.addObject('MeshTopology', src='@loader', name='topo')
+    modelContact.addObject('MechanicalObject')
+    modelContact.addObject('TriangleCollisionModel', group=1)
+    modelContact.addObject('LineCollisionModel', group=1)
+    modelContact.addObject('PointCollisionModel', group=1)
+    modelContact.addObject('BarycentricMapping')
+
+
+    ##########################################
+    # Contact                                #
+    ##########################################
+    floorContact = rootNode.addChild('floorContact')
+    floorContact.addObject('MeshOBJLoader', name='loader', filename='mesh/square1.obj', scale=200, rotation=[90, 0, 180], translation=[100, -11, -100])
+    floorContact.addObject('MeshTopology', src='@loader', name='topo')
+    floorContact.addObject('MechanicalObject')
+    floorContact.addObject('TriangleCollisionModel', group=2)
+    floorContact.addObject('LineCollisionModel', group=2)
+    floorContact.addObject('PointCollisionModel', group=2)
+
+    return rootNode

@@ -220,6 +220,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC Sofa.Component.SolidMechanics.FEM.E
 find_package(SofaPython3 QUIET)
 if(SofaPython3_FOUND)
     add_subdirectory(${SRC_DIR}/binding)
+    target_link_libraries(${PROJECT_NAME} PUBLIC SofaPython3::Plugin) # For the tests
 endif()
 
 ## Install rules for the library and headers; CMake package configurations files
