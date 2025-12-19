@@ -105,7 +105,9 @@ protected:
     sofa::Data<sofa::type::vector<Real>>         d_force;
     sofa::Data<Real>                             d_displacement;
     sofa::Data<Deriv>                            d_direction;
-    sofa::Data<Real>                             d_epsilon;
+    sofa::Data<Real>                             d_energyWeight;
+    SOFA_ATTRIBUTE_DEPRECATED("v25.12", "v26.12", "Use d_energyWeight instead.")
+    sofa::Data<Real> d_penalty; // Used to deprecate the name of the data from the UI
 
     sofa::Data<bool>                             d_showForce;
     sofa::Data<Real>                             d_visuScale;
@@ -134,11 +136,11 @@ protected:
     using Actuator<DataTypes>::m_lambdaMax ;
     using Actuator<DataTypes>::m_lambdaMin ;
     using Actuator<DataTypes>::m_lambdaInit ;
-    using Actuator<DataTypes>::m_epsilon ;
+    using Actuator<DataTypes>::m_energyWeight ;
     using Actuator<DataTypes>::m_hasLambdaMax ;
     using Actuator<DataTypes>::m_hasLambdaMin ;
     using Actuator<DataTypes>::m_hasLambdaInit ;
-    using Actuator<DataTypes>::m_hasEpsilon ;
+    using Actuator<DataTypes>::m_hasEnergyWeight ;
     using Actuator<DataTypes>::m_nbLines ;
     ////////////////////////////////////////////////////////////////////////////
 

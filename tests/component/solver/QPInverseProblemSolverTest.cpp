@@ -92,7 +92,7 @@ struct QPInverseProblemSolverTest : public BaseTest,
         int nbTimeStep = 10;
         string deltaString;
         double tolerance = 1e-10;
-        m_root->getObject("QPInverseProblemSolver")->findData("epsilon")->read("0.0");
+        m_root->getObject("QPInverseProblemSolver")->findData("energyWeight")->read("0.0");
         m_root->getObject("QPInverseProblemSolver")->findData("qpSolver")->read(qpSolver);
         // Test inverse resolution (effector == target)
 

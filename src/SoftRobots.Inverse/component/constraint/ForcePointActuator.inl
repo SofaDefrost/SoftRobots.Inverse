@@ -72,9 +72,12 @@ ForcePointActuator<DataTypes>::ForcePointActuator(MechanicalState* object)
                            "Direction of the force we want to apply. If d=[0,0,0], the direction \n"
                            "will be optimized."))
 
-    , d_epsilon(initData(&d_epsilon, Real(1e-3), "penalty",
-                           "Use this value to prioritize the constraint. 0 means no limitation on the energy \n"
-                            "transfered by this actuator. Default is 1e-3."))
+    , d_energyWeight(initData(&d_energyWeight, Real(1e-3), "energyWeight",
+                              "An energy term is added in the minimization process. \n"
+                              "Specify the energy weight of the constraint. 0 means no limitation on the energy \n"
+                              "transfered by this actuator. The default value used is the energyWeight defined in the inverse problem solver."))
+
+    , d_penalty(initData(&d_penalty, Real(1e-3), "penalty", ""))
 
     , d_showForce(initData(&d_showForce, false, "showForce",
                            ""))
@@ -90,6 +93,8 @@ ForcePointActuator<DataTypes>::ForcePointActuator(MechanicalState* object)
 template<class DataTypes>
 void ForcePointActuator<DataTypes>::setUpData()
 {
+    d_penalty.setDisplayed(false);
+
     d_force.setReadOnly(true);
     d_displacement.setReadOnly(true);
 
@@ -115,6 +120,13 @@ void ForcePointActuator<DataTypes>::init()
                             "To remove this error message fix your scene possibly by "
                             "adding a MechanicalObject." ;
 
+    if (d_penalty.isSet())
+    {
+        msg_deprecated() << "The data penalty is deprecated. To fix your scene please use energyWeight instead. It will be removed in v26.12.";
+        const auto& penalty = sofa::helper::getReadAccessor(d_penalty);
+        d_energyWeight.setValue(penalty);
+    }
+
     initData();
     initLimit();
 }
@@ -132,10 +144,10 @@ void ForcePointActuator<DataTypes>::initData()
 {
     m_dim = (d_direction.getValue().norm()<1e-10)? Deriv::total_size: 1;
 
-    if(d_epsilon.isSet())
+    if(d_energyWeight.isSet())
     {
-        m_hasEpsilon = true;
-        m_epsilon = d_epsilon.getValue();
+        m_hasEnergyWeight = true;
+        m_energyWeight = d_energyWeight.getValue();
     }
 
     if(d_initForce.isSet())
