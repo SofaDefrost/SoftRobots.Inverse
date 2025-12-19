@@ -132,16 +132,19 @@ QPInverseProblemSolver::QPInverseProblemSolver()
 
     , d_qpSolver(initData(&d_qpSolver, "qpSolver", "QP solver implementation to be used"))
 
-    , d_epsilon(initData(&d_epsilon, 1e-3, "epsilon",
-                         "An energy term is added in the minimization process. \n"
-                         "Epsilon has to be chosen sufficiently small so that the deformation \n"
-                         "energy does not disrupt the quality of the effector positioning. "
-                         "Default value 1e-3."))
+    , d_energyWeight(initData(&d_energyWeight, 1e-3, "energyWeight",
+                             "An energy term is added in the minimization process. \n"
+                             "This is the weight of this term. \n"
+                             "It has to be chosen sufficiently small so that the deformation \n"
+                             "energy does not disrupt the quality of the effector positioning. "
+                             "Default value 1e-3."))
+
+    , d_epsilon(initData(&d_epsilon, 1e-3, "epsilon", ""))
 
     , d_actuatorsOnly(initData(&d_actuatorsOnly, false, "actuatorsOnly",
-                         "An energy term is added in the minimization process. \n"
-                         "If true, only for actuators."
-                         "Default value false."))
+                                 "An energy term is added in the minimization process. \n"
+                                 "If true, add it only for actuators."
+                                 "Default value false."))
 
     , d_allowSliding(initData(&d_allowSliding,false,"allowSliding",
                               "In case of friction, this option enable/disable sliding contact."))
@@ -156,12 +159,12 @@ QPInverseProblemSolver::QPInverseProblemSolver()
                                   "If set, will contraints the sum of contact forces \n"
                                   "to be lesser or equal to the given value.") )
 
-    , d_objective(initData(&d_objective, 250.0, "objective", "Erreur between the target and the end effector "))
+    , d_objective(initData(&d_objective, 0.0, "objective", "Calculated optimal objective function value."))
 
-    , m_lastCP(NULL)
     , m_CP1(nullptr)
     , m_CP2(nullptr)
     , m_CP3(nullptr)
+    , m_lastCP(nullptr)
 {
     sofa::helper::OptionsGroup qpSolvers{"qpOASES" , "proxQP"};
 #if defined SOFTROBOTSINVERSE_ENABLE_PROXQP && !defined SOFTROBOTSINVERSE_ENABLE_QPOASES
@@ -169,6 +172,8 @@ QPInverseProblemSolver::QPInverseProblemSolver()
 #else
     qpSolvers.setSelectedItem(QPSolverImpl::QPOASES);
 #endif
+
+    d_objective.setReadOnly(true);
 
     d_qpSolver.setValue(qpSolvers);
 
@@ -181,6 +186,14 @@ QPInverseProblemSolver::QPInverseProblemSolver()
         deleteProblems();
         createProblems();
     });
+
+    d_epsilon.setDisplayed(false);
+    if (d_epsilon.isSet())
+    {
+        msg_deprecated() << "The data epsilon is deprecated. To fix your scene please use energyWeight instead. It will be removed in v26.12.";
+        const auto& epsilon = sofa::helper::getReadAccessor(d_epsilon);
+        d_energyWeight.setValue(epsilon);
+    }
 }
 
 void QPInverseProblemSolver::createProblems()
@@ -469,19 +482,6 @@ inline void QPInverseProblemSolver::buildCompliance(const ConstraintParams *cPar
     AdvancedTimer::stepEnd("Get Compliance");
 }
 
-void QPInverseProblemSolver::rebuildSystem(double massFactor, double forceFactor)
-{
-    d_graph.beginEdit()->clear();
-    d_graph.endEdit();
-
-    //rebuildConstraintCorrectionSystem()
-    for (unsigned int i=0; i<m_constraintsCorrections.size(); i++)
-    {
-        BaseConstraintCorrection* CC = m_constraintsCorrections[i];
-        CC->rebuildSystem(massFactor, forceFactor);
-    }
-}
-
 bool QPInverseProblemSolver::solveSystem(const ConstraintParams * cParams,
                                          MultiVecId res1,
                                          MultiVecId res2)
@@ -494,7 +494,7 @@ bool QPInverseProblemSolver::solveSystem(const ConstraintParams * cParams,
 
     double time = getContext()->getTime();
     m_currentCP->setTime(time);
-    m_currentCP->setEpsilon(d_epsilon.getValue());
+    m_currentCP->setEnergyWeight(d_energyWeight.getValue());
     m_currentCP->setEnergyActuatorsOnly(d_actuatorsOnly.getValue());
     m_currentCP->setTolerance(d_tolerance.getValue());
     m_currentCP->setMaxIterations(d_maxIterations.getValue());

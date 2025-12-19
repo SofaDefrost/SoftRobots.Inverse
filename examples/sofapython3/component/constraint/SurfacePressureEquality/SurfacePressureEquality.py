@@ -15,7 +15,7 @@ def createScene(rootNode):
     rootNode.findData('gravity').value = [0, 0, 0]
     rootNode.findData('dt').value = 0.02
     rootNode.addObject('FreeMotionAnimationLoop')
-    rootNode.addObject('QPInverseProblemSolver', printLog=0, epsilon=1e-1, maxIterations=1000, tolerance=1e-5)
+    rootNode.addObject('QPInverseProblemSolver', printLog=0, energyWeight=1e-1, maxIterations=1000, tolerance=1e-5)
 
     rootNode.addObject('BackgroundSetting', color=[1, 1, 1, 1])
     rootNode.addObject('LightManager')

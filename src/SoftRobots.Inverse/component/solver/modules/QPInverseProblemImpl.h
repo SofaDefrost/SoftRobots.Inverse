@@ -82,7 +82,7 @@ protected:
                              vector<double> &result,
                              vector<double> &dual) = 0;
 
-    void computeEnergyWeight(double& weight);
+    void computeEnergyScalingFactor(double& weight);
     void buildQPMatrices();
 
     void solveWithContact(vector<double>& result, double &objective, int &iterations);
