@@ -35,11 +35,11 @@
 #include <qpOASES/Utils.hpp>
 
 
-extern "C" void dgemm_(	const char *TRANSA, const char *TRANSB,
-						const unsigned long *M, const unsigned long *N, const unsigned long *K,
-						const double *ALPHA, const double *A, const unsigned long *LDA, const double *B, const unsigned long *LDB,
-						const double *BETA, double *C, const unsigned long *LDC
-						)
+extern "C" void qpoases_dgemm_(	const char *TRANSA, const char *TRANSB,
+								const unsigned long *M, const unsigned long *N, const unsigned long *K,
+								const double *ALPHA, const double *A, const unsigned long *LDA, const double *B, const unsigned long *LDB,
+								const double *BETA, double *C, const unsigned long *LDC
+								)
 {
 	unsigned long i, j, k;
 
@@ -90,11 +90,11 @@ extern "C" void dgemm_(	const char *TRANSA, const char *TRANSB,
 						C[j+(*LDC)*k] += *ALPHA * A[i+(*LDA)*j] * B[i+(*LDB)*k];
 }
 
-extern "C" void sgemm_(	const char *TRANSA, const char *TRANSB,
-						const unsigned long *M, const unsigned long *N, const unsigned long *K,
-						const float *ALPHA, const float *A, const unsigned long *LDA, const float *B, const unsigned long *LDB,
-						const float *BETA, float *C, const unsigned long *LDC
-						)
+extern "C" void qpoases_sgemm_(	const char *TRANSA, const char *TRANSB,
+								const unsigned long *M, const unsigned long *N, const unsigned long *K,
+								const float *ALPHA, const float *A, const unsigned long *LDA, const float *B, const unsigned long *LDB,
+								const float *BETA, float *C, const unsigned long *LDC
+								)
 {
 	unsigned long i, j, k;
 

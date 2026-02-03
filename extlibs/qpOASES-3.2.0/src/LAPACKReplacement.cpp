@@ -35,9 +35,9 @@
 #include <qpOASES/Utils.hpp>
 
 
-extern "C" void dpotrf_(	const char *uplo, const unsigned long *_n, double *a,
-							const unsigned long *_lda, long *info
-							)
+extern "C" void qpoases_dpotrf_(	const char *uplo, const unsigned long *_n, double *a,
+									const unsigned long *_lda, long *info
+									)
 {
 	double sum;
 	long i, j, k;
@@ -77,7 +77,7 @@ extern "C" void dpotrf_(	const char *uplo, const unsigned long *_n, double *a,
 }
 
 
-extern "C" void spotrf_(	const char *uplo, const unsigned long *_n, float *a,
+extern "C" void qpoases_spotrf_(	const char *uplo, const unsigned long *_n, float *a,
 							const unsigned long *_lda, long *info
 							)
 {

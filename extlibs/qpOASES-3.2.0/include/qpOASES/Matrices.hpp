@@ -45,24 +45,24 @@
 #ifdef __USE_SINGLE_PRECISION__
 
 	/** Macro for calling level 3 BLAS operation in single precision. */
-	#define GEMM sgemm_
+	#define GEMM qpoases_sgemm_
 	/** Macro for calling level 3 BLAS operation in single precision. */
-	#define SYR ssyr_
+	#define SYR qpoases_ssyr_
 	/** Macro for calling level 3 BLAS operation in single precision. */
-	#define SYR2 ssyr2_
+	#define SYR2 qpoases_ssyr2_
 	/** Macro for calling level 3 BLAS operation in single precision. */
-	#define POTRF spotrf_
+	#define POTRF qpoases_spotrf_
 
 #else
 
 	/** Macro for calling level 3 BLAS operation in double precision. */
-	#define GEMM dgemm_
+	#define GEMM qpoases_dgemm_
 	/** Macro for calling level 3 BLAS operation in double precision. */
-	#define SYR  dsyr_
+	#define SYR  qpoases_dsyr_
 	/** Macro for calling level 3 BLAS operation in double precision. */
-	#define SYR2 dsyr2_
+	#define SYR2 qpoases_dsyr2_
 	/** Macro for calling level 3 BLAS operation in double precision. */
-	#define POTRF dpotrf_
+	#define POTRF qpoases_dpotrf_
 
 #endif /* __USE_SINGLE_PRECISION__ */
 
@@ -70,32 +70,32 @@
 extern "C"
 {
 	/** Performs one of the matrix-matrix operation in double precision. */
-	void dgemm_ ( const char*, const char*, const unsigned long*, const unsigned long*, const unsigned long*,
+	void qpoases_dgemm_ ( const char*, const char*, const unsigned long*, const unsigned long*, const unsigned long*,
 			const double*, const double*, const unsigned long*, const double*, const unsigned long*,
 			const double*, double*, const unsigned long* );
 	/** Performs one of the matrix-matrix operation in single precision. */
-	void sgemm_ ( const char*, const char*, const unsigned long*, const unsigned long*, const unsigned long*,
+	void qpoases_sgemm_ ( const char*, const char*, const unsigned long*, const unsigned long*, const unsigned long*,
 			const float*, const float*, const unsigned long*, const float*, const unsigned long*,
 			const float*, float*, const unsigned long* );
 
 	/** Performs a symmetric rank 1 operation in double precision. */
-	void dsyr_ ( const char *, const unsigned long *, const double *, const double *,
+	void qpoases_dsyr_ ( const char *, const unsigned long *, const double *, const double *,
 				 const unsigned long *, double *, const unsigned long *);
 	/** Performs a symmetric rank 1 operation in single precision. */
-	void ssyr_ ( const char *, const unsigned long *, const float *, const float *,
+	void qpoases_ssyr_ ( const char *, const unsigned long *, const float *, const float *,
 				 const unsigned long *, float *, const unsigned long *);
 
 	/** Performs a symmetric rank 2 operation in double precision. */
-	void dsyr2_ ( const char *, const unsigned long *, const double *, const double *,
+	void qpoases_dsyr2_ ( const char *, const unsigned long *, const double *, const double *,
 				  const unsigned long *, const double *, const unsigned long *, double *, const unsigned long *);
 	/** Performs a symmetric rank 2 operation in single precision. */
-	void ssyr2_ ( const char *, const unsigned long *, const float *, const float *,
+	void qpoases_ssyr2_ ( const char *, const unsigned long *, const float *, const float *,
 				  const unsigned long *, const float *, const unsigned long *, float *, const unsigned long *);
 
 	/** Calculates the Cholesky factorization of a real symmetric positive definite matrix in double precision. */
-	void dpotrf_ ( const char *, const unsigned long *, double *, const unsigned long *, long * );
+	void qpoases_dpotrf_ ( const char *, const unsigned long *, double *, const unsigned long *, long * );
 	/** Calculates the Cholesky factorization of a real symmetric positive definite matrix in single precision. */
-	void spotrf_ ( const char *, const unsigned long *, float *, const unsigned long *, long * );
+	void qpoases_spotrf_ ( const char *, const unsigned long *, float *, const unsigned long *, long * );
 }
 
 
