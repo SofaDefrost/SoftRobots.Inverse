@@ -16,7 +16,7 @@ endif()
 
 SP3_add_python_module(
     TARGET       ${PROJECT_NAME}
-    PACKAGE      Bindings.Modules
+    PACKAGE      SoftRobots
     MODULE       SoftRobotsInverse
     DESTINATION  Sofa
     SOURCES      ${SOURCE_FILES}
