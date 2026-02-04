@@ -118,15 +118,15 @@ extern "C" void qpoases_spotrf_(	const char *uplo, const unsigned long *_n, floa
 		*info = 0;
 }
 
-extern "C" void dtrtrs_(	const char *UPLO, const char *TRANS, const char *DIAG,
-							const unsigned long *N, const unsigned long *NRHS,
-							double *A, const unsigned long *LDA, double *B, const unsigned long *LDB, long *INFO
-							)
+extern "C" void qpoases_dtrtrs_(	const char *UPLO, const char *TRANS, const char *DIAG,
+									const unsigned long *N, const unsigned long *NRHS,
+									double *A, const unsigned long *LDA, double *B, const unsigned long *LDB, long *INFO
+									)
 {
 	; /* Dummy. If SQProblemSchur is to be used, system LAPACK must be used */
 }
 
-extern "C" void strtrs_(	const char *UPLO, const char *TRANS, const char *DIAG,
+extern "C" void qpoases_strtrs_(	const char *UPLO, const char *TRANS, const char *DIAG,
 							const unsigned long *N, const unsigned long *NRHS,
 							float *A, const unsigned long *LDA, float *B, const unsigned long *LDB, long *INFO
 							)
@@ -134,7 +134,7 @@ extern "C" void strtrs_(	const char *UPLO, const char *TRANS, const char *DIAG,
 	; /* Dummy. If SQProblemSchur is to be used, system LAPACK must be used */
 }
 
-extern "C" void dtrcon_(	const char *NORM, const char *UPLO, const char *DIAG,
+extern "C" void qpoases_dtrcon_(	const char *NORM, const char *UPLO, const char *DIAG,
 							const unsigned long *N, double *A, const unsigned long *LDA,
 							double *RCOND, double *WORK, const unsigned long *IWORK, long *INFO
 							)
@@ -142,7 +142,7 @@ extern "C" void dtrcon_(	const char *NORM, const char *UPLO, const char *DIAG,
 	; /* Dummy. If SQProblemSchur is to be used, system LAPACK must be used */
 }
 
-extern "C" void strcon_(	const char *NORM, const char *UPLO, const char *DIAG,
+extern "C" void qpoases_strcon_(	const char *NORM, const char *UPLO, const char *DIAG,
 							const unsigned long *N, float *A, const unsigned long *LDA,
 							float *RCOND, float *WORK, const unsigned long *IWORK, long *INFO
 							)

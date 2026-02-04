@@ -49,9 +49,9 @@
 	/** Macro for calling level 3 BLAS operation in single precision. */
 	//#define ORMQR sormqr_
 	/** Macro for calling level 3 BLAS operation in single precision. */
-	#define TRTRS strtrs_
+	#define TRTRS qpoases_strtrs_
 	/** Macro for calling level 3 BLAS operation in single precision. */
-	#define TRCON strcon_
+	#define TRCON qpoases_strcon_
 
 #else
 
@@ -60,9 +60,9 @@
 	/** Macro for calling level 3 BLAS operation in double precision. */
 	//#define ORMQR dormqr_
 	/** Macro for calling level 3 BLAS operation in double precision. */
-	#define TRTRS dtrtrs_
+	#define TRTRS qpoases_dtrtrs_
 	/** Macro for calling level 3 BLAS operation in double precision. */
-	#define TRCON dtrcon_
+	#define TRCON qpoases_dtrcon_
 
 #endif /* __USE_SINGLE_PRECISION__ */
 
@@ -84,17 +84,17 @@ extern "C" {
 					//float *WORK, const unsigned long *LWORK, int *INFO );
 
 	/** Solve a triangular system (double precision) */
-	void dtrtrs_(	const char *UPLO, const char *TRANS, const char *DIAG, const unsigned long *N, const unsigned long *NRHS,
+	void qpoases_dtrtrs_(	const char *UPLO, const char *TRANS, const char *DIAG, const unsigned long *N, const unsigned long *NRHS,
 					double *A, const unsigned long *LDA, double *B, const unsigned long *LDB, long *INFO );
 	/** Solve a triangular system (single precision) */
-	void strtrs_(	const char *UPLO, const char *TRANS, const char *DIAG, const unsigned long *N, const unsigned long *NRHS,
+	void qpoases_strtrs_(	const char *UPLO, const char *TRANS, const char *DIAG, const unsigned long *N, const unsigned long *NRHS,
 					float *A, const unsigned long *LDA, float *B, const unsigned long *LDB, long *INFO );
 
 	/** Estimate the reciprocal of the condition number of a triangular matrix in double precision */
-	void dtrcon_(	const char *NORM, const char *UPLO, const char *DIAG, const unsigned long *N, double *A, const unsigned long *LDA,
+	void qpoases_dtrcon_(	const char *NORM, const char *UPLO, const char *DIAG, const unsigned long *N, double *A, const unsigned long *LDA,
 					double *RCOND, double *WORK, const unsigned long *IWORK, long *INFO );
 	/** Estimate the reciprocal of the condition number of a triangular matrix in single precision */
-	void strcon_(	const char *NORM, const char *UPLO, const char *DIAG, const unsigned long *N, float *A, const unsigned long *LDA,
+	void qpoases_strcon_(	const char *NORM, const char *UPLO, const char *DIAG, const unsigned long *N, float *A, const unsigned long *LDA,
 					float *RCOND, float *WORK, const unsigned long *IWORK, long *INFO );
 }
 
