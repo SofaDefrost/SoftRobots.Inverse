@@ -12,8 +12,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, macos-13, macos-14, windows-2022]
-        python_version: ["3.13"]
+        os: [ubuntu-latest, macos-latest, windows-latest, ubuntu-24.04-arm]
+        python_version: ["3.12"]
         build_type: ["Release"]
         qp_solver: ["qpOases", "proxQP"]
 
@@ -28,68 +28,69 @@ jobs:
         channels: conda-forge
         conda-remove-defaults: "true"
 
+    - name: Install SOFA and SofaPython3 from devel packages
+      shell: bash -l {0}
+      run: |
+        conda install sofa-devel sofa-python3 -c https://prefix.dev/sofa-framework-devel
+
+    - name: Checkout SOFA SoftRobots
+      uses: actions/checkout@v4
+      with:
+        repository: SofaDefrost/SoftRobots
+        ref: master
+        path: SoftRobots
+
     - name: Checkout source code
       uses: actions/checkout@v4
 
-    - name: Install SOFA from nightly packages [Conda]
+    - name: Install compilation environment [Linux / macOS]
+      if: contains(matrix.os, 'ubuntu') || contains(matrix.os, 'macos')
       shell: bash -l {0}
       run: |
-        conda install sofa-devel sofa-python3 sofa-stlib sofa-softrobots -c sofa-framework-nightly
+        conda install cmake cxx-compilers ninja pkg-config
 
-    - name: Install compilation environment [Conda / Linux]
-      if: contains(matrix.os, 'ubuntu')
-      shell: bash -l {0}
-      run: |
-        conda install cmake compilers make ninja      
-        conda install mesa-libgl-devel-cos7-x86_64
-
-    - name: Install compilation environment [Conda / macOS]
-      if: contains(matrix.os, 'macos')
-      shell: bash -l {0}
-      run: |
-        conda install cmake compilers make ninja
-
-    - name: Install compilation environment [Conda / Windows]
+    - name: Install compilation environment [Windows]
       if: contains(matrix.os, 'windows')
       shell: bash -l {0}
       run: |
-        conda install cmake vs2022_win-64
+        conda install cmake vs2022_win-64 ninja pkg-config
 
-    - name: Install dependencies [Conda]
+    - name: Configure, build & install SoftRobots
       shell: bash -l {0}
       run: |
-        conda install eigen libboost-headers pybind11 cxxopts
+        cd SoftRobots
+        mkdir build
+        cd build
+        cmake .. -GNinja \
+         -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} \
+         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+         -DPython_EXECUTABLE:PATH=${CONDA_PREFIX}/bin/python \
+         -DSOFTROBOTS_BUILD_TESTS:BOOL=OFF
+        cmake --build . --config ${{ matrix.build_type }} -v -j 2
+        cmake --install . --config ${{ matrix.build_type }}
 
-    - name: Install QP solver dependencies [Conda / proxQP]
+    - name: Install QP solver dependencies [proxQP]
       if: contains(matrix.qp_solver, 'proxQP')
       shell: bash -l {0}
       run: |
         conda install proxsuite
         echo "CMAKE_OPTS_QPSOLVER=-DSOFTROBOTSINVERSE_ENABLE_PROXQP=ON -DSOFTROBOTSINVERSE_ENABLE_QPOASES=OFF" >> "$GITHUB_ENV"
 
-    - name: Install QP solver dependencies [Conda / qpOases & not osx-arm64]
-      if: contains(matrix.qp_solver, 'qpOases') && !contains(matrix.os, 'macos-14')
+    - name: Install QP solver dependencies [qpOases]
+      if: contains(matrix.qp_solver, 'qpOases')
       shell: bash -l {0}
       run: |
         conda install qpoases
         echo "CMAKE_OPTS_QPSOLVER=-DSOFTROBOTSINVERSE_ENABLE_PROXQP=OFF -DSOFTROBOTSINVERSE_ENABLE_QPOASES=ON" >> "$GITHUB_ENV"        
 
-      # Use embedded qpOases version as its conda package for python>3.10 under osx-arm64 platform is not supported anymore
-    - name: Install QP solver dependencies [Conda / qpOases & osx-arm64]
-      if: contains(matrix.qp_solver, 'qpOases') && contains(matrix.os, 'macos-14')
-      shell: bash -l {0}
-      run: |
-        echo "CMAKE_OPTS_QPSOLVER=-DSOFTROBOTSINVERSE_ENABLE_PROXQP=OFF -DSOFTROBOTSINVERSE_ENABLE_QPOASES=ON" >> "$GITHUB_ENV"        
-
-    - name: Print environment [Conda]
+    - name: Print environment
       shell: bash -l {0}
       run: |
         conda info
         conda list
         env
 
-    - name: Configure [Conda / Linux & macOS]
-      if: contains(matrix.os, 'macos') || contains(matrix.os, 'ubuntu')
+    - name: Configure SoftRobots.Inverse
       shell: bash -l {0}
       run: |
         mkdir build
@@ -100,32 +101,19 @@ jobs:
          -DPython_EXECUTABLE:PATH=${CONDA_PREFIX}/bin/python \
          -DSOFTROBOTSINVERSE_BUILD_TESTS:BOOL=ON
 
-    - name: Configure [Conda / Windows]
-      if: contains(matrix.os, 'windows')
-      shell: bash -l {0}
-      run: |
-        mkdir build
-        cd build
-        cmake .. -G"Visual Studio 17 2022" -T "v143" $CMAKE_OPTS_QPSOLVER  \
-         -DCMAKE_GENERATOR_PLATFORM=x64 \
-         -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} \
-         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-         -DPython_EXECUTABLE:PATH=${CONDA_PREFIX}/python.exe \
-         -DSOFTROBOTSINVERSE_BUILD_TESTS:BOOL=ON
-
-    - name: Build [Conda]
+    - name: Build SoftRobots.Inverse
       shell: bash -l {0}
       run: |
         cd build
         cmake --build . --config ${{ matrix.build_type }} -v -j 2
 
-    - name: Install [Conda]
+    - name: Install SoftRobots.Inverse
       shell: bash -l {0}
       run: |
         cd build
         cmake --install . --config ${{ matrix.build_type }}
 
-    - name: Test [Conda]
+    - name: Test SoftRobots.Inverse
       shell: bash -l {0}
       run: |
         cd build
