@@ -1,4 +1,4 @@
-name: CI - Linux/OSX/Windows - Conda
+name: CI - Conda
 
 on:
   workflow_dispatch:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-with-conda-and-test:
-    name: "[conda:${{ matrix.os }}:py${{ matrix.python_version }}:${{ matrix.qp_solver }}]"
+    name: "${{ matrix.os }} with SOFA master from Conda devel [QPSolver = ${{ matrix.qp_solver }}]"
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -47,7 +47,7 @@ jobs:
       if: contains(matrix.os, 'ubuntu') || contains(matrix.os, 'macos')
       shell: bash -l {0}
       run: |
-        conda install cmake cxx-compilers ninja pkg-config
+        conda install cmake cxx-compiler ninja pkg-config
 
     - name: Install compilation environment [Windows]
       if: contains(matrix.os, 'windows')
