@@ -37,13 +37,13 @@ jobs:
       if: contains(matrix.os, 'ubuntu') || contains(matrix.os, 'macos')
       shell: bash -l {0}
       run: |
-        conda install cmake cxx-compiler ninja pkg-config
+        conda install cmake cxx-compiler ninja pkg-config pybind11
 
     - name: Install compilation environment [Windows]
       if: contains(matrix.os, 'windows')
       shell: bash -l {0}
       run: |
-        conda install cmake vs2022_win-64 ninja pkg-config
+        conda install cmake vs2022_win-64 ninja pkg-config pybind11
 
     - name: Checkout SOFA SoftRobots
       uses: actions/checkout@v4
