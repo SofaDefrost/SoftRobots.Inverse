@@ -60,19 +60,30 @@ jobs:
 
     - name: Configure SoftRobots [Windows]
       if: contains(matrix.os, 'windows')
-      shell: bash -l {0}
+      # It's better to use CMD to have all VS variables setup
+      shell: cmd /C CALL {0}
       run: |
         cd SoftRobots
         mkdir build
         cd build
-        cmake .. -GNinja \
-         -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} \
-         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-         -DPython_EXECUTABLE:PATH=${CONDA_PREFIX}/python.exe \
+        cmake .. -GNinja ^
+         -DCMAKE_INSTALL_PREFIX=%CONDA_PREFIX%/Library ^
+         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ^
+         -DPython_EXECUTABLE:PATH=%CONDA_PREFIX%/python.exe ^
          -DSOFTROBOTS_BUILD_TESTS:BOOL=OFF
 
-    - name: Build & install SoftRobots
+    - name: Build & install SoftRobots [Linux / macOS]
+      if: contains(matrix.os, 'ubuntu') || contains(matrix.os, 'macos')
       shell: bash -l {0}
+      run: |
+        cd SoftRobots/build
+        cmake --build . --config ${{ matrix.build_type }} -v -j 2
+        cmake --install . --config ${{ matrix.build_type }}
+
+    - name: Build & install SoftRobots [Windows]
+      if: contains(matrix.os, 'windows')
+      # It's better to use CMD to have all VS variables setup
+      shell: cmd /C CALL {0}
       run: |
         cd SoftRobots/build
         cmake --build . --config ${{ matrix.build_type }} -v -j 2
@@ -116,26 +127,32 @@ jobs:
 
     - name: Configure SoftRobots.Inverse [Windows]
       if: contains(matrix.os, 'windows')
-      shell: bash -l {0}
+      # It's better to use CMD to have all VS variables setup
+      shell: cmd /C CALL {0}
       run: |
         mkdir build
         cd build
-        cmake .. -GNinja $CMAKE_OPTS_QPSOLVER \
-         -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} \
-         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-         -DPython_EXECUTABLE:PATH=${CONDA_PREFIX}/python.exe \
+        cmake .. -GNinja %CMAKE_OPTS_QPSOLVER% ^
+         -DCMAKE_INSTALL_PREFIX=%CONDA_PREFIX% ^
+         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ^
+         -DPython_EXECUTABLE:PATH=%CONDA_PREFIX%/python.exe  ^
          -DSOFTROBOTSINVERSE_BUILD_TESTS:BOOL=ON
 
-    - name: Build SoftRobots.Inverse
+    - name: Build && install SoftRobots.Inverse [Linux / macOS]
+      if: contains(matrix.os, 'ubuntu') || contains(matrix.os, 'macos')
       shell: bash -l {0}
       run: |
         cd build
         cmake --build . --config ${{ matrix.build_type }} -v -j 2
+        cmake --install . --config ${{ matrix.build_type }}
 
-    - name: Install SoftRobots.Inverse
-      shell: bash -l {0}
+    - name: Build && install SoftRobots.Inverse [Windows]
+      if: contains(matrix.os, 'windows')
+      # It's better to use CMD to have all VS variables setup
+      shell: cmd /C CALL {0}
       run: |
         cd build
+        cmake --build . --config ${{ matrix.build_type }} -v -j 2
         cmake --install . --config ${{ matrix.build_type }}
 
     - name: Test SoftRobots.Inverse
