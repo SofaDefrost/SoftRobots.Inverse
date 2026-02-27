@@ -58,6 +58,7 @@ jobs:
     - name: Configure, build & install SoftRobots
       shell: bash -l {0}
       run: |
+        ls -al
         cd SoftRobots
         mkdir build
         cd build
