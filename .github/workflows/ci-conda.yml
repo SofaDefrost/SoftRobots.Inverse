@@ -33,16 +33,6 @@ jobs:
       run: |
         conda install sofa-devel sofa-python3 -c https://prefix.dev/sofa-framework-devel
 
-    - name: Checkout SOFA SoftRobots
-      uses: actions/checkout@v4
-      with:
-        repository: SofaDefrost/SoftRobots
-        ref: master
-        path: SoftRobots
-
-    - name: Checkout source code
-      uses: actions/checkout@v4
-
     - name: Install compilation environment [Linux / macOS]
       if: contains(matrix.os, 'ubuntu') || contains(matrix.os, 'macos')
       shell: bash -l {0}
@@ -54,6 +44,13 @@ jobs:
       shell: bash -l {0}
       run: |
         conda install cmake vs2022_win-64 ninja pkg-config
+
+    - name: Checkout SOFA SoftRobots
+      uses: actions/checkout@v4
+      with:
+        repository: SofaDefrost/SoftRobots
+        ref: master
+        path: SoftRobots
 
     - name: Configure, build & install SoftRobots
       shell: bash -l {0}
@@ -69,6 +66,9 @@ jobs:
          -DSOFTROBOTS_BUILD_TESTS:BOOL=OFF
         cmake --build . --config ${{ matrix.build_type }} -v -j 2
         cmake --install . --config ${{ matrix.build_type }}
+
+    - name: Checkout source code
+      uses: actions/checkout@v4
 
     - name: Install QP solver dependencies [proxQP]
       if: contains(matrix.qp_solver, 'proxQP')
