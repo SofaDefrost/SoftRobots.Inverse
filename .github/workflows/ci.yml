@@ -129,12 +129,21 @@ jobs:
           if [[ "$RUNNER_OS" == "Windows" ]]; then
             cp $SoftRobots_ROOT/bin/*.dll $SOFA_ROOT/bin/
             echo "PYTHONPATH=${{ github.workspace }}/STLIB/python3/src;$SoftRobots_ROOT/lib/python3/site-packages" | tee -a $GITHUB_ENV
-
           else
             cp $SoftRobots_ROOT/lib/lib* $SOFA_ROOT/lib/
             echo "PYTHONPATH=${{ github.workspace }}/STLIB/python3/src:$SoftRobots_ROOT/lib/python3/site-packages" | tee -a $GITHUB_ENV
-
           fi
+
+          ### Deactivate some tests because the use of prefabs doesn't allow the scene test script to identify missing plugins before hands
+
+          # Missing ArticulatedSystemPlugin
+          echo "ignore \"sofapython3/component/constraint/JointActuator/JointActuator.py\"" >> ${{ env.WORKSPACE_SRC_PATH }}/examples/.scene-tests
+
+          # Missing BeamAdapter
+          echo "ignore \"sofapython3/component/constraint/BarycentricCenterEffector/BarycentricCenterEffector_Rigid.py\"" >> ${{ env.WORKSPACE_SRC_PATH }}/examples/.scene-tests
+          echo "ignore \"sofapython3/component/constraint/SlidingActuator/actuatedBeam.py\"" >> ${{ env.WORKSPACE_SRC_PATH }}/examples/.scene-tests
+
+
 
 
       - name: Launch test
