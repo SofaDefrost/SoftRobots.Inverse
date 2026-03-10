@@ -124,7 +124,17 @@ jobs:
         shell: bash
         run: |
           ${{ steps.sofa.outputs.python_exe }} -m pip install matplotlib
-          echo "PYTHONPATH=${{ github.workspace }}/STLIB/python3/src" | tee -a $GITHUB_ENV
+
+          ## Copy SoftRobots lib into a folder known by SOFA so the plugin can be found
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            cp $SoftRobots_ROOT/bin/*.dll $SOFA_ROOT/bin/
+            echo "PYTHONPATH=${{ github.workspace }}/STLIB/python3/src;$SoftRobots_ROOT/lib/python3/site-packages" | tee -a $GITHUB_ENV
+
+          else
+            cp $SoftRobots_ROOT/lib/lib* $SOFA_ROOT/lib/
+            echo "PYTHONPATH=${{ github.workspace }}/STLIB/python3/src:$SoftRobots_ROOT/lib/python3/site-packages" | tee -a $GITHUB_ENV
+
+          fi
 
 
       - name: Launch test
