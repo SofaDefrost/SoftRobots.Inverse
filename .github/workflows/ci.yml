@@ -124,7 +124,7 @@ jobs:
         shell: bash
         run: |
           ${{ steps.sofa.outputs.python_exe }} -m pip install matplotlib
-          echo "PYTHONPATH=${{ github.workspace }}/python3/src" | tee -a $GITHUB_ENV
+          echo "PYTHONPATH=${{ github.workspace }}/STLIB/python3/src" | tee -a $GITHUB_ENV
 
 
       - name: Launch test
