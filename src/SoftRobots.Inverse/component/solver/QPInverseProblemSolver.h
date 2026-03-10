@@ -43,6 +43,8 @@
 #include <SoftRobots.Inverse/component/solver/modules/QPInverseProblemImpl.h>
 #include <SoftRobots.Inverse/component/config.h>
 
+#include <sofa/core/objectmodel/lifecycle/RenamedData.h>
+
 using sofa::core::objectmodel::KeypressedEvent ;
 
 namespace softrobotsinverse::solver
@@ -102,9 +104,6 @@ public:
                      MultiVecId res1,
                      MultiVecId res2=MultiVecId::null()) override;
 
-    void rebuildSystem(double massFactor,
-                       double forceFactor) override;
-
     bool solveSystem(const ConstraintParams* cParams,
                      MultiVecId res1, MultiVecId res2=MultiVecId::null()) override;
 
@@ -148,7 +147,10 @@ public:
     sofa::Data<double>    d_responseFriction;
     sofa::Data<sofa::helper::OptionsGroup> d_qpSolver;
 
-    sofa::Data<double>    d_epsilon;
+    sofa::Data<double>    d_energyWeight;
+    SOFA_ATTRIBUTE_DEPRECATED("v25.12", "v26.12", "Use d_energyWeight instead.")
+    sofa::core::objectmodel::lifecycle::RenamedData<double>    d_epsilon;
+
     sofa::Data<bool>      d_actuatorsOnly;
     sofa::Data<bool>      d_allowSliding;
     sofa::Data<map <string, vector<SReal> > > d_graph;

@@ -34,7 +34,7 @@ def createScene(rootNode):
     rootNode.addObject('VisualStyle', displayFlags='showBehaviorModels')
     rootNode.addObject('BackgroundSetting', color=[0, 0.168627, 0.211765, 1.])
     rootNode.addObject('FreeMotionAnimationLoop')
-    rootNode.addObject('QPInverseProblemSolver', epsilon=0)
+    rootNode.addObject('QPInverseProblemSolver', energyWeight=0)
 
     # Target position of the end effector
     goal = rootNode.addChild('Goal')

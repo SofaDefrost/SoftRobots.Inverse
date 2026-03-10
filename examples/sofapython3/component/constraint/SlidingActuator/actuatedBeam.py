@@ -35,7 +35,7 @@ def createScene(rootNode):
                                                    'showForceFields showInteractionForceFields')
 
     rootNode.addObject('FreeMotionAnimationLoop')
-    rootNode.addObject('QPInverseProblemSolver', epsilon=0.001, printLog=False, tolerance=1e-10, maxIterations=1000)
+    rootNode.addObject('QPInverseProblemSolver', energyWeight=0.001, printLog=False, tolerance=1e-10, maxIterations=1000)
 
     #########################################
     # Goal for end effector                 #

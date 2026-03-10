@@ -48,7 +48,7 @@ def createScene(rootNode):
     rootNode.dt = 0.02
 
     rootNode.addObject('FreeMotionAnimationLoop')
-    rootNode.addObject('QPInverseProblemSolver', printLog=False, epsilon=1e-3, tolerance=1e-4, maxIterations=2500)
+    rootNode.addObject('QPInverseProblemSolver', printLog=False, energyWeight=1e-3, tolerance=1e-4, maxIterations=2500)
     rootNode.addObject('CollisionPipeline')
     rootNode.addObject('BruteForceBroadPhase')
     rootNode.addObject('BVHNarrowPhase')

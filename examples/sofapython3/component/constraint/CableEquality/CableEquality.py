@@ -15,7 +15,7 @@ def createScene(rootNode):
     rootNode.findData('gravity').value = [0, 0, 0]
     rootNode.findData('dt').value = 0.02
     rootNode.addObject('FreeMotionAnimationLoop')
-    rootNode.addObject('QPInverseProblemSolver', printLog=0, epsilon=1e-3, maxIterations=1000, tolerance=1e-4)
+    rootNode.addObject('QPInverseProblemSolver', printLog=0, energyWeight=1e-3, maxIterations=1000, tolerance=1e-4)
 
     VolumetricMeshPath = MeshesPath + 'Accordeon_Volumetric.vtk'
     SurfaceMeshPath = MeshesPath + 'Accordeon_Surface.stl'
