@@ -33,6 +33,8 @@
 
 #include <SoftRobots.Inverse/component/config.h>
 
+#include <sofa/core/objectmodel/lifecycle/RenamedData.h>
+
 namespace softrobotsinverse::constraint
 {
     using softrobotsinverse::behavior::Actuator;
@@ -107,7 +109,7 @@ protected:
     sofa::Data<Deriv>                            d_direction;
     sofa::Data<Real>                             d_energyWeight;
     SOFA_ATTRIBUTE_DEPRECATED("v25.12", "v26.12", "Use d_energyWeight instead.")
-    sofa::Data<Real> d_penalty; // Used to deprecate the name of the data from the UI
+    sofa::core::objectmodel::lifecycle::RenamedData<Real> d_epsilon;
 
     sofa::Data<bool>                             d_showForce;
     sofa::Data<Real>                             d_visuScale;

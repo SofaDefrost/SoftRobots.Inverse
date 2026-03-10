@@ -139,8 +139,6 @@ QPInverseProblemSolver::QPInverseProblemSolver()
                              "energy does not disrupt the quality of the effector positioning. "
                              "Default value 1e-3."))
 
-    , d_epsilon(initData(&d_epsilon, 1e-3, "epsilon", ""))
-
     , d_actuatorsOnly(initData(&d_actuatorsOnly, false, "actuatorsOnly",
                                  "An energy term is added in the minimization process. \n"
                                  "If true, add it only for actuators."
@@ -187,13 +185,8 @@ QPInverseProblemSolver::QPInverseProblemSolver()
         createProblems();
     });
 
-    d_epsilon.setDisplayed(false);
-    if (d_epsilon.isSet())
-    {
-        msg_deprecated() << "The data epsilon is deprecated. To fix your scene please use energyWeight instead. It will be removed in v26.12.";
-        const auto& epsilon = sofa::helper::getReadAccessor(d_epsilon);
-        d_energyWeight.setValue(epsilon);
-    }
+    d_epsilon.setOriginalData(&d_energyWeight);
+    addAlias(&d_energyWeight, "epsilon");
 }
 
 void QPInverseProblemSolver::createProblems()

@@ -77,8 +77,6 @@ ForcePointActuator<DataTypes>::ForcePointActuator(MechanicalState* object)
                               "Specify the energy weight of the constraint. 0 means no limitation on the energy \n"
                               "transfered by this actuator. The default value used is the energyWeight defined in the inverse problem solver."))
 
-    , d_penalty(initData(&d_penalty, Real(1e-3), "penalty", ""))
-
     , d_showForce(initData(&d_showForce, false, "showForce",
                            ""))
 
@@ -93,7 +91,8 @@ ForcePointActuator<DataTypes>::ForcePointActuator(MechanicalState* object)
 template<class DataTypes>
 void ForcePointActuator<DataTypes>::setUpData()
 {
-    d_penalty.setDisplayed(false);
+    d_epsilon.setOriginalData(&d_energyWeight);
+    this->addAlias(&d_energyWeight, "penalty");
 
     d_force.setReadOnly(true);
     d_displacement.setReadOnly(true);
@@ -119,13 +118,6 @@ void ForcePointActuator<DataTypes>::init()
                             "the object is deactivated. "
                             "To remove this error message fix your scene possibly by "
                             "adding a MechanicalObject." ;
-
-    if (d_penalty.isSet())
-    {
-        msg_deprecated() << "The data penalty is deprecated. To fix your scene please use energyWeight instead. It will be removed in v26.12.";
-        const auto& penalty = sofa::helper::getReadAccessor(d_penalty);
-        d_energyWeight.setValue(penalty);
-    }
 
     initData();
     initLimit();
