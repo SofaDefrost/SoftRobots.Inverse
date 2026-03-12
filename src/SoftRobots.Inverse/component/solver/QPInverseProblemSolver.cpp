@@ -91,12 +91,17 @@ using std::string;
 using sofa::type::Vec;
 using std::map;
 
-
 namespace softrobotsinverse::solver
 {
 
 namespace
 {
+
+// QP solver options
+#define QPOASES_OPT "qpOASES"
+#define PROXQP_OPT "proxQP"
+#define UNKNOWN_OPT "unknown"
+
 template< typename TMultiVecId >
 void clearMultiVecId(BaseContext* ctx, const ConstraintParams* cParams, const TMultiVecId& vid)
 {
@@ -130,7 +135,13 @@ QPInverseProblemSolver::QPInverseProblemSolver()
 
     , d_responseFriction(initData(&d_responseFriction, 0., "responseFriction", "Response friction for contact resolution"))
 
-    , d_qpSolver(initData(&d_qpSolver, "qpSolver", "QP solver implementation to be used"))
+    , d_qpSolver(initData(&d_qpSolver,
+#if defined SOFTROBOTSINVERSE_ENABLE_PROXQP && !defined SOFTROBOTSINVERSE_ENABLE_QPOASES
+                          {PROXQP_OPT , QPOASES_OPT}, // in that case, set proxQP as the default solver
+#else
+                          {QPOASES_OPT , PROXQP_OPT}, // let the user know about both options, even if only one is installed
+#endif
+                          "qpSolver", "QP solver implementation to be used."))
 
     , d_epsilon(initData(&d_epsilon, 1e-3, "epsilon",
                          "An energy term is added in the minimization process. \n"
@@ -143,7 +154,7 @@ QPInverseProblemSolver::QPInverseProblemSolver()
                          "If true, only for actuators."
                          "Default value false."))
 
-    , d_allowSliding(initData(&d_allowSliding,false,"allowSliding",
+    , d_allowSliding(initData(&d_allowSliding, false, "allowSliding",
                               "In case of friction, this option enable/disable sliding contact."))
 
     , d_graph(initData(&d_graph,"info","") )
@@ -158,20 +169,13 @@ QPInverseProblemSolver::QPInverseProblemSolver()
 
     , d_objective(initData(&d_objective, 250.0, "objective", "Erreur between the target and the end effector "))
 
-    , m_lastCP(NULL)
     , m_CP1(nullptr)
     , m_CP2(nullptr)
     , m_CP3(nullptr)
+    , m_lastCP(nullptr)
+    , m_currentCP(nullptr)
+    , m_context(nullptr)
 {
-    sofa::helper::OptionsGroup qpSolvers{"qpOASES" , "proxQP"};
-#if defined SOFTROBOTSINVERSE_ENABLE_PROXQP && !defined SOFTROBOTSINVERSE_ENABLE_QPOASES
-    qpSolvers.setSelectedItem(QPSolverImpl::PROXQP);
-#else
-    qpSolvers.setSelectedItem(QPSolverImpl::QPOASES);
-#endif
-
-    d_qpSolver.setValue(qpSolvers);
-
     d_graph.setWidget("graph");
     createProblems();
 
@@ -185,30 +189,51 @@ QPInverseProblemSolver::QPInverseProblemSolver()
 
 void QPInverseProblemSolver::createProblems()
 {
-    switch(d_qpSolver.getValue().getSelectedId())
-    {
+    const auto qpSolver = sofa::helper::getReadAccessor(d_qpSolver);
+
+    std::string selectedSolver = UNKNOWN_OPT; // Used to detect if the user has selected an uninstalled solver
 #ifdef SOFTROBOTSINVERSE_ENABLE_PROXQP
-    case QPSolverImpl::PROXQP :
+    if (qpSolver->getSelectedItem() == PROXQP_OPT)
+        selectedSolver = PROXQP_OPT;
+#endif
+#ifdef SOFTROBOTSINVERSE_ENABLE_QPOASES
+    if (qpSolver->getSelectedItem() == QPOASES_OPT)
+        selectedSolver = QPOASES_OPT;
+#endif
+
+    if(selectedSolver == UNKNOWN_OPT)
+    {
+        if (d_qpSolver.hasDefaultValue())
+        {
+            const auto defaultSolver = d_qpSolver.getDefaultValueString();
+            msg_warning() << "Unknown or uninstalled specified solver: " << qpSolver->getSelectedItem() << ". Using the default solver instead: " << defaultSolver;
+            selectedSolver = defaultSolver;
+        }
+    }
+#ifdef SOFTROBOTSINVERSE_ENABLE_PROXQP
+    if(selectedSolver == PROXQP_OPT)
+    {
         msg_info() << "Using proxQP solver";
         m_CP1 = new module::QPInverseProblemProxQP();
         m_CP2 = new module::QPInverseProblemProxQP();
         m_CP3 = new module::QPInverseProblemProxQP();
-        break;
+    }
 #endif
 #ifdef SOFTROBOTSINVERSE_ENABLE_QPOASES
-    case QPSolverImpl::QPOASES :
+    if(selectedSolver == QPOASES_OPT)
+    {
         msg_info() << "Using qpOASES solver";
         m_CP1 = new module::QPInverseProblemQPOases();
         m_CP2 = new module::QPInverseProblemQPOases();
         m_CP3 = new module::QPInverseProblemQPOases();
-        break;
-#endif
-    default :
-        msg_error() << "Unkown specified solver: " << d_qpSolver.getValue();
-        sofa::core::objectmodel::BaseObject::d_componentState.setValue(sofa::core::objectmodel::ComponentState::Invalid);
-        break;
     }
+#endif
 
+    if (m_CP1 == nullptr)
+    {
+        msg_error() << "No installed qpSolver, the component cannot work.";
+        sofa::core::objectmodel::BaseObject::d_componentState.setValue(sofa::core::objectmodel::ComponentState::Invalid);
+    }
 
     m_currentCP = m_CP1;
 }
@@ -256,12 +281,12 @@ void QPInverseProblemSolver::init()
     VectorOperations vop(ExecParams::defaultInstance(), this->getContext());
     {
         MultiVecDeriv lambda(&vop, m_lambdaId);
-        lambda.realloc(&vop,false,true);
+        lambda.realloc(&vop,false,true,sofa::core::VecIdProperties{"lambda", GetClass()->className});
         m_lambdaId = lambda.id();
     }
     {
         MultiVecDeriv dx(&vop, m_dxId);
-        dx.realloc(&vop,false,true);
+        dx.realloc(&vop,false,true,sofa::core::VecIdProperties{"constraint_dx", GetClass()->className});
         m_dxId = dx.id();
     }
 
@@ -343,6 +368,9 @@ bool QPInverseProblemSolver::prepareStates(const ConstraintParams *cParams, Mult
 
 bool QPInverseProblemSolver::buildSystem(const ConstraintParams *cParams, MultiVecId res1, MultiVecId res2)
 {
+    if (sofa::core::objectmodel::BaseObject::d_componentState.getValue() == sofa::core::objectmodel::ComponentState::Invalid)
+        return false;
+
     SOFA_UNUSED(res1);
     SOFA_UNUSED(res2);
 
@@ -486,6 +514,8 @@ bool QPInverseProblemSolver::solveSystem(const ConstraintParams * cParams,
                                          MultiVecId res1,
                                          MultiVecId res2)
 {
+    if (sofa::core::objectmodel::BaseObject::d_componentState.getValue() == sofa::core::objectmodel::ComponentState::Invalid)
+        return false;
 
     SOFA_UNUSED(cParams);
     SOFA_UNUSED(res1);
@@ -566,6 +596,9 @@ bool QPInverseProblemSolver::solveSystem(const ConstraintParams * cParams,
 
 void QPInverseProblemSolver::computeResidual(const ExecParams* eparam)
 {
+    if (sofa::core::objectmodel::BaseObject::d_componentState.getValue() == sofa::core::objectmodel::ComponentState::Invalid)
+        return;
+
     for (unsigned int i=0; i<m_constraintsCorrections.size(); i++)
     {
         BaseConstraintCorrection* CC = m_constraintsCorrections[i];
@@ -575,6 +608,9 @@ void QPInverseProblemSolver::computeResidual(const ExecParams* eparam)
 
 bool QPInverseProblemSolver::applyCorrection(const ConstraintParams *cParams, MultiVecId res1, MultiVecId res2)
 {
+    if (sofa::core::objectmodel::BaseObject::d_componentState.getValue() == sofa::core::objectmodel::ComponentState::Invalid)
+        return false;
+
     AdvancedTimer::stepBegin("Compute And Apply Motion Correction");
 
     if (cParams->constOrder() == sofa::core::ConstraintOrder::POS_AND_VEL)

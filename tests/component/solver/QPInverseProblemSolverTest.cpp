@@ -1,11 +1,10 @@
 #include <string>
 using std::string ;
-#include <sofa/testing/BaseTest.h>
-using sofa::testing::BaseTest ;
+
+#include <gtest/gtest.h>
 #include <sofa/helper/BackTrace.h>
 #include <sofa/helper/system/Locale.h>
 #include <sofa/component/statecontainer/MechanicalObject.h>
-
 
 using sofa::helper::WriteAccessor ;
 using sofa::defaulttype::Vec3Types ;
@@ -32,61 +31,32 @@ using std::stof;
 namespace sofa
 {
 
-template <typename _DataTypes>
-struct QPInverseProblemSolverTest : public BaseTest,
-        QPInverseProblemSolver
+struct QPInverseProblemSolverTest : public ::testing::Test, QPInverseProblemSolver
 {
     typedef QPInverseProblemSolver ThisClass ;
-    typedef _DataTypes DataTypes;
-    typedef typename DataTypes::Coord Coord;
-    typedef typename DataTypes::VecCoord VecCoord;
-    typedef typename DataTypes::Real Real;
 
+    simulation::Node::SPtr m_root; ///< Root of the scene graph, created by the constructor an re-used in the tests
 
-    simulation::Node::SPtr m_root;                 ///< Root of the scene graph, created by the constructor an re-used in the tests
-
-
-    void normalTests()
-    {
-        Node::SPtr node = sofa::simulation::getSimulation()->createNewGraph("root");
-        typename MechanicalObject<DataTypes>::SPtr mecaobject = New<MechanicalObject<DataTypes> >() ;
-        typename ThisClass::SPtr thisobject = New<ThisClass >() ;
-        mecaobject->init() ;
-
-        node->addObject(mecaobject) ;
-        node->addObject(thisobject) ;
-
-        thisobject->setName("myname") ;
-        EXPECT_TRUE(thisobject->getName() == "myname") ;
-
-        EXPECT_NO_THROW( thisobject->init() ) ;
-
-        return ;
-    }
-
-
-    void doSetUp() override
+    void SetUp()
     {
         /// Load the scene
         string sceneName = "Finger.scn";
-
         string fileName  = string(SOFTROBOTSINVERSE_TEST_DIR) + "/component/solver/scenes/" + sceneName;
+        m_root = sofa::simulation::node::load(fileName.c_str());
 
-        m_root = core::objectmodel::SPtr_dynamic_cast<simulation::Node>( sofa::simulation::node::load(fileName.c_str()));
-
-        /// Test if load has succeededls
-        simulation::SceneLoaderXML scene;
-
-        if(!m_root || !scene.loadSucceed)
+        if(!m_root)
             ADD_FAILURE() << "Error while loading the scene: " << sceneName << std::endl;
     }
 
+    void normalTests()
+    {
+        EXPECT_NO_THROW(sofa::simulation::node::initRoot(m_root.get()));
+        return ;
+    }
 
     // Test the behavior of the algorithm
     void behaviorTests(const std::string& qpSolver)
     {
-        helper::system::TemporaryLocale locale(LC_NUMERIC, "C");
-
         sofa::simulation::node::initRoot(m_root.get());
 
         int nbTimeStep = 10;
@@ -146,15 +116,7 @@ struct QPInverseProblemSolverTest : public BaseTest,
             sofa::simulation::node::animate(m_root.get());
 
         lambdaString  =  m_root->getChild("finger")->getChild("controlledPoints")->getObject("cable")->findData("force")->getValueString();
-        // Don't know why proxQP has a very small primal residual here instead 
-        if(qpSolver == "proxQP")
-        {
-          EXPECT_GE( stof(lambdaString.c_str()), -DBL_EPSILON);
-        }
-        else
-        {
-          EXPECT_GE( stof(lambdaString.c_str()), 0.);
-        }
+        EXPECT_GE( stof(lambdaString.c_str()), -DBL_EPSILON);
 
         // State2: Test lambda >= -20
         m_root->getChild("goal")->getObject("goalMO")->findData("position")->read("-110 -10 7.5");
@@ -212,36 +174,28 @@ struct QPInverseProblemSolverTest : public BaseTest,
 
 };
 
-
-
-using ::testing::Types;
-typedef Types<Vec3Types> DataTypes;
-
-TYPED_TEST_SUITE(QPInverseProblemSolverTest, DataTypes);
-
-TYPED_TEST(QPInverseProblemSolverTest, normalTests) {
+TEST_F(QPInverseProblemSolverTest, normalTests) {
     ASSERT_NO_THROW( this->normalTests() );
 }
 
-#ifdef SOFTROBOTSINVERSE_ENABLE_QPOASES
-TYPED_TEST(QPInverseProblemSolverTest, regressionTestsQpOASES) {
+// We should always install at least one solver
+// and the scene should not crash if we have selected an uninstalled solver
+
+TEST_F(QPInverseProblemSolverTest, regressionTestsQpOASES) {
     ASSERT_NO_THROW( this->regressionTests("qpOASES") );
 }
 
-TYPED_TEST(QPInverseProblemSolverTest, behaviorTestsQpOASES) {
+TEST_F(QPInverseProblemSolverTest, behaviorTestsQpOASES) {
     ASSERT_NO_THROW( this->behaviorTests("qpOASES") );
 }
-#endif
 
-#ifdef SOFTROBOTSINVERSE_ENABLE_PROXQP
-TYPED_TEST(QPInverseProblemSolverTest, regressionTestsProxQP) {
+TEST_F(QPInverseProblemSolverTest, regressionTestsProxQP) {
     ASSERT_NO_THROW( this->regressionTests("proxQP") );
 }
 
-TYPED_TEST(QPInverseProblemSolverTest, behaviorTestsProxQP) {
+TEST_F(QPInverseProblemSolverTest, behaviorTestsProxQP) {
     ASSERT_NO_THROW( this->behaviorTests("proxQP") );
 }
 
-#endif
 }
 
