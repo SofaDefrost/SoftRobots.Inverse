@@ -94,27 +94,27 @@ public:
     ////////////////////////////////////////////////////////////////////////////////
 
     ////////////////////// Inherited from ConstraintSolver ///////////////////////////
-    bool prepareStates(const ConstraintParams * cParams,
+    bool doPrepareStates(const ConstraintParams * cParams,
                        MultiVecId res1,
                        MultiVecId res2=MultiVecId::null()) override;
 
-    bool buildSystem(const ConstraintParams * cParams,
+    bool doBuildSystem(const ConstraintParams * cParams,
                      MultiVecId res1,
                      MultiVecId res2=MultiVecId::null()) override;
 
-    void rebuildSystem(double massFactor,
+    void doRebuildSystem(double massFactor,
                        double forceFactor) override;
 
-    bool solveSystem(const ConstraintParams* cParams,
+    bool doSolveSystem(const ConstraintParams* cParams,
                      MultiVecId res1, MultiVecId res2=MultiVecId::null()) override;
 
-    bool applyCorrection(const ConstraintParams * cParams,
+    bool doApplyCorrection(const ConstraintParams * cParams,
                          MultiVecId res1,
                          MultiVecId res2=MultiVecId::null()) override;
 
-    void computeResidual(const ExecParams* params) override;
+    void doComputeResidual(const ExecParams* params) override;
 
-    void removeConstraintCorrection(BaseConstraintCorrection *s) override;
+    void doRemoveConstraintCorrection(BaseConstraintCorrection *s) override;
 
     MultiVecDerivId getLambda() const override
     {

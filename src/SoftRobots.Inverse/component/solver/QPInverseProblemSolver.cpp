@@ -296,12 +296,12 @@ void QPInverseProblemSolver::cleanup()
     ConstraintSolver::cleanup();
 }
 
-void QPInverseProblemSolver::removeConstraintCorrection(sofa::core::behavior::BaseConstraintCorrection *s)
+void QPInverseProblemSolver::doRemoveConstraintCorrection(sofa::core::behavior::BaseConstraintCorrection *s)
 {
     m_constraintsCorrections.erase(std::remove(m_constraintsCorrections.begin(), m_constraintsCorrections.end(), s), m_constraintsCorrections.end());
 }
 
-bool QPInverseProblemSolver::prepareStates(const ConstraintParams *cParams, MultiVecId res1, MultiVecId res2)
+bool QPInverseProblemSolver::doPrepareStates(const ConstraintParams *cParams, MultiVecId res1, MultiVecId res2)
 {
     SOFA_UNUSED(res1);
     SOFA_UNUSED(res2);
@@ -341,7 +341,7 @@ bool QPInverseProblemSolver::prepareStates(const ConstraintParams *cParams, Mult
     return true;
 }
 
-bool QPInverseProblemSolver::buildSystem(const ConstraintParams *cParams, MultiVecId res1, MultiVecId res2)
+bool QPInverseProblemSolver::doBuildSystem(const ConstraintParams *cParams, MultiVecId res1, MultiVecId res2)
 {
     SOFA_UNUSED(res1);
     SOFA_UNUSED(res2);
@@ -469,7 +469,7 @@ inline void QPInverseProblemSolver::buildCompliance(const ConstraintParams *cPar
     AdvancedTimer::stepEnd("Get Compliance");
 }
 
-void QPInverseProblemSolver::rebuildSystem(double massFactor, double forceFactor)
+void QPInverseProblemSolver::doRebuildSystem(double massFactor, double forceFactor)
 {
     d_graph.beginEdit()->clear();
     d_graph.endEdit();
@@ -482,7 +482,7 @@ void QPInverseProblemSolver::rebuildSystem(double massFactor, double forceFactor
     }
 }
 
-bool QPInverseProblemSolver::solveSystem(const ConstraintParams * cParams,
+bool QPInverseProblemSolver::doSolveSystem(const ConstraintParams * cParams,
                                          MultiVecId res1,
                                          MultiVecId res2)
 {
@@ -564,7 +564,7 @@ bool QPInverseProblemSolver::solveSystem(const ConstraintParams * cParams,
 }
 
 
-void QPInverseProblemSolver::computeResidual(const ExecParams* eparam)
+void QPInverseProblemSolver::doComputeResidual(const ExecParams* eparam)
 {
     for (unsigned int i=0; i<m_constraintsCorrections.size(); i++)
     {
@@ -573,7 +573,7 @@ void QPInverseProblemSolver::computeResidual(const ExecParams* eparam)
     }
 }
 
-bool QPInverseProblemSolver::applyCorrection(const ConstraintParams *cParams, MultiVecId res1, MultiVecId res2)
+bool QPInverseProblemSolver::doApplyCorrection(const ConstraintParams *cParams, MultiVecId res1, MultiVecId res2)
 {
     AdvancedTimer::stepBegin("Compute And Apply Motion Correction");
 
