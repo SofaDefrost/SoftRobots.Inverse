@@ -65,7 +65,7 @@ bool QPInverseProblemSolver_Trampoline::solveSystem()
                           );
 }
 
-bool QPInverseProblemSolver_Trampoline::solveSystem(const sofa::core::ConstraintParams* cParams,
+bool QPInverseProblemSolver_Trampoline::doSolveSystem(const sofa::core::ConstraintParams* cParams,
                                                     sofa::core::MultiVecId res1,
                                                     sofa::core::MultiVecId res2)
 {

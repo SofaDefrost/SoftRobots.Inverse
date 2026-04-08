@@ -44,7 +44,7 @@ public:
 
     bool solveSystem();
 
-    bool solveSystem(const sofa::core::ConstraintParams* cParams,
+    bool doSolveSystem(const sofa::core::ConstraintParams* cParams,
                      sofa::core::MultiVecId res1,
                      sofa::core::MultiVecId res2=sofa::core::MultiVecId::null()) override;
 
