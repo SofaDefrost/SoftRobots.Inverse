@@ -469,19 +469,6 @@ inline void QPInverseProblemSolver::buildCompliance(const ConstraintParams *cPar
     AdvancedTimer::stepEnd("Get Compliance");
 }
 
-void QPInverseProblemSolver::rebuildSystem(double massFactor, double forceFactor)
-{
-    d_graph.beginEdit()->clear();
-    d_graph.endEdit();
-
-    //rebuildConstraintCorrectionSystem()
-    for (unsigned int i=0; i<m_constraintsCorrections.size(); i++)
-    {
-        BaseConstraintCorrection* CC = m_constraintsCorrections[i];
-        CC->rebuildSystem(massFactor, forceFactor);
-    }
-}
-
 bool QPInverseProblemSolver::solveSystem(const ConstraintParams * cParams,
                                          MultiVecId res1,
                                          MultiVecId res2)
@@ -561,16 +548,6 @@ bool QPInverseProblemSolver::solveSystem(const ConstraintParams * cParams,
 
 
     return true;
-}
-
-
-void QPInverseProblemSolver::computeResidual(const ExecParams* eparam)
-{
-    for (unsigned int i=0; i<m_constraintsCorrections.size(); i++)
-    {
-        BaseConstraintCorrection* CC = m_constraintsCorrections[i];
-        CC->computeResidual(eparam,&m_currentCP->f);
-    }
 }
 
 bool QPInverseProblemSolver::applyCorrection(const ConstraintParams *cParams, MultiVecId res1, MultiVecId res2)
