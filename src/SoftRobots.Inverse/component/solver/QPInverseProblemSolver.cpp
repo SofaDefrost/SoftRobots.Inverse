@@ -42,8 +42,8 @@
 #include <sofa/simulation/mechanicalvisitor/MechanicalResetConstraintVisitor.h>
 #include <sofa/simulation/mechanicalvisitor/MechanicalVOpVisitor.h>
 #include <sofa/simulation/mechanicalvisitor/MechanicalProjectJacobianMatrixVisitor.h>
-#include <sofa/simulation/DefaultTaskScheduler.h>
-#include <sofa/simulation/MainTaskSchedulerFactory.h>
+#include <sofa/simulation/task/DefaultTaskScheduler.h>
+#include <sofa/simulation/task/MainTaskSchedulerFactory.h>
 #include <sofa/helper/AdvancedTimer.h>
 #include <sofa/helper/ScopedAdvancedTimer.h>
 #include <sofa/helper/map.h>
