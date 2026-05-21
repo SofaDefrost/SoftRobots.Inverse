@@ -126,10 +126,10 @@ void YoungModulusActuator<DataTypes>::bwdInit()
 {
     BaseContext * context = getContext();
 
-    if (l_forceField.empty())
+    if (l_forceField.empty() || l_forceField.get()==nullptr)
     {
         l_forceField.set(context->get< BaseLinearElasticityFEMForceField< DataTypes >>());
-        if (!l_forceField.empty())
+        if (!l_forceField.empty() && l_forceField.get()!=nullptr)
         {
             msg_info() << "Found force field named " << l_forceField->getName();
             m_initialYoungModulus = l_forceField->d_youngModulus.getValue()[0];
