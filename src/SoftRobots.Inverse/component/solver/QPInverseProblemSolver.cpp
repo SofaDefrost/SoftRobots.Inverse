@@ -42,8 +42,8 @@
 #include <sofa/simulation/mechanicalvisitor/MechanicalResetConstraintVisitor.h>
 #include <sofa/simulation/mechanicalvisitor/MechanicalVOpVisitor.h>
 #include <sofa/simulation/mechanicalvisitor/MechanicalProjectJacobianMatrixVisitor.h>
-#include <sofa/simulation/DefaultTaskScheduler.h>
-#include <sofa/simulation/MainTaskSchedulerFactory.h>
+#include <sofa/simulation/task/DefaultTaskScheduler.h>
+#include <sofa/simulation/task/MainTaskSchedulerFactory.h>
 #include <sofa/helper/AdvancedTimer.h>
 #include <sofa/helper/ScopedAdvancedTimer.h>
 #include <sofa/helper/map.h>
@@ -554,16 +554,6 @@ bool QPInverseProblemSolver::solveSystem(const ConstraintParams * cParams,
 
 
     return true;
-}
-
-
-void QPInverseProblemSolver::computeResidual(const ExecParams* eparam)
-{
-    for (unsigned int i=0; i<m_constraintsCorrections.size(); i++)
-    {
-        BaseConstraintCorrection* CC = m_constraintsCorrections[i];
-        CC->computeResidual(eparam,&m_currentCP->f);
-    }
 }
 
 bool QPInverseProblemSolver::applyCorrection(const ConstraintParams *cParams, MultiVecId res1, MultiVecId res2)
