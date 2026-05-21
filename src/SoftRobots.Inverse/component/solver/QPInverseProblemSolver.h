@@ -34,8 +34,8 @@
 #include <sofa/core/behavior/BaseConstraintCorrection.h>
 #include <sofa/core/objectmodel/DataCallback.h>
 #include <sofa/core/objectmodel/KeypressedEvent.h>
-#include <sofa/simulation/TaskScheduler.h>
-#include <sofa/simulation/InitTasks.h>
+#include <sofa/simulation/task/TaskScheduler.h>
+#include <sofa/simulation/task/InitTasks.h>
 #include <sofa/helper/map.h>
 #include <sofa/helper/OptionsGroup.h>
 
