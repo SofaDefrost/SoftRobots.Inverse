@@ -53,16 +53,20 @@ YoungModulusActuator<DataTypes>::YoungModulusActuator(MechanicalState* object)
     , d_maxYoungVariationRatio(initData(&d_maxYoungVariationRatio, (Real)1.0e1, "maxYoungVariationRatio",
                                         "Maximum variation of young / its actual value. \n"
                                         "If unspecified default value 1.0e1."))
-    , m_previousYoungValue(0.0)
-    , m_previousVolumeValue(0.0)
-    , m_deltaYoungModulus(0.0)
-    , m_deltaVolume(0.0)
+
+    , d_youngModulus(initData(&d_youngModulus, (Real)0., "youngModulus", "Optimized Young modulus."))
+
+    , l_forceField(initLink("forceField", "link to the force field"))
+
+    , m_initialYoungModulus(0.0)
     , m_initError(false)
-    , m_youngModulus(0.0)
+    , m_deltaYoungModulus(0.0)
 {
     // QP on only one value, we set dimension to one
     m_lambdaMax.resize(1);
     m_lambdaMin.resize(1);
+
+    d_youngModulus.setReadOnly(true);
 }
 
 
@@ -99,16 +103,21 @@ void YoungModulusActuator<DataTypes>::initLimit()
 template<class DataTypes>
 void YoungModulusActuator<DataTypes>::updateLimit()
 {
-    m_lambdaMin[0]=-(m_youngModulus-d_minYoung.getValue());
-    m_lambdaMax[0]=d_maxYoung.getValue()-m_youngModulus;
+    const auto& youngModulus = sofa::helper::getReadAccessor(d_youngModulus);
+    const auto& minYoung = sofa::helper::getReadAccessor(d_minYoung);
+    const auto& maxYoung = sofa::helper::getReadAccessor(d_maxYoung);
+    const auto& maxYoungVariationRatio = sofa::helper::getReadAccessor(d_maxYoungVariationRatio);
 
-    double youngMin=m_youngModulus-m_youngModulus*d_maxYoungVariationRatio.getValue();
-    if(youngMin>=d_minYoung.getValue())
-        m_lambdaMin[0]=-m_youngModulus*d_maxYoungVariationRatio.getValue();
+    m_lambdaMin[0] =- (youngModulus - minYoung);
+    m_lambdaMax[0] = maxYoung - youngModulus;
 
-    double youngMax=m_youngModulus+m_youngModulus*d_maxYoungVariationRatio.getValue();
-    if(youngMax<=d_maxYoung.getValue())
-        m_lambdaMax[0]=m_youngModulus*d_maxYoungVariationRatio.getValue();
+    double youngMin = youngModulus - youngModulus * maxYoungVariationRatio;
+    if(youngMin >= minYoung)
+        m_lambdaMin[0] =- youngModulus * maxYoungVariationRatio;
+
+    double youngMax = youngModulus + youngModulus * maxYoungVariationRatio;
+    if(youngMax <= maxYoung)
+        m_lambdaMax[0] = youngModulus * maxYoungVariationRatio;
 }
 
 
@@ -116,20 +125,23 @@ template<class DataTypes>
 void YoungModulusActuator<DataTypes>::bwdInit()
 {
     BaseContext * context = getContext();
-    m_tetraForceField = context->get< TetrahedronFEMForceField< DataTypes >  >();
 
-    if(m_tetraForceField != nullptr)
+    if (l_forceField.empty())
     {
-        msg_info()<<"Found tetrahedronFEMForceField named "<<m_tetraForceField->getName();
-        const VecReal& youngModulus = m_tetraForceField->d_youngModulus.getValue();
-        m_youngModulus = youngModulus[0];
-        m_initialYoungModulus = m_youngModulus;
-        initLimit();
-    }
-    else
-    {
-        msg_error()<<"No TetrahedronFEMForceField found";
-        d_componentState = ComponentState::Invalid;
+        l_forceField.set(context->get< BaseLinearElasticityFEMForceField< DataTypes >>());
+        if (!l_forceField.empty())
+        {
+            msg_info() << "Found force field named " << l_forceField->getName();
+            m_initialYoungModulus = l_forceField->d_youngModulus.getValue()[0];
+
+            d_youngModulus.setValue(m_initialYoungModulus);
+            initLimit();
+        }
+        else
+        {
+            msg_error() << "No force field found";
+            d_componentState = ComponentState::Invalid;
+        }
     }
 }
 
@@ -140,7 +152,7 @@ void YoungModulusActuator<DataTypes>::reset()
     if(d_componentState.getValue() == ComponentState::Invalid)
         return;
 
-    m_youngModulus = m_initialYoungModulus;
+    d_youngModulus.setValue(m_initialYoungModulus);
     initLimit();
 }
 
@@ -161,18 +173,17 @@ void YoungModulusActuator<DataTypes>::buildConstraintMatrix(const ConstraintPara
 
     MatrixDeriv& matrix = *cMatrix.beginEdit();
 
-    const VecReal& youngModulus = m_tetraForceField->d_youngModulus.getValue();
-    m_youngModulus = youngModulus[0];
-
     // TODO(damien): this seems a bit hacky :) what are the other possibilities.
     VecDeriv force;
     getForce(force, x);
     
     MatrixDerivRowIterator rowIterator = matrix.writeLine(constraintIndex);
+    const auto& youngModulus = l_forceField->d_youngModulus.getValue()[0];
+    d_youngModulus.setValue(youngModulus);
 
     for (unsigned int j=0; j<force.size(); j++)
     {
-        force[j] = force[j]*(1.0/m_youngModulus);
+        force[j] = force[j]*(1.0/youngModulus);
 
         if(force[j].norm() != 0.0)
             rowIterator.setCol(j, force[j]);
@@ -200,7 +211,7 @@ void YoungModulusActuator<DataTypes>::getForce(VecDeriv& force,
     //                                                      const DataVecCoord& d_x,
     //                                                      const DataVecDeriv& /*d_v*/)
     DataVecDeriv v;
-    m_tetraForceField->addForce(nullptr, f, x, v);
+    l_forceField->addForce(nullptr, f, x, v);
     force = f.getValue();
 }
 
@@ -229,14 +240,14 @@ void YoungModulusActuator<DataTypes>::storeResults(vector<double> &lambda, vecto
     if(d_componentState.getValue() == ComponentState::Invalid)
         return;
 
-    VecReal &youngModulus = *m_tetraForceField->d_youngModulus.beginEdit();
+    Real youngModulus = sofa::helper::getWriteAccessor(d_youngModulus);
+    youngModulus += Real(lambda[0]);
 
-    m_previousYoungValue = youngModulus[0];
-    youngModulus[0] += Real(lambda[0]);
-    m_youngModulus = youngModulus[0];
-
-    m_tetraForceField->d_youngModulus.endEdit();
-    m_tetraForceField->reinit();
+    if (d_applyForce.getValue())
+    {
+        l_forceField->setYoungModulus(youngModulus);
+        l_forceField->reinit();
+    }
 
     updateLimit();
 

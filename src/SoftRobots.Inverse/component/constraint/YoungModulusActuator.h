@@ -28,7 +28,7 @@
 ******************************************************************************/
 #pragma once
 
-#include <sofa/component/solidmechanics/fem/elastic/TetrahedronFEMForceField.h>
+#include <sofa/component/solidmechanics/fem/elastic/BaseLinearElasticityFEMForceField.h>
 #include <SoftRobots.Inverse/component/behavior/Actuator.h>
 
 #include <SoftRobots.Inverse/component/config.h>
@@ -40,7 +40,7 @@ namespace softrobotsinverse::constraint
     using sofa::linearalgebra::BaseVector ;
     using sofa::core::ConstraintParams ;
     using softrobotsinverse::behavior::Actuator ;
-    using sofa::component::solidmechanics::fem::elastic::TetrahedronFEMForceField ;
+    using sofa::component::solidmechanics::fem::elastic::BaseLinearElasticityFEMForceField ;
 
 /**
  * This component is used to solve effector constraint by changing young moduli.
@@ -102,19 +102,17 @@ protected:
     sofa::Data<Real> d_minYoung;
     sofa::Data<Real> d_maxYoung;
     sofa::Data<Real> d_maxYoungVariationRatio;
-    sofa::Data<bool> d_hasVolumeOptimization;
 
-    double m_previousYoungValue;
-    Real   m_previousVolumeValue;
-
-    double m_deltaYoungModulus;
-    Real   m_deltaVolume;
-
-    bool m_initError;
-    Real m_youngModulus;
+    sofa::Data<Real> d_youngModulus;
     Real m_initialYoungModulus;
 
-    TetrahedronFEMForceField< DataTypes > * m_tetraForceField;
+    bool m_initError;
+    double m_deltaYoungModulus;
+
+    /// Link to be set to the forcefield in the component graph.
+    sofa::SingleLink<YoungModulusActuator<DataTypes>,
+                     BaseLinearElasticityFEMForceField<DataTypes>,
+                     sofa::BaseLink::FLAG_STOREPATH | sofa::BaseLink::FLAG_STRONGLINK> l_forceField;
 
 
 private:
@@ -136,6 +134,7 @@ private:
     using Actuator<DataTypes>::m_lambdaMin ;
     using Actuator<DataTypes>::getContext ;
     using Actuator<DataTypes>::d_componentState ;
+    using Actuator<DataTypes>::d_applyForce ;
     ///////////////////////////////////////////////////////////////////////////
 };
 
