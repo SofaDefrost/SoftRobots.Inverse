@@ -142,6 +142,7 @@ private:
 // each compilation unit. see: http://www.stroustrup.com/C++11FAQ.html#extern-templates
 #if !defined(SOFTROBOTS_INVERSE_YOUNGMODULUSACTUATOR_CPP)
 extern template class SOFA_SOFTROBOTS_INVERSE_API YoungModulusActuator<sofa::defaulttype::Vec3Types>;
+extern template class SOFA_SOFTROBOTS_INVERSE_API YoungModulusActuator<sofa::defaulttype::Rigid3Types>;
 #endif
 
 } // namespace
