@@ -146,7 +146,7 @@ public:
     sofa::Data<sofa::helper::OptionsGroup> d_qpSolver;
 
     sofa::Data<double>    d_energyWeight;
-    SOFA_ATTRIBUTE_DEPRECATED("v25.12", "v26.12", "Use d_energyWeight instead.")
+    SOFA_ATTRIBUTE_DEPRECATED("v26.06", "v27.06", "Use d_energyWeight instead.")
     sofa::core::objectmodel::lifecycle::RenamedData<double>    d_epsilon;
 
     sofa::Data<bool>      d_actuatorsOnly;
