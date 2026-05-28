@@ -108,7 +108,7 @@ protected:
     sofa::Data<Real>                             d_displacement;
     sofa::Data<Deriv>                            d_direction;
     sofa::Data<Real>                             d_energyWeight;
-    SOFA_ATTRIBUTE_DEPRECATED("v25.12", "v26.12", "Use d_energyWeight instead.")
+    SOFA_ATTRIBUTE_DEPRECATED("v26.06", "v27.06", "Use d_energyWeight instead.")
     sofa::core::objectmodel::lifecycle::RenamedData<Real> d_epsilon;
 
     sofa::Data<bool>                             d_showForce;
