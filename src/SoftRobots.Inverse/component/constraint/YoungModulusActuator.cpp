@@ -43,10 +43,13 @@ void registerYoungModulusActuator(ObjectFactory* factory)
 {
     factory->registerObjects(ObjectRegistrationData("This component is used to solve effector constraint "
                                                     "by changing young moduli")
-                                 .add< YoungModulusActuator<Vec3Types> >(true));
+                                 .add< YoungModulusActuator<Vec3Types> >(true)
+                                 .add< YoungModulusActuator<Rigid3Types> >()
+                             );
 }
 
 template class SOFA_SOFTROBOTS_INVERSE_API YoungModulusActuator<Vec3Types>;
+template class SOFA_SOFTROBOTS_INVERSE_API YoungModulusActuator<Rigid3Types>;
 
 
 } // namespace
