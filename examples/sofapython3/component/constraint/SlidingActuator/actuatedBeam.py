@@ -23,7 +23,7 @@ def createScene(rootNode):
     rootNode.addObject('RequiredPlugin',
                    name='Sofa.Component.Mapping.NonLinear')  # Needed to use components [RigidMapping]
     rootNode.addObject('RequiredPlugin',
-                   name='Sofa.Component.ODESolver.Backward')  # Needed to use components [EulerImplicitIntegrationScheme]
+                   name='Sofa.Component.IntegrationSchemes.Backward')  # Needed to use components [EulerImplicitIntegrationScheme]
     rootNode.addObject('RequiredPlugin',
                    name='Sofa.Component.SolidMechanics.Spring')  # Needed to use components [RestShapeSpringsForceField]
     rootNode.addObject('RequiredPlugin',
