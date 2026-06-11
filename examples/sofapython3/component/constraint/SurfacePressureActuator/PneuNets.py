@@ -17,7 +17,7 @@ def createScene(rootNode):
     # Goal                                   #
     ##########################################
     goal = rootNode.addChild('goal')
-    goal.addObject('EulerImplicitSolver', firstOrder=True)
+    goal.addObject('EulerImplicitIntegrationScheme', firstOrder=True)
     goal.addObject('CGLinearSolver', iterations=100, tolerance=1e-5, threshold=1e-5)
     goal.addObject('MechanicalObject', name='goalMO', position=[[-230, 15, 0]])
     goal.addObject('SphereCollisionModel', radius=5, group=3)
@@ -27,7 +27,7 @@ def createScene(rootNode):
     # FEM Model                              #
     ##########################################
     model = rootNode.addChild('model')
-    model.addObject('EulerImplicitSolver', rayleighStiffness=0.2, rayleighMass=0.2)
+    model.addObject('EulerImplicitIntegrationScheme', rayleighStiffness=0.2, rayleighMass=0.2)
     model.addObject('SparseLDLSolver')
 
     model.addObject('MeshVTKLoader', name='loader', filename=path + 'PneuNets.vtk')

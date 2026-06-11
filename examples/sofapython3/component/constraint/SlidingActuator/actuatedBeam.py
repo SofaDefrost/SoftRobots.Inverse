@@ -23,7 +23,7 @@ def createScene(rootNode):
     rootNode.addObject('RequiredPlugin',
                    name='Sofa.Component.Mapping.NonLinear')  # Needed to use components [RigidMapping]
     rootNode.addObject('RequiredPlugin',
-                   name='Sofa.Component.ODESolver.Backward')  # Needed to use components [EulerImplicitSolver]
+                   name='Sofa.Component.ODESolver.Backward')  # Needed to use components [EulerImplicitIntegrationScheme]
     rootNode.addObject('RequiredPlugin',
                    name='Sofa.Component.SolidMechanics.Spring')  # Needed to use components [RestShapeSpringsForceField]
     rootNode.addObject('RequiredPlugin',
@@ -41,7 +41,7 @@ def createScene(rootNode):
     # Goal for end effector                 #
     #########################################
     goal = rootNode.addChild('goal')
-    goal.addObject('EulerImplicitSolver', firstOrder=True)
+    goal.addObject('EulerImplicitIntegrationScheme', firstOrder=True)
     goal.addObject('CGLinearSolver', iterations=100, tolerance=1e-5, threshold=1e-4)
     goal.addObject('MechanicalObject', name='dofs', template='Rigid3', showObject=True, drawMode=2, showObjectScale=1,
                    position=[30.0, 0.0, 0.0, 0, 0, 0, 1])
@@ -52,7 +52,7 @@ def createScene(rootNode):
     # Beam Model                             #
     ##########################################
     model = rootNode.addChild('model')
-    model.addObject('EulerImplicitSolver', rayleighStiffness=0.1, rayleighMass=0.1)
+    model.addObject('EulerImplicitIntegrationScheme', rayleighStiffness=0.1, rayleighMass=0.1)
     model.addObject('SparseLDLSolver', template="CompressedRowSparseMatrixMat3x3d")
     model.addObject('GenericConstraintCorrection')
     model.addObject('MeshTopology', position=[[0, 0, 0], [5, 0, 0], [10, 0, 0], [15, 0, 0], [20, 0, 0]],

@@ -27,7 +27,7 @@ def createScene(rootNode):
     # Effector goal for interactive control  #
     ##########################################
     goal = rootNode.addChild('goal')
-    goal.addObject('EulerImplicitSolver', firstOrder=True)
+    goal.addObject('EulerImplicitIntegrationScheme', firstOrder=True)
     goal.addObject('CGLinearSolver', iterations=100, tolerance=0.0001, threshold=0.0001)
     goal.addObject('MechanicalObject', name='dofs', showObject=True, showObjectScale=2, drawMode=1,
                    position=[[50, 5, 130], [50, 5, 70], [50, 5, 15]])
@@ -44,7 +44,7 @@ def createScene(rootNode):
     # FEM Model                              #
     ##########################################
     model = rootNode.addChild('model')
-    model.addObject('EulerImplicitSolver')
+    model.addObject('EulerImplicitIntegrationScheme')
     model.addObject('SparseLDLSolver', template="CompressedRowSparseMatrixMat3x3d")
     model.addObject('MeshVTKLoader', name='loader', filename=mecaMeshFile, scale3d=[1.5, 1.5, 1.5],
                     translation=translation)

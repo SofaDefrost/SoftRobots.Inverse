@@ -13,7 +13,7 @@ def createScene(rootNode):
     settings.addObject('RequiredPlugin', name='Sofa.Component.IO.Mesh')  # Needed to use components [MeshVTKLoader]  
     settings.addObject('RequiredPlugin', name='Sofa.Component.LinearSolver.Direct')  # Needed to use components [SparseLDLSolver]
     settings.addObject('RequiredPlugin', name='Sofa.Component.LinearSolver.Iterative')  # Needed to use components [CGLinearSolver,ShewchukPCGLinearSolver]
-    settings.addObject('RequiredPlugin', name='Sofa.Component.ODESolver.Backward')  # Needed to use components [EulerImplicitSolver]
+    settings.addObject('RequiredPlugin', name='Sofa.Component.ODESolver.Backward')  # Needed to use components [EulerImplicitIntegrationScheme]
     settings.addObject('RequiredPlugin', name='Sofa.Component.StateContainer')  # Needed to use components [MechanicalObject]
     settings.addObject('RequiredPlugin', name='Sofa.Component.Visual')  # Needed to use components [VisualStyle]  
     settings.addObject('RequiredPlugin', name='Sofa.Component.Constraint.Projective')  # Needed to use components [FixedProjectiveConstraint]
@@ -38,7 +38,7 @@ def createScene(rootNode):
 
     #goal
     goal = rootNode.addChild('goal')
-    goal.addObject('EulerImplicitSolver', firstOrder=True)
+    goal.addObject('EulerImplicitIntegrationScheme', firstOrder=True)
     goal.addObject('CGLinearSolver', iterations=100,threshold=1e-5, tolerance=1e-5)
     goal.addObject('MechanicalObject', name='goalMO', position=[[0, 0, 125]])
     goal.addObject('SphereCollisionModel', radius=5, group=1)
@@ -46,7 +46,7 @@ def createScene(rootNode):
 
     #robot
     robot = rootNode.addChild('robot')
-    robot.addObject('EulerImplicitSolver')
+    robot.addObject('EulerImplicitIntegrationScheme')
     robot.addObject('SparseLDLSolver', template="CompressedRowSparseMatrixd")
     robot.addObject('GenericConstraintCorrection')
     robot.addObject('MeshVTKLoader', name="loader", filename="mesh/diamond.vtk")

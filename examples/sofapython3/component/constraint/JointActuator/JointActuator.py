@@ -17,7 +17,7 @@ def createScene(rootNode):
     rootNode.addObject('RequiredPlugin', name='Sofa.Component.AnimationLoop')  # Needed to use components [FreeMotionAnimationLoop]
     rootNode.addObject('RequiredPlugin', name='Sofa.Component.Constraint.Lagrangian.Correction')  # Needed to use components [UncoupledConstraintCorrection]
     rootNode.addObject('RequiredPlugin', name='Sofa.Component.LinearSolver.Iterative')  # Needed to use components [CGLinearSolver]
-    rootNode.addObject('RequiredPlugin', name='Sofa.Component.ODESolver.Backward')  # Needed to use components [EulerImplicitSolver]
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.ODESolver.Backward')  # Needed to use components [EulerImplicitIntegrationScheme]
     rootNode.addObject('RequiredPlugin', name='Sofa.Component.Setting')  # Needed to use components [BackgroundSetting]
     rootNode.addObject('RequiredPlugin', name='Sofa.Component.StateContainer')  # Needed to use components [MechanicalObject]
     rootNode.addObject('RequiredPlugin', name='Sofa.Component.Visual')  # Needed to use components [VisualStyle]
@@ -38,7 +38,7 @@ def createScene(rootNode):
 
     # Target position of the end effector
     goal = rootNode.addChild('Goal')
-    goal.addObject('EulerImplicitSolver', firstOrder=True)
+    goal.addObject('EulerImplicitIntegrationScheme', firstOrder=True)
     goal.addObject('CGLinearSolver', iterations=25, tolerance=1e-5, threshold=1e-5)
     goal.addObject('MechanicalObject', name='dofs', position=[5, 5, 0],
                    showObject=True, showObjectScale=0.5, drawMode=2)
@@ -46,7 +46,7 @@ def createScene(rootNode):
 
     # Simulation node
     simulation = rootNode.addChild('Simulation')
-    simulation.addObject('EulerImplicitSolver')
+    simulation.addObject('EulerImplicitIntegrationScheme')
     simulation.addObject('CGLinearSolver', iterations=25, tolerance=1e-5, threshold=1e-5)
 
     object = simulation.addChild('Object')

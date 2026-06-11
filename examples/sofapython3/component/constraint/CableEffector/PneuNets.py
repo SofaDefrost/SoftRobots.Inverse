@@ -17,7 +17,7 @@ def createScene(rootNode):
     # FEM Model                              #
     ##########################################
     model = rootNode.addChild('model')
-    model.addObject('EulerImplicitSolver', rayleighStiffness=0.1, rayleighMass=0.1)
+    model.addObject('EulerImplicitIntegrationScheme', rayleighStiffness=0.1, rayleighMass=0.1)
     model.addObject('SparseLDLSolver', template="CompressedRowSparseMatrixMat3x3d")
     model.addObject('MeshVTKLoader', name='loader', filename=path + 'PneuNets.vtk')
     model.addObject('MeshTopology', src='@loader', name='container')

@@ -30,7 +30,7 @@ def createScene(rootNode):
                    name='Sofa.Component.Mapping.Linear')  # Needed to use components [BarycentricMapping]  
     rootNode.addObject('RequiredPlugin', name='Sofa.Component.Mass')  # Needed to use components [UniformMass]  
     rootNode.addObject('RequiredPlugin',
-                   name='Sofa.Component.ODESolver.Backward')  # Needed to use components [EulerImplicitSolver]  
+                   name='Sofa.Component.ODESolver.Backward')  # Needed to use components [EulerImplicitIntegrationScheme]  
     rootNode.addObject('RequiredPlugin',
                    name='Sofa.Component.SolidMechanics.FEM.Elastic')  # Needed to use components [TetrahedronFEMForceField]  
     rootNode.addObject('RequiredPlugin',
@@ -60,7 +60,7 @@ def createScene(rootNode):
     ##########################################
     goal = rootNode.addChild('goal')
     goal.addObject('VisualStyle', displayFlags='showCollisionModels')
-    goal.addObject('EulerImplicitSolver', firstOrder=True)
+    goal.addObject('EulerImplicitIntegrationScheme', firstOrder=True)
     goal.addObject('CGLinearSolver', iterations=100, tolerance=1e-5, threshold=1e-5)
     goal.addObject('MechanicalObject', name='goalMO', showObject=True, showObjectScale=10, drawMode=1,
                    showColor=[255, 255, 255, 255], position=[40, 30, 30])
@@ -71,7 +71,7 @@ def createScene(rootNode):
     # FEM Model                              #
     ##########################################
     model = rootNode.addChild('model')
-    model.addObject('EulerImplicitSolver')
+    model.addObject('EulerImplicitIntegrationScheme')
     model.addObject('SparseLDLSolver', template="CompressedRowSparseMatrixMat3x3d")
     model.addObject('MeshVTKLoader', name='loader', filename=path + 'sphere.vtk')
     model.addObject('MeshTopology', src='@loader', name='container')
@@ -86,7 +86,7 @@ def createScene(rootNode):
     # FEM Model                              #
     ##########################################
     skin = rootNode.addChild('skin')
-    skin.addObject('EulerImplicitSolver')
+    skin.addObject('EulerImplicitIntegrationScheme')
     skin.addObject('SparseLDLSolver', template="CompressedRowSparseMatrixMat3x3d")
     skin.addObject('MeshVTKLoader', name='loader', filename=path + 'skin.vtk')
     skin.addObject('MeshTopology', src='@loader', name='container')

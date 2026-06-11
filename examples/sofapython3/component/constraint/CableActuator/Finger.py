@@ -21,7 +21,7 @@ def createScene(rootNode):
     # FEM Model                              #
     ##########################################
     finger = rootNode.addChild('finger')
-    finger.addObject('EulerImplicitSolver', firstOrder=True, rayleighMass=0.1, rayleighStiffness=0.1)
+    finger.addObject('EulerImplicitIntegrationScheme', firstOrder=True, rayleighMass=0.1, rayleighStiffness=0.1)
     finger.addObject('SparseLDLSolver', template="CompressedRowSparseMatrixMat3x3d")
     finger.addObject('MeshVTKLoader', name='loader', filename=path + 'finger.vtk')
     finger.addObject('MeshTopology', src='@loader', name='container')
@@ -78,7 +78,7 @@ def createScene(rootNode):
     # Effector goal for interactive control  #
     ##########################################
     goal = rootNode.addChild('goal')
-    goal.addObject('EulerImplicitSolver', firstOrder=True)
+    goal.addObject('EulerImplicitIntegrationScheme', firstOrder=True)
     goal.addObject('CGLinearSolver', iterations=100, tolerance=1e-5, threshold=1e-5)
     goal.addObject('MechanicalObject', name='goalMO',
                    position=[-120, 7, 7])
