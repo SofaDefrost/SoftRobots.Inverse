@@ -30,7 +30,7 @@ def createScene(rootNode):
                    name='Sofa.Component.Mapping.Linear')  # Needed to use components [BarycentricMapping]  
     rootNode.addObject('RequiredPlugin', name='Sofa.Component.Mass')  # Needed to use components [UniformMass]  
     rootNode.addObject('RequiredPlugin',
-                   name='Sofa.Component.IntegrationSchemes.Backward')  # Needed to use components [EulerImplicitIntegrationScheme]  
+                   name='Sofa.Component.IntegrationScheme.Backward')  # Needed to use components [EulerImplicitIntegrationScheme]  
     rootNode.addObject('RequiredPlugin',
                    name='Sofa.Component.SolidMechanics.FEM.Elastic')  # Needed to use components [TetrahedronFEMForceField]  
     rootNode.addObject('RequiredPlugin',

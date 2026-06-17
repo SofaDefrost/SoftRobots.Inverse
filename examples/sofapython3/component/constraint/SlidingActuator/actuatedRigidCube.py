@@ -17,7 +17,7 @@ def createScene(rootnode):
                    name='Sofa.Component.Mapping.NonLinear')  # Needed to use components [RigidMapping]  
     rootnode.addObject('RequiredPlugin', name='Sofa.Component.Mass')  # Needed to use components [UniformMass]  
     rootnode.addObject('RequiredPlugin',
-                   name='Sofa.Component.IntegrationSchemes.Backward')  # Needed to use components [EulerImplicitIntegrationScheme]  
+                   name='Sofa.Component.IntegrationScheme.Backward')  # Needed to use components [EulerImplicitIntegrationScheme]  
     rootnode.addObject('RequiredPlugin',
                    name='Sofa.Component.StateContainer')  # Needed to use components [MechanicalObject]  
     rootnode.addObject('RequiredPlugin', name='Sofa.GL.Component.Rendering3D')  # Needed to use components [OglModel] 
