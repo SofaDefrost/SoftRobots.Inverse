@@ -158,10 +158,12 @@ QPInverseProblemSolver::QPInverseProblemSolver()
 
     , d_objective(initData(&d_objective, 250.0, "objective", "Erreur between the target and the end effector "))
 
-    , m_lastCP(NULL)
+    , d_mode(initData(&d_mode, sofa::helper::OptionsGroup{"inverse",  "direct (not implemented)"}, "mode", "Solver mode, either inverse or direct."))
+
     , m_CP1(nullptr)
     , m_CP2(nullptr)
     , m_CP3(nullptr)
+    , m_lastCP(NULL)
 {
     sofa::helper::OptionsGroup qpSolvers{"qpOASES" , "proxQP"};
 #if defined SOFTROBOTSINVERSE_ENABLE_PROXQP && !defined SOFTROBOTSINVERSE_ENABLE_QPOASES
@@ -490,12 +492,12 @@ bool QPInverseProblemSolver::solveSystem(const ConstraintParams * cParams,
     if(d_minContactForces.isSet()) m_currentCP->setMinContactForces(d_minContactForces.getValue());
     if(d_maxContactForces.isSet()) m_currentCP->setMaxContactForces(d_maxContactForces.getValue());
 
-    double objective;
-    int iterations;
+    double objective = 0.;
+    int iterations = 0;
+    if (d_mode.getValue().getSelectedId() == 0)
     {
         sofa::helper::ScopedAdvancedTimer("ConstraintsQP");
         m_currentCP->solve(objective, iterations);
-
     }
 
     module::QPInverseProblem::QPConstraintLists* qpCLists = m_currentCP->getQPConstraintLists();
