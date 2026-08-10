@@ -36,7 +36,7 @@ namespace softrobotsinverse::solver::module
 {
 
 using softrobots::behavior::SoftRobotsBaseConstraint ;
-using sofa::core::behavior::BaseConstraint ;
+using sofa::core::behavior::BaseLagrangianConstraint ;
 using sofa::helper::system::thread::CTime ;
 using sofa::type::vector;
 using sofa::core::MultiMatrixDerivId ;
@@ -70,7 +70,7 @@ Visitor::Result QPMechanicalSetConstraint::fwdConstraintSet(Node* node, sofa::co
     c->buildConstraintMatrix(m_cparams, m_res, m_constraintId);
 
     SoftRobotsBaseConstraint* ipc = dynamic_cast<SoftRobotsBaseConstraint*>(c);
-    BaseConstraint* cc = dynamic_cast<BaseConstraint*>(c);
+    BaseLagrangianConstraint* cc = dynamic_cast<BaseLagrangianConstraint*>(c);
 
     if(ipc && ipc->m_constraintType == ipc->ACTUATOR)
     {
