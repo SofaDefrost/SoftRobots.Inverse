@@ -373,7 +373,7 @@ void SlidingActuator<DataTypes>::storeResults(sofa::type::vector<double> &lambda
     l[0] = lambda[0];
     d_force.setValue(lambda[0]);
 
-    auto d = sofa::helper::getWriteAccessor(this->d_lambda);
+    auto d = sofa::helper::getWriteAccessor(this->d_delta);
     double& displacement = sofa::helper::getWriteAccessor(d_displacement);
     if(d_accumulateDisp.getValue())
     {

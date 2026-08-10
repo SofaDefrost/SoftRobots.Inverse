@@ -181,24 +181,26 @@ void ForcePointActuator<DataTypes>::updateLimit()
             lambda = d_minForce.getValue();
     }
 
+    auto lambda = sofa::helper::getReadAccessor(this->d_lambda);
+
     if(d_maxForceVariation.isSet())
     {
         if (m_dim>1)
         {
             for(unsigned int j=0; j<Deriv::total_size; j++)
             {
-                if(rabs(m_lambdaMin[j] - this->d_lambda.getValue()[j]) >= d_maxForceVariation.getValue() || !d_minForce.isSet())
-                    m_lambdaMin[j] = this->d_lambda.getValue()[j] - d_maxForceVariation.getValue();
-                if(rabs(m_lambdaMax[j] - this->d_lambda.getValue()[j]) >= d_maxForceVariation.getValue() || !d_maxForce.isSet())
-                    m_lambdaMax[j] = this->d_lambda.getValue()[j] + d_maxForceVariation.getValue();
+                if(rabs(m_lambdaMin[j] - lambda[j]) >= d_maxForceVariation.getValue() || !d_minForce.isSet())
+                    m_lambdaMin[j] = lambda[j] - d_maxForceVariation.getValue();
+                if(rabs(m_lambdaMax[j] - lambda[j]) >= d_maxForceVariation.getValue() || !d_maxForce.isSet())
+                    m_lambdaMax[j] = lambda[j] + d_maxForceVariation.getValue();
             }
         }
         else
         {
-            if(rabs(m_lambdaMin[0] - this->d_lambda.getValue()[0]) >= d_maxForceVariation.getValue() || !d_minForce.isSet())
-                m_lambdaMin[0] = this->d_lambda.getValue()[0] - d_maxForceVariation.getValue();
-            if(rabs(m_lambdaMax[0] - this->d_lambda.getValue()[0]) >= d_maxForceVariation.getValue() || !d_maxForce.isSet())
-                m_lambdaMax[0] = this->d_lambda.getValue()[0] + d_maxForceVariation.getValue();
+            if(rabs(m_lambdaMin[0] - lambda[0]) >= d_maxForceVariation.getValue() || !d_minForce.isSet())
+                m_lambdaMin[0] = lambda[0] - d_maxForceVariation.getValue();
+            if(rabs(m_lambdaMax[0] - lambda[0]) >= d_maxForceVariation.getValue() || !d_maxForce.isSet())
+                m_lambdaMax[0] = lambda[0] + d_maxForceVariation.getValue();
         }
     }
 }
