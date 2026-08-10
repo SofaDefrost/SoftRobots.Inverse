@@ -109,9 +109,11 @@ void QPInverseProblemImpl::init(){
 }
 
 /// Build system
-void QPInverseProblemImpl:: computeEnergyWeight(double& weight)
+
+
+void QPInverseProblemImpl:: computeEnergyScalingFactor(double& scalingFactor)
 {
-    weight = 0.0;
+    scalingFactor = 0.0;
     unsigned int nbActuators = m_qpCLists->actuatorRowIds.size();
     unsigned int nbEquality = m_qpCLists->equalityRowIds.size();
 
@@ -148,7 +150,7 @@ void QPInverseProblemImpl:: computeEnergyWeight(double& weight)
     }
 
     if(normW > 1e-14)
-        weight = normQ/normW;
+        scalingFactor = normQ/normW;
 }
 
 
@@ -198,9 +200,9 @@ void QPInverseProblemImpl::buildQPMatrices()
             m_qpSystem->c[j] += m_qpSystem->W[m_qpCLists->effectorRowIds[i]][acIds[j]]*m_qpSystem->dFree[m_qpCLists->effectorRowIds[i]];
     }
 
-    // Add energy term to Q+=eps*||Q||/||Waa||*Waa, eps is set by user
-    double weight = 0.;
-    computeEnergyWeight(weight); // compute ||Q||/||Waa||
+    // Add energy term to Q+=eps*||Q||/||Waa||*Waa, eps (the weight of this term) is set by user
+    double scalingFactor = 0.;
+    computeEnergyScalingFactor(scalingFactor); // compute ||Q||/||Waa||
     int actuatorsId = 0;
     int equalityId = 0;
     unsigned int actuatorsNbLines = 0;
@@ -226,10 +228,10 @@ void QPInverseProblemImpl::buildQPMatrices()
             }
             for(unsigned int j=0; j<dim; j++)
             {
-                if(ac->hasEpsilon() && j==k) // energy of a specific actuator
-                    m_qpSystem->Q[k][j] += ac->getEpsilon()*weight*m_qpSystem->W[acIds[k]][acIds[j]];
+                if(ac->hasEnergyWeight() && j==k) // energy of a specific actuator
+                    m_qpSystem->Q[k][j] += ac->getEnergyWeight()*scalingFactor*m_qpSystem->W[acIds[k]][acIds[j]];
                 else
-                    m_qpSystem->Q[k][j] += m_epsilon*weight*m_qpSystem->W[acIds[k]][acIds[j]];
+                    m_qpSystem->Q[k][j] += m_ernergyWeight*scalingFactor*m_qpSystem->W[acIds[k]][acIds[j]];
             }
         }
         else if (k<nbActuators+nbEquality)
@@ -244,16 +246,16 @@ void QPInverseProblemImpl::buildQPMatrices()
             }
             for(unsigned int j=0; j<dim; j++)
             {
-                if(ac->hasEpsilon() && j==k) // energy of a specific actuator
-                    m_qpSystem->Q[k][j] += ac->getEpsilon()*weight*m_qpSystem->W[acIds[k]][acIds[j]];
+                if(ac->hasEnergyWeight() && j==k) // energy of a specific actuator
+                    m_qpSystem->Q[k][j] += ac->getEnergyWeight()*scalingFactor*m_qpSystem->W[acIds[k]][acIds[j]];
                 else
-                    m_qpSystem->Q[k][j] += m_epsilon*weight*m_qpSystem->W[acIds[k]][acIds[j]];
+                    m_qpSystem->Q[k][j] += m_ernergyWeight*scalingFactor*m_qpSystem->W[acIds[k]][acIds[j]];
             }
         }
         else // contacts
         {
             for(unsigned int j=0; j<dim; j++)
-                m_qpSystem->Q[k][j] += m_epsilon*weight*m_qpSystem->W[acIds[k]][acIds[j]];
+                m_qpSystem->Q[k][j] += m_ernergyWeight*scalingFactor*m_qpSystem->W[acIds[k]][acIds[j]];
         }
     }
 

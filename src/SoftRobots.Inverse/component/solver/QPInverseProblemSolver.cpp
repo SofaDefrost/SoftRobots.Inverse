@@ -132,16 +132,17 @@ QPInverseProblemSolver::QPInverseProblemSolver()
 
     , d_qpSolver(initData(&d_qpSolver, "qpSolver", "QP solver implementation to be used"))
 
-    , d_epsilon(initData(&d_epsilon, 1e-3, "epsilon",
-                         "An energy term is added in the minimization process. \n"
-                         "Epsilon has to be chosen sufficiently small so that the deformation \n"
-                         "energy does not disrupt the quality of the effector positioning. "
-                         "Default value 1e-3."))
+    , d_energyWeight(initData(&d_energyWeight, 1e-3, "energyWeight",
+                             "An energy term is added in the minimization process. \n"
+                             "This is the weight of this term. \n"
+                             "It has to be chosen sufficiently small so that the deformation \n"
+                             "energy does not disrupt the quality of the effector positioning. "
+                             "Default value 1e-3."))
 
     , d_actuatorsOnly(initData(&d_actuatorsOnly, false, "actuatorsOnly",
-                         "An energy term is added in the minimization process. \n"
-                         "If true, only for actuators."
-                         "Default value false."))
+                                 "An energy term is added in the minimization process. \n"
+                                 "If true, add it only for actuators."
+                                 "Default value false."))
 
     , d_allowSliding(initData(&d_allowSliding,false,"allowSliding",
                               "In case of friction, this option enable/disable sliding contact."))
@@ -156,14 +157,14 @@ QPInverseProblemSolver::QPInverseProblemSolver()
                                   "If set, will contraints the sum of contact forces \n"
                                   "to be lesser or equal to the given value.") )
 
-    , d_objective(initData(&d_objective, 250.0, "objective", "Erreur between the target and the end effector "))
+    , d_objective(initData(&d_objective, 0.0, "objective", "Calculated optimal objective function value."))
 
     , d_mode(initData(&d_mode, sofa::helper::OptionsGroup{"inverse",  "direct (not implemented)"}, "mode", "Solver mode, either inverse or direct."))
 
     , m_CP1(nullptr)
     , m_CP2(nullptr)
     , m_CP3(nullptr)
-    , m_lastCP(NULL)
+    , m_lastCP(nullptr)
 {
     sofa::helper::OptionsGroup qpSolvers{"qpOASES" , "proxQP"};
 #if defined SOFTROBOTSINVERSE_ENABLE_PROXQP && !defined SOFTROBOTSINVERSE_ENABLE_QPOASES
@@ -171,6 +172,8 @@ QPInverseProblemSolver::QPInverseProblemSolver()
 #else
     qpSolvers.setSelectedItem(QPSolverImpl::QPOASES);
 #endif
+
+    d_objective.setReadOnly(true);
 
     d_qpSolver.setValue(qpSolvers);
 
@@ -183,6 +186,9 @@ QPInverseProblemSolver::QPInverseProblemSolver()
         deleteProblems();
         createProblems();
     });
+
+    d_epsilon.setOriginalData(&d_energyWeight);
+    addAlias(&d_energyWeight, "epsilon");
 }
 
 void QPInverseProblemSolver::createProblems()
@@ -483,7 +489,7 @@ bool QPInverseProblemSolver::solveSystem(const ConstraintParams * cParams,
 
     double time = getContext()->getTime();
     m_currentCP->setTime(time);
-    m_currentCP->setEpsilon(d_epsilon.getValue());
+    m_currentCP->setEnergyWeight(d_energyWeight.getValue());
     m_currentCP->setEnergyActuatorsOnly(d_actuatorsOnly.getValue());
     m_currentCP->setTolerance(d_tolerance.getValue());
     m_currentCP->setMaxIterations(d_maxIterations.getValue());
