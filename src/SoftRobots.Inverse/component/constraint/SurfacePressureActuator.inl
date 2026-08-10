@@ -49,13 +49,6 @@ SurfacePressureActuator<DataTypes>::SurfacePressureActuator(MechanicalState* obj
     // These data from SurfacePressureModel have no sense for actuator
     d_eqPressure.setDisplayed(false);
     d_eqVolumeGrowth.setDisplayed(false);
-
-    // QP on only one value, we set dimension to one
-    m_lambdaInit.resize(1);
-    m_deltaMax.resize(1);
-    m_deltaMin.resize(1);
-    m_lambdaMax.resize(1);
-    m_lambdaMin.resize(1);
 }
 
 template<class DataTypes>
@@ -91,6 +84,9 @@ template<class DataTypes>
 void SurfacePressureActuator<DataTypes>::initData()
 {
     d_volumeGrowth.setValue(0.0);
+
+    auto pressure = sofa::helper::getWriteAccessor(this->d_lambda);
+    pressure[0] = d_initPressure.getValue();
     d_pressure.setValue(d_initPressure.getValue());
 
     if(d_initPressure.isSet()){
@@ -150,7 +146,7 @@ void SurfacePressureActuator<DataTypes>::initLimits()
 template<class DataTypes>
 void SurfacePressureActuator<DataTypes>::updateLimits()
 {
-    sofa::helper::ReadAccessor<sofa::Data<double>> volumeGrowth = d_volumeGrowth;
+    sofa::helper::ReadAccessor<sofa::Data<sofa::type::vector<double>>> volumeGrowth = this->d_delta;
     sofa::helper::ReadAccessor<sofa::Data<Real>> maxVolumeGrowthVariation = d_maxVolumeGrowthVariation;
     sofa::helper::ReadAccessor<sofa::Data<Real>> maxVolumeGrowth = d_maxVolumeGrowth;
     sofa::helper::ReadAccessor<sofa::Data<Real>> minVolumeGrowth = d_minVolumeGrowth;
@@ -163,10 +159,10 @@ void SurfacePressureActuator<DataTypes>::updateLimits()
 
     if(d_maxVolumeGrowthVariation.isSet())
     {
-        if(rabs(m_deltaMax[0] - volumeGrowth) >= maxVolumeGrowthVariation || !d_maxVolumeGrowth.isSet())
-            m_deltaMax[0] = volumeGrowth + maxVolumeGrowthVariation;
-        if(rabs(m_deltaMin[0] + volumeGrowth) <= -maxVolumeGrowthVariation || !d_minVolumeGrowth.isSet())
-            m_deltaMin[0] = volumeGrowth - maxVolumeGrowthVariation;
+        if(rabs(m_deltaMax[0] - volumeGrowth[0]) >= maxVolumeGrowthVariation || !d_maxVolumeGrowth.isSet())
+            m_deltaMax[0] = volumeGrowth[0] + maxVolumeGrowthVariation;
+        if(rabs(m_deltaMin[0] + volumeGrowth[0]) <= -maxVolumeGrowthVariation || !d_minVolumeGrowth.isSet())
+            m_deltaMin[0] = volumeGrowth[0] - maxVolumeGrowthVariation;
     }
 }
 
@@ -174,6 +170,11 @@ template<class DataTypes>
 void SurfacePressureActuator<DataTypes>::storeResults(sofa::type::vector<double> &lambda,
                                                       sofa::type::vector<double> &delta)
 {
+    auto l = sofa::helper::getWriteAccessor(this->d_lambda);
+    auto d = sofa::helper::getWriteAccessor(this->d_delta);
+    l[0] = lambda[0];
+    d[0] = delta[0];
+
     d_pressure.setValue(lambda[0]);
     d_volumeGrowth.setValue(delta[0]);
 

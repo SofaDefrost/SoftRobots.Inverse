@@ -106,7 +106,9 @@ protected:
     sofa::Data<Real>          d_maxAngle;
     sofa::Data<Real>          d_minAngle;
     sofa::Data<Real>          d_maxAngleVariation;
+    SOFA_ATTRIBUTE_DEPRECATED("v26.06", "v27.06", "Use d_lambda instead.")
     sofa::Data<Real>          d_effort;
+    SOFA_ATTRIBUTE_DEPRECATED("v26.06", "v27.06", "Use d_delta instead.")
     sofa::Data<Real>          d_angle;
 
 
@@ -140,11 +142,6 @@ protected:
     using Actuator<DataTypes>::m_nbLines ;
     using Actuator<DataTypes>::d_componentState ;
     ////////////////////////////////////////////////////////////////////////////
-
-
-private:
-
-    void setUpData();
 
 };
 

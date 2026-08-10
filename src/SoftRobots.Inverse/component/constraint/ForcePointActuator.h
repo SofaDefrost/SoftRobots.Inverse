@@ -104,7 +104,9 @@ protected:
     sofa::Data<Real>                             d_minForce;
     sofa::Data<Real>                             d_initForce;
     sofa::Data<Real>                             d_maxForceVariation;
+    SOFA_ATTRIBUTE_DEPRECATED("v26.06", "v27.06", "Use d_lambda instead.")
     sofa::Data<sofa::type::vector<Real>>         d_force;
+    SOFA_ATTRIBUTE_DEPRECATED("v26.06", "v27.06", "Use d_delta instead.")
     sofa::Data<Real>                             d_displacement;
     sofa::Data<Deriv>                            d_direction;
     sofa::Data<Real>                             d_energyWeight;

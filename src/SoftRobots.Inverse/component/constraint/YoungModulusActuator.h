@@ -103,6 +103,7 @@ protected:
     sofa::Data<Real> d_maxYoung;
     sofa::Data<Real> d_maxYoungVariationRatio;
 
+    SOFA_ATTRIBUTE_DEPRECATED("v26.06", "v27.06", "Use d_lambda instead.")
     sofa::Data<Real> d_youngModulus;
     Real m_initialYoungModulus;
 
