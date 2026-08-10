@@ -38,7 +38,7 @@ namespace softrobotsinverse::solver::module
 {
 
 using softrobots::behavior::SoftRobotsBaseConstraint;
-using sofa::core::behavior::BaseConstraint;
+using sofa::core::behavior::BaseLagrangianConstraint;
 using sofa::type::vector;
 
 class SOFA_SOFTROBOTS_INVERSE_API QPInverseProblem : public sofa::component::constraint::lagrangian::solver::ConstraintProblem
@@ -77,7 +77,7 @@ class SOFA_SOFTROBOTS_INVERSE_API QPInverseProblem : public sofa::component::con
         vector<SoftRobotsBaseConstraint*> actuators;
         vector<SoftRobotsBaseConstraint*> effectors;
         vector<SoftRobotsBaseConstraint*> sensors;
-        vector<BaseConstraint*>           contacts;
+        vector<BaseLagrangianConstraint*> contacts;
         vector<SoftRobotsBaseConstraint*> equality;
 
         vector< unsigned int > effectorRowIds;
