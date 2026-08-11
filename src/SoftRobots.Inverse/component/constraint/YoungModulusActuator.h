@@ -126,6 +126,7 @@ private:
     /// Bring inherited attributes and function in the current lookup context.
     /// otherwise any access to the base::attribute would require
     /// the "this->" approach.
+    using Actuator<DataTypes>::d_lambda ;
     using Actuator<DataTypes>::m_state ;
     using Actuator<DataTypes>::m_nbLines ;
     using Actuator<DataTypes>::d_constraintIndex ;

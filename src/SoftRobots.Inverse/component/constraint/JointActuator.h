@@ -131,10 +131,12 @@ protected:
     /// Bring inherited attributes and function in the current lookup context.
     /// otherwise any access to the base::attribute would require
     /// the "this->" approach.
+    using Actuator<DataTypes>::d_lambda ;
     using Actuator<DataTypes>::m_lambdaMax ;
     using Actuator<DataTypes>::m_lambdaMin ;
     using Actuator<DataTypes>::m_hasLambdaMax ;
     using Actuator<DataTypes>::m_hasLambdaMin ;
+    using Actuator<DataTypes>::d_delta ;
     using Actuator<DataTypes>::m_deltaMax ;
     using Actuator<DataTypes>::m_deltaMin ;
     using Actuator<DataTypes>::m_hasDeltaMax ;

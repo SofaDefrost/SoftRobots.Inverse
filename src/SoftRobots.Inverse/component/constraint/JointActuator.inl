@@ -65,8 +65,10 @@ JointActuator<DataTypes>::JointActuator(MechanicalState* object)
 
     , d_maxAngleVariation(initData(&d_maxAngleVariation, "maxAngleVariation", "In radian"))
 {
-    this->d_lambda.setName("effort");
-    this->d_delta.setName("angle");
+    this->addAlias(&d_lambda, "effort");
+    d_lambda.setName("effort");
+    this->addAlias(&d_delta, "angle");
+    d_delta.setName("angle");
 }
 
 
@@ -131,8 +133,8 @@ void JointActuator<DataTypes>::initLimit()
         m_deltaMin[0] = d_minAngle.getValue();
     }
 
-    auto effort = sofa::helper::getReadAccessor(this->d_lambda);
-    auto angle = sofa::helper::getReadAccessor(this->d_delta);
+    auto effort = sofa::helper::getReadAccessor(d_lambda);
+    auto angle = sofa::helper::getReadAccessor(d_delta);
 
     if(d_maxEffortVariation.isSet())
     {
@@ -159,8 +161,8 @@ void JointActuator<DataTypes>::initLimit()
 template<class DataTypes>
 void JointActuator<DataTypes>::initData()
 {
-    auto effort = sofa::helper::getWriteAccessor(this->d_lambda);
-    auto angle = sofa::helper::getWriteAccessor(this->d_delta);
+    auto effort = sofa::helper::getWriteAccessor(d_lambda);
+    auto angle = sofa::helper::getWriteAccessor(d_delta);
     effort[0] = d_initEffort.getValue();
     angle[0] = d_initAngle.getValue();
     d_effort.setValue(d_initEffort.getValue());
@@ -183,8 +185,8 @@ void JointActuator<DataTypes>::updateLimit()
     if(d_minAngle.isSet())
         m_deltaMin[0] = d_minAngle.getValue();
 
-    auto effort = sofa::helper::getReadAccessor(this->d_lambda);
-    auto angle = sofa::helper::getReadAccessor(this->d_delta);
+    auto effort = sofa::helper::getReadAccessor(d_lambda);
+    auto angle = sofa::helper::getReadAccessor(d_delta);
 
     if(d_maxEffortVariation.isSet())
     {
@@ -252,8 +254,8 @@ void JointActuator<DataTypes>::storeResults(vector<double> &lambda, vector<doubl
     if(!this->isComponentStateValid())
         return ;
 
-    auto effort = sofa::helper::getWriteAccessor(this->d_lambda);
-    auto angle = sofa::helper::getWriteAccessor(this->d_delta);
+    auto effort = sofa::helper::getWriteAccessor(d_lambda);
+    auto angle = sofa::helper::getWriteAccessor(d_delta);
     effort[0] = lambda[0];
     angle[0] = delta[0];
 

@@ -60,8 +60,9 @@ YoungModulusActuator<DataTypes>::YoungModulusActuator(MechanicalState* object)
     , m_initError(false)
     , m_deltaYoungModulus(0.0)
 {
-    this->d_lambda.setHelp("Optimized Young modulus");
-    this->d_lambda.setName("youngModulus");
+    this->addAlias(&d_lambda, "youngModulus");
+    d_lambda.setHelp("Optimized Young modulus");
+    d_lambda.setName("youngModulus");
 }
 
 
@@ -98,7 +99,7 @@ void YoungModulusActuator<DataTypes>::initLimit()
 template<class DataTypes>
 void YoungModulusActuator<DataTypes>::updateLimit()
 {
-    const auto& youngModulus = sofa::helper::getReadAccessor(this->d_lambda);
+    const auto& youngModulus = sofa::helper::getReadAccessor(d_lambda);
     const auto& minYoung = sofa::helper::getReadAccessor(d_minYoung);
     const auto& maxYoung = sofa::helper::getReadAccessor(d_maxYoung);
     const auto& maxYoungVariationRatio = sofa::helper::getReadAccessor(d_maxYoungVariationRatio);
@@ -129,7 +130,7 @@ void YoungModulusActuator<DataTypes>::bwdInit()
             msg_info() << "Found force field named " << l_forceField->getName();
             m_initialYoungModulus = l_forceField->d_youngModulus.getValue()[0];
 
-            auto youngModulus = sofa::helper::getWriteAccessor(this->d_lambda);
+            auto youngModulus = sofa::helper::getWriteAccessor(d_lambda);
             youngModulus[0] = m_initialYoungModulus;
             d_youngModulus.setValue(m_initialYoungModulus);
             initLimit();
@@ -149,7 +150,7 @@ void YoungModulusActuator<DataTypes>::reset()
     if(d_componentState.getValue() == ComponentState::Invalid)
         return;
 
-    auto youngModulus = sofa::helper::getWriteAccessor(this->d_lambda);
+    auto youngModulus = sofa::helper::getWriteAccessor(d_lambda);
     youngModulus[0] = m_initialYoungModulus;
     d_youngModulus.setValue(m_initialYoungModulus);
     initLimit();
@@ -178,7 +179,7 @@ void YoungModulusActuator<DataTypes>::buildConstraintMatrix(const ConstraintPara
     
     MatrixDerivRowIterator rowIterator = matrix.writeLine(constraintIndex);
     const auto& youngModulus = l_forceField->d_youngModulus.getValue()[0];
-    auto lambda = sofa::helper::getWriteAccessor(this->d_lambda);
+    auto lambda = sofa::helper::getWriteAccessor(d_lambda);
     lambda[0] = youngModulus;
     d_youngModulus.setValue(youngModulus);
 
@@ -241,7 +242,7 @@ void YoungModulusActuator<DataTypes>::storeResults(vector<double> &lambda, vecto
     if(d_componentState.getValue() == ComponentState::Invalid)
         return;
 
-    auto l = sofa::helper::getWriteAccessor(this->d_lambda);
+    auto l = sofa::helper::getWriteAccessor(d_lambda);
     l[0] += Real(lambda[0]);
     Real youngModulus = sofa::helper::getWriteAccessor(d_youngModulus);
     youngModulus += Real(lambda[0]);
