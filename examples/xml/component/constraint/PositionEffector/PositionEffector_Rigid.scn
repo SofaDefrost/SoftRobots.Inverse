@@ -11,7 +11,7 @@
     <RequiredPlugin name="Sofa.Component.Constraint.Projective"/> <!-- Needed to use components [FixedProjectiveConstraint] -->  
     <RequiredPlugin name="Sofa.Component.LinearSolver.Direct"/> <!-- Needed to use components [BTDLinearSolver] -->  
     <RequiredPlugin name="Sofa.Component.Mapping.Linear"/> <!-- Needed to use components [BeamLinearMapping] -->  
-    <RequiredPlugin name="Sofa.Component.ODESolver.Backward"/> <!-- Needed to use components [EulerImplicitSolver] -->  
+    <RequiredPlugin name="Sofa.Component.IntegrationScheme.Backward"/> <!-- Needed to use components [EulerImplicitIntegrationScheme] -->
     <RequiredPlugin name="Sofa.Component.SceneUtility"/> <!-- Needed to use components [InfoComponent] -->  
     <RequiredPlugin name="Sofa.Component.StateContainer"/> <!-- Needed to use components [MechanicalObject] -->  
     <RequiredPlugin name="Sofa.Component.Topology.Container.Constant"/> <!-- Needed to use components [CubeTopology,MeshTopology] -->  
@@ -30,7 +30,7 @@
 
     <Node name="beam">
 
-        <EulerImplicitSolver rayleighStiffness="0" printLog="false" />
+        <EulerImplicitIntegrationScheme rayleighStiffness="0" printLog="false" />
         <BTDLinearSolver template="BTDMatrix6d" printLog="false" verbose="false" />
 
         <MechanicalObject template="Rigid3" name="DOFs"

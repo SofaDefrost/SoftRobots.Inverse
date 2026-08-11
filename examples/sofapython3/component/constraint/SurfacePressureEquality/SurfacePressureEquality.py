@@ -30,7 +30,7 @@ def createScene(rootNode):
     # Mechanical Model                       #
     ##########################################
     model = rootNode.addChild('model')
-    model.addObject('EulerImplicitSolver')
+    model.addObject('EulerImplicitIntegrationScheme')
     model.addObject('SparseLDLSolver', template="CompressedRowSparseMatrixd")
     model.addObject('MeshVTKLoader', name='loader', filename=VolumetricMeshPath, scale3d=[1, 1, 1])
     model.addObject('MeshTopology', src='@loader', name='container')

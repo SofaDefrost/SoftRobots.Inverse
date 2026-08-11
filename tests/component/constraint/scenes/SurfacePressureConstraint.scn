@@ -14,7 +14,7 @@
 
 
         <Node name='bunny'>
-                <EulerImplicitSolver firstOrder="0"/>
+                <EulerImplicitIntegrationScheme firstOrder="0"/>
                 <SparseLDLSolver />
                 <MeshVTKLoader name="loader" filename="mesh/Hollow_Stanford_Bunny.vtu"/>
                 <TetrahedronSetTopologyContainer src="@loader"/>

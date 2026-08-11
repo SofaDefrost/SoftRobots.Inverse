@@ -16,7 +16,7 @@ def createScene(rootNode):
 
     # goal
     goal = rootNode.addChild('goal')
-    goal.addObject('EulerImplicitSolver', firstOrder=True)
+    goal.addObject('EulerImplicitIntegrationScheme', firstOrder=True)
     goal.addObject('CGLinearSolver', iterations=100, tolerance=1e-5, threshold=1e-5)
     goal.addObject('MechanicalObject', name='goalMO', position=[[-2.87, 1.6, -3.46], [0.10, 2.19, -1.25]])
     goal.addObject('SphereCollisionModel', radius=0.25, group=3)
@@ -24,7 +24,7 @@ def createScene(rootNode):
 
     # bunny
     bunny = rootNode.addChild('bunny')
-    bunny.addObject('EulerImplicitSolver', rayleighStiffness=0.1, rayleighMass=0.1)
+    bunny.addObject('EulerImplicitIntegrationScheme', rayleighStiffness=0.1, rayleighMass=0.1)
     bunny.addObject('SparseLDLSolver', template='CompressedRowSparseMatrixMat3x3d')
     bunny.addObject('MeshVTKLoader', name='loader', filename=path + 'bunny.vtu', translation=[0.1, 0, 1])
     bunny.addObject('TetrahedronSetTopologyContainer', src='@loader', name='container')
