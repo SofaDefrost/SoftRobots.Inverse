@@ -135,8 +135,10 @@ protected:
     sofa::Data<SetIndexArray>         d_indices;
 
     sofa::Data<double>                d_initForce;
+    SOFA_ATTRIBUTE_DEPRECATED("v26.06", "v27.06", "Use d_lambda instead.")
     sofa::Data<double>                d_force;
     sofa::Data<double>                d_initDisplacement;
+    SOFA_ATTRIBUTE_DEPRECATED("v26.06", "v27.06", "Use d_delta instead.")
     sofa::Data<double>                d_displacement;
     sofa::Data<bool>                  d_accumulateDisp;
 

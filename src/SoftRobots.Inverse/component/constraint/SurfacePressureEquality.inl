@@ -47,10 +47,6 @@ SurfacePressureEquality<DataTypes>::SurfacePressureEquality(MechanicalState* obj
     d_minVolumeGrowth.setDisplayed(false);
     d_maxPressure.setDisplayed(false);
     d_minPressure.setDisplayed(false);
-
-    // QP on only one value, we set dimension to one
-    m_lambdaEqual.resize(1);
-    m_deltaEqual.resize(1);
 }
 
 template<class DataTypes>

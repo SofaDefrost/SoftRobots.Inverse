@@ -108,10 +108,10 @@ protected:
     sofa::Data<VecDeriv>                      d_directions;
     sofa::Data<bool>                          d_updateNormals;
 
-    sofa::Data<sofa::type::vector<Triangle>>      d_triangles;
-    sofa::Data<sofa::type::vector<Quad>>          d_quads;
-    sofa::Data<sofa::type::vector<Coord>>         d_positions;
-    sofa::type::vector<Edge>                m_edges;
+    sofa::Data<sofa::type::vector<Triangle>>  d_triangles;
+    sofa::Data<sofa::type::vector<Quad>>      d_quads;
+    sofa::Data<sofa::type::vector<Coord>>     d_positions;
+    sofa::type::vector<Edge>                  m_edges;
 
     sofa::Data<Real>                          d_maxForce;
     sofa::Data<Real>                          d_minForce;
@@ -120,15 +120,17 @@ protected:
     sofa::Data<Real>                          d_maxDisplacement;
     sofa::Data<Real>                          d_minDisplacement;
 
-    sofa::Data<sofa::type::vector<Real>>          d_force;
-    sofa::Data<sofa::type::vector<Real>>          d_displacement;
+    SOFA_ATTRIBUTE_DEPRECATED("v26.06", "v27.06", "Use d_lambda instead.")
+    sofa::Data<sofa::type::vector<Real>>      d_force;
+    SOFA_ATTRIBUTE_DEPRECATED("v26.06", "v27.06", "Use d_delta instead.")
+    sofa::Data<sofa::type::vector<Real>>      d_displacement;
 
     sofa::Data<bool>                          d_drawForce;
     sofa::Data<bool>                          d_drawSphere;
     sofa::Data<bool>                          d_drawSurface;
     sofa::Data<Real>                          d_visuScale;
 
-    bool                                m_useNormals{false};
+    bool                                      m_useNormals{false};
 
     sofa::type::vector<sofa::type::vector<unsigned int>>        m_pointsInSphereId;
     sofa::type::vector<sofa::type::vector<unsigned int>>        m_trianglesInSpheresId;
@@ -147,7 +149,6 @@ protected:
     using Actuator<DataTypes>::m_state ;
     using Actuator<DataTypes>::d_constraintIndex ;
     ////////////////////////////////////////////////////////////////////////////
-
 
     void initLimit();
     void initData();

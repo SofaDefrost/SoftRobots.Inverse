@@ -64,26 +64,9 @@ JointActuator<DataTypes>::JointActuator(MechanicalState* object)
     , d_minAngle(initData(&d_minAngle, "minAngle", "In radian"))
 
     , d_maxAngleVariation(initData(&d_maxAngleVariation, "maxAngleVariation", "In radian"))
-
-    , d_effort(initData(&d_effort, "effort", "Warning: to get the actual effort you should divide this value by dt."))
-
-    , d_angle(initData(&d_angle, "angle", ""))
 {
-    setUpData();
-
-    // QP on only one value, we set dimension to one
-    m_deltaMax.resize(1);
-    m_deltaMin.resize(1);
-    m_lambdaMax.resize(1);
-    m_lambdaMin.resize(1);
-}
-
-
-template<class DataTypes>
-void JointActuator<DataTypes>::setUpData()
-{
-    d_effort.setReadOnly(true);
-    d_angle.setReadOnly(true);
+    this->setLambdaName("effort");
+    this->setDeltaName("angle");
 }
 
 
@@ -148,24 +131,27 @@ void JointActuator<DataTypes>::initLimit()
         m_deltaMin[0] = d_minAngle.getValue();
     }
 
+    auto effort = sofa::helper::getReadAccessor(d_lambda);
+    auto angle = sofa::helper::getReadAccessor(d_delta);
+
     if(d_maxEffortVariation.isSet())
     {
         m_hasLambdaMax = true;
         m_hasLambdaMin = true;
-        if(rabs(m_lambdaMin[0] - d_effort.getValue()) >= d_maxEffortVariation.getValue() || !d_minEffort.isSet())
-            m_lambdaMin[0] = d_effort.getValue() - d_maxEffortVariation.getValue();
-        if(rabs(m_lambdaMax[0] - d_effort.getValue()) >= d_maxEffortVariation.getValue() || !d_maxEffort.isSet())
-            m_lambdaMax[0] = d_effort.getValue() + d_maxEffortVariation.getValue();
+        if(rabs(m_lambdaMin[0] - effort[0]) >= d_maxEffortVariation.getValue() || !d_minEffort.isSet())
+            m_lambdaMin[0] = effort[0] - d_maxEffortVariation.getValue();
+        if(rabs(m_lambdaMax[0] - effort[0]) >= d_maxEffortVariation.getValue() || !d_maxEffort.isSet())
+            m_lambdaMax[0] = effort[0] + d_maxEffortVariation.getValue();
     }
 
     if(d_maxAngleVariation.isSet())
     {
         m_hasDeltaMax = true;
         m_hasDeltaMin = true;
-        if(rabs(m_deltaMin[0] - d_angle.getValue()) >= d_maxAngleVariation.getValue() || !d_minAngle.isSet())
-            m_deltaMin[0] = d_angle.getValue() - d_maxAngleVariation.getValue();
-        if(rabs(m_deltaMax[0] - d_angle.getValue()) >= d_maxAngleVariation.getValue() || !d_maxAngle.isSet())
-            m_deltaMax[0] = d_angle.getValue() + d_maxAngleVariation.getValue();
+        if(rabs(m_deltaMin[0] - angle[0]) >= d_maxAngleVariation.getValue() || !d_minAngle.isSet())
+            m_deltaMin[0] = angle[0] - d_maxAngleVariation.getValue();
+        if(rabs(m_deltaMax[0] - angle[0]) >= d_maxAngleVariation.getValue() || !d_maxAngle.isSet())
+            m_deltaMax[0] = angle[0] + d_maxAngleVariation.getValue();
     }
 }
 
@@ -173,6 +159,10 @@ void JointActuator<DataTypes>::initLimit()
 template<class DataTypes>
 void JointActuator<DataTypes>::initData()
 {
+    auto effort = sofa::helper::getWriteAccessor(d_lambda);
+    auto angle = sofa::helper::getWriteAccessor(d_delta);
+    effort[0] = d_initEffort.getValue();
+    angle[0] = d_initAngle.getValue();
     d_effort.setValue(d_initEffort.getValue());
     d_angle.setValue(d_initAngle.getValue());
 }
@@ -193,20 +183,23 @@ void JointActuator<DataTypes>::updateLimit()
     if(d_minAngle.isSet())
         m_deltaMin[0] = d_minAngle.getValue();
 
+    auto effort = sofa::helper::getReadAccessor(d_lambda);
+    auto angle = sofa::helper::getReadAccessor(d_delta);
+
     if(d_maxEffortVariation.isSet())
     {
-        if(rabs(m_lambdaMin[0] - d_effort.getValue()) >= d_maxEffortVariation.getValue() || !d_minEffort.isSet())
-            m_lambdaMin[0] = d_effort.getValue() - d_maxEffortVariation.getValue();
-        if(rabs(m_lambdaMax[0] - d_effort.getValue()) >= d_maxEffortVariation.getValue() || !d_maxEffort.isSet())
-            m_lambdaMax[0] = d_effort.getValue() + d_maxEffortVariation.getValue();
+        if(rabs(m_lambdaMin[0] - effort[0]) >= d_maxEffortVariation.getValue() || !d_minEffort.isSet())
+            m_lambdaMin[0] = effort[0] - d_maxEffortVariation.getValue();
+        if(rabs(m_lambdaMax[0] - effort[0]) >= d_maxEffortVariation.getValue() || !d_maxEffort.isSet())
+            m_lambdaMax[0] = effort[0] + d_maxEffortVariation.getValue();
     }
 
     if(d_maxAngleVariation.isSet())
     {
-        if(rabs(m_deltaMin[0] - d_angle.getValue()) >= d_maxAngleVariation.getValue() || !d_minAngle.isSet())
-            m_deltaMin[0] = d_angle.getValue() - d_maxAngleVariation.getValue();
-        if(rabs(m_deltaMax[0] - d_angle.getValue()) >= d_maxAngleVariation.getValue() || !d_maxAngle.isSet())
-            m_deltaMax[0] = d_angle.getValue() + d_maxAngleVariation.getValue();
+        if(rabs(m_deltaMin[0] - angle[0]) >= d_maxAngleVariation.getValue() || !d_minAngle.isSet())
+            m_deltaMin[0] = angle[0] - d_maxAngleVariation.getValue();
+        if(rabs(m_deltaMax[0] - angle[0]) >= d_maxAngleVariation.getValue() || !d_maxAngle.isSet())
+            m_deltaMax[0] = angle[0] + d_maxAngleVariation.getValue();
     }
 }
 
@@ -258,6 +251,11 @@ void JointActuator<DataTypes>::storeResults(vector<double> &lambda, vector<doubl
 {
     if(!this->isComponentStateValid())
         return ;
+
+    auto effort = sofa::helper::getWriteAccessor(d_lambda);
+    auto angle = sofa::helper::getWriteAccessor(d_delta);
+    effort[0] = lambda[0];
+    angle[0] = delta[0];
 
     d_effort.setValue(lambda[0]);
     d_angle.setValue(delta[0]);

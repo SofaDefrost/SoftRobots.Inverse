@@ -106,7 +106,9 @@ protected:
     sofa::Data<Real>          d_maxAngle;
     sofa::Data<Real>          d_minAngle;
     sofa::Data<Real>          d_maxAngleVariation;
+    SOFA_ATTRIBUTE_DEPRECATED("v26.06", "v27.06", "Use d_lambda instead.")
     sofa::Data<Real>          d_effort;
+    SOFA_ATTRIBUTE_DEPRECATED("v26.06", "v27.06", "Use d_delta instead.")
     sofa::Data<Real>          d_angle;
 
 
@@ -129,10 +131,12 @@ protected:
     /// Bring inherited attributes and function in the current lookup context.
     /// otherwise any access to the base::attribute would require
     /// the "this->" approach.
+    using Actuator<DataTypes>::d_lambda ;
     using Actuator<DataTypes>::m_lambdaMax ;
     using Actuator<DataTypes>::m_lambdaMin ;
     using Actuator<DataTypes>::m_hasLambdaMax ;
     using Actuator<DataTypes>::m_hasLambdaMin ;
+    using Actuator<DataTypes>::d_delta ;
     using Actuator<DataTypes>::m_deltaMax ;
     using Actuator<DataTypes>::m_deltaMin ;
     using Actuator<DataTypes>::m_hasDeltaMax ;
@@ -140,11 +144,6 @@ protected:
     using Actuator<DataTypes>::m_nbLines ;
     using Actuator<DataTypes>::d_componentState ;
     ////////////////////////////////////////////////////////////////////////////
-
-
-private:
-
-    void setUpData();
 
 };
 

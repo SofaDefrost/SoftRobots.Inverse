@@ -77,14 +77,8 @@ SlidingActuator<DataTypes>::SlidingActuator(MechanicalState* object)
     , d_initForce(initData(&d_initForce, double(0.0), "initForce",
                            "Initial force. Default is 0."))
 
-    , d_force(initData(&d_force,double(0.0), "force",
-                          "Output force. Warning: to get the actual force you should divide this value by dt."))
-
     , d_initDisplacement(initData(&d_initDisplacement, double(0.0), "initDisplacement",
                           "Initial displacement. Default is 0."))
-
-    , d_displacement(initData(&d_displacement,double(0.0), "displacement",
-                          "Output displacement compared to the initial position."))
 
     , d_accumulateDisp(initData(&d_accumulateDisp, false, "accumulateDisp", "In case of relative displacement, accumulate the displacement."))
 
@@ -106,17 +100,8 @@ SlidingActuator<DataTypes>::SlidingActuator(MechanicalState* object)
     d_initForce.setGroup("Input");
     d_initDisplacement.setGroup("Input");
 
-    d_force.setGroup("Output");
-    d_displacement.setGroup("Output");
-
     d_showDirection.setGroup("Visualization");
     d_showVisuScale.setGroup("Visualization");
-
-    // QP on only one value, we set dimension to one
-    m_deltaMax.resize(1);
-    m_deltaMin.resize(1);
-    m_lambdaMax.resize(1);
-    m_lambdaMin.resize(1);
 }
 
 
@@ -199,6 +184,11 @@ void SlidingActuator<DataTypes>::initData()
         d_direction.setValue(direction);
     }
 
+    auto displacement = sofa::helper::getWriteAccessor(this->d_delta);
+    auto force = sofa::helper::getWriteAccessor(this->d_lambda);
+
+    displacement[0] = d_initDisplacement.getValue();
+    force[0] = d_initForce.getValue();
     d_displacement.setValue(d_initDisplacement.getValue());
     d_force.setValue(d_initForce.getValue());
 }
@@ -219,7 +209,7 @@ void SlidingActuator<DataTypes>::checkIndicesRegardingState()
 template<class DataTypes>
 void SlidingActuator<DataTypes>::initLimit()
 {
-    ReadAccessor<sofa::Data<double>> displacement = d_displacement;
+    ReadAccessor<sofa::Data<sofa::type::vector<double>>> displacement = this->d_delta;
     ReadAccessor<sofa::Data<Real>> maxDispVariation = d_maxDispVariation;
     ReadAccessor<sofa::Data<Real>> maxPositiveDisplacement = d_maxPositiveDisplacement;
     ReadAccessor<sofa::Data<Real>> maxNegativeDisplacement = d_maxNegativeDisplacement;
@@ -254,10 +244,10 @@ void SlidingActuator<DataTypes>::initLimit()
     {
         m_hasDeltaMax = true;
         m_hasDeltaMin = true;
-        if(rabs(m_deltaMin[0] - displacement) >= maxDispVariation || !d_maxNegativeDisplacement.isSet())
-            m_deltaMin[0] = displacement - maxDispVariation;
-        if(rabs(m_deltaMax[0] - displacement) >= maxDispVariation || !d_maxPositiveDisplacement.isSet())
-            m_deltaMax[0] = displacement + maxDispVariation;
+        if(rabs(m_deltaMin[0] - displacement[0]) >= maxDispVariation || !d_maxNegativeDisplacement.isSet())
+            m_deltaMin[0] = displacement[0] - maxDispVariation;
+        if(rabs(m_deltaMax[0] - displacement[0]) >= maxDispVariation || !d_maxPositiveDisplacement.isSet())
+            m_deltaMax[0] = displacement[0] + maxDispVariation;
     }
 }
 
@@ -265,23 +255,23 @@ void SlidingActuator<DataTypes>::initLimit()
 template<class DataTypes>
 void SlidingActuator<DataTypes>::updateLimit()
 {
-    ReadAccessor<sofa::Data<double>> displacement = d_displacement;
+    ReadAccessor<sofa::Data<sofa::type::vector<double>>> displacement = this->d_delta;
     ReadAccessor<sofa::Data<Real>> maxDispVariation = d_maxDispVariation;
     ReadAccessor<sofa::Data<Real>> maxPositiveDisplacement = d_maxPositiveDisplacement;
     ReadAccessor<sofa::Data<Real>> maxNegativeDisplacement = d_maxNegativeDisplacement;
 
     if(d_maxPositiveDisplacement.isSet())
     {
-        if (d_accumulateDisp.getValue() && displacement > 0)
-            m_deltaMax[0] = maxPositiveDisplacement - displacement;
+        if (d_accumulateDisp.getValue() && displacement[0] > 0)
+            m_deltaMax[0] = maxPositiveDisplacement - displacement[0];
         else
             m_deltaMax[0] = maxPositiveDisplacement;
     }
 
     if(d_maxNegativeDisplacement.isSet())
     {
-        if (d_accumulateDisp.getValue() && displacement < 0)
-            m_deltaMin[0] = -maxNegativeDisplacement - displacement;
+        if (d_accumulateDisp.getValue() && displacement[0] < 0)
+            m_deltaMin[0] = -maxNegativeDisplacement - displacement[0];
         else
             m_deltaMin[0] = -maxNegativeDisplacement;
     }
@@ -297,10 +287,10 @@ void SlidingActuator<DataTypes>::updateLimit()
         }
         else
         {
-            if(rabs(m_deltaMin[0] - displacement) >= maxDispVariation || !d_maxNegativeDisplacement.isSet())
-                m_deltaMin[0] = displacement - maxDispVariation;
-            if(rabs(m_deltaMax[0] - displacement) >= maxDispVariation || !d_maxPositiveDisplacement.isSet())
-                m_deltaMax[0] = displacement + maxDispVariation;
+            if(rabs(m_deltaMin[0] - displacement[0]) >= maxDispVariation || !d_maxNegativeDisplacement.isSet())
+                m_deltaMin[0] = displacement[0] - maxDispVariation;
+            if(rabs(m_deltaMax[0] - displacement[0]) >= maxDispVariation || !d_maxPositiveDisplacement.isSet())
+                m_deltaMax[0] = displacement[0] + maxDispVariation;
         }
     }
 }
@@ -378,16 +368,22 @@ void SlidingActuator<DataTypes>::storeResults(sofa::type::vector<double> &lambda
 {
     if(d_componentState.getValue() != ComponentState::Valid)
         return ;
+
+    auto l = sofa::helper::getWriteAccessor(this->d_lambda);
+    l[0] = lambda[0];
     d_force.setValue(lambda[0]);
 
+    auto d = sofa::helper::getWriteAccessor(this->d_delta);
     double& displacement = sofa::helper::getWriteAccessor(d_displacement);
     if(d_accumulateDisp.getValue())
     {
         displacement += delta[0];
+        d[0] += delta[0];
     }
     else
     {
         displacement = delta[0];
+        d[0] = delta[0];
     }
 
     updateLimit();

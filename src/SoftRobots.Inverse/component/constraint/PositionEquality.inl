@@ -54,8 +54,6 @@ PositionEquality<DataTypes>::PositionEquality(MechanicalState* object)
                                  "Example of use: to allow the cable to reach an \n"
                                  "initial configuration before optimizing."))
 {
-    // PositionEquality of dimension 1
-    m_deltaEqual.resize(1);
 }
 
 
