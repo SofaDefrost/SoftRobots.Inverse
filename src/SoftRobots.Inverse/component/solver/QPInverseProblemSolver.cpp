@@ -159,7 +159,7 @@ QPInverseProblemSolver::QPInverseProblemSolver()
 
     , d_objective(initData(&d_objective, 0.0, "objective", "Calculated optimal objective function value."))
 
-    , d_mode(initData(&d_mode, sofa::helper::OptionsGroup{"inverse",  "direct (not implemented)"}, "mode", "Solver mode, either inverse or direct."))
+    , d_mode(initData(&d_mode, sofa::helper::OptionsGroup{"inverse",  "skipSolve"}, "mode", "Solver mode. In the `skipSolve` case, the component will skip the solving step."))
 
     , m_CP1(nullptr)
     , m_CP2(nullptr)
