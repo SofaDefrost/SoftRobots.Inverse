@@ -60,7 +60,7 @@ YoungModulusActuator<DataTypes>::YoungModulusActuator(MechanicalState* object)
     , m_initError(false)
     , m_deltaYoungModulus(0.0)
 {
-    this->setLambdaDescription("youngModulus", "Optimized Young modulus");
+    this->setLambdaNameAndHelp("youngModulus", "Optimized Young modulus");
 }
 
 

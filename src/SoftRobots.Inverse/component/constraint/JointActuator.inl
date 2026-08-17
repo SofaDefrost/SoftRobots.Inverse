@@ -65,8 +65,8 @@ JointActuator<DataTypes>::JointActuator(MechanicalState* object)
 
     , d_maxAngleVariation(initData(&d_maxAngleVariation, "maxAngleVariation", "In radian"))
 {
-    this->setLambdaDescription("effort", "");
-    this->setDeltaDescription("angle", "");
+    this->setLambdaName("effort");
+    this->setDeltaName("angle");
 }
 
 
