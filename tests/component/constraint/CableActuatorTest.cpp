@@ -17,7 +17,7 @@ using sofa::defaulttype::Vec3Types ;
 #include <sofa/simulation/common/SceneLoaderXML.h>
 using sofa::simulation::SceneLoaderXML ;
 
-#include <sofa/simulation/graph/DAGSimulation.h>
+#include <sofa/simulation/Simulation.h>
 using sofa::simulation::Simulation ;
 
 #include <sofa/simulation/Node.h>
@@ -110,7 +110,7 @@ struct CableActuatorTest : public BaseTest, CableActuator<_DataTypes>
 
 
     void normalTests(){
-        auto simu = sofa::simulation::getSimulation();
+        auto simu = sofa::simulation::MainSimulation::getSimulation();
 
         Node::SPtr node = simu->createNewGraph("root");
         typename MechanicalObject<DataTypes>::SPtr mecaobject = New<MechanicalObject<DataTypes> >() ;
