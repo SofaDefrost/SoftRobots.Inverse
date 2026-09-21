@@ -61,7 +61,7 @@ protected:
         m_simulation->reset(m_root.get());
 
         int nbTimeStep = 10;
-        m_root->getObject("QPInverseProblemSolver")->findData("epsilon")->read("0.0");
+        m_root->getObject("QPInverseProblemSolver")->findData("energyWeight")->read("0.0");
         m_root->getObject("CollisionResponse")->findData("responseParams")->read("mu=0.0");
         m_root->getObject("QPInverseProblemSolver")->findData("responseFriction")->read("0.0");
 
@@ -85,7 +85,7 @@ protected:
         m_simulation->reset(m_root.get());
 
         int nbTimeStep = 10;
-        m_root->getObject("QPInverseProblemSolver")->findData("epsilon")->read("0.0");
+        m_root->getObject("QPInverseProblemSolver")->findData("energyWeight")->read("0.0");
         m_root->getObject("CollisionResponse")->findData("responseParams")->read("mu=0.6");
         m_root->getObject("QPInverseProblemSolver")->findData("responseFriction")->read("0.6");
 

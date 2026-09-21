@@ -13,7 +13,7 @@ using sofa::defaulttype::Vec3Types ;
 #include <sofa/simulation/common/SceneLoaderXML.h>
 using sofa::simulation::SceneLoaderXML ;
 
-#include <sofa/simulation/graph/DAGSimulation.h>
+#include <sofa/simulation/Simulation.h>
 using sofa::simulation::Simulation ;
 #include <sofa/simulation/Node.h>
 using sofa::simulation::Node ;
@@ -48,7 +48,7 @@ struct QPInverseProblemSolverTest : public BaseTest,
 
     void normalTests()
     {
-        Node::SPtr node = sofa::simulation::getSimulation()->createNewGraph("root");
+        Node::SPtr node = sofa::simulation::MainSimulation::getSimulation()->createNewGraph("root");
         typename MechanicalObject<DataTypes>::SPtr mecaobject = New<MechanicalObject<DataTypes> >() ;
         typename ThisClass::SPtr thisobject = New<ThisClass >() ;
         mecaobject->init() ;
@@ -92,7 +92,7 @@ struct QPInverseProblemSolverTest : public BaseTest,
         int nbTimeStep = 10;
         string deltaString;
         double tolerance = 1e-10;
-        m_root->getObject("QPInverseProblemSolver")->findData("epsilon")->read("0.0");
+        m_root->getObject("QPInverseProblemSolver")->findData("energyWeight")->read("0.0");
         m_root->getObject("QPInverseProblemSolver")->findData("qpSolver")->read(qpSolver);
         // Test inverse resolution (effector == target)
 

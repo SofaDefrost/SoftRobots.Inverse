@@ -100,7 +100,7 @@ class SOFA_SOFTROBOTS_INVERSE_API QPInverseProblem : public sofa::component::con
     void solve(double& objective, int& iterations);
 
     void setTime(const double& time) {m_time = time;}
-    void setEpsilon(const double& epsilon) {m_epsilon = epsilon;}
+    void setEnergyWeight(const double& energyWeight) {m_ernergyWeight = energyWeight;}
     void setEnergyActuatorsOnly(const bool& actuatorsOnly) {m_actuatorsOnly = actuatorsOnly;}
     void setTolerance(const double& tolerance) {m_tolerance = tolerance;}
     void setMaxIterations(const int& maxIt) {m_maxIteration = maxIt;}
@@ -127,7 +127,7 @@ protected:
     QPSystem* m_qpSystem;
     QPConstraintLists* m_qpCLists;
 
-    double    m_epsilon;
+    double    m_ernergyWeight;
     bool      m_actuatorsOnly;
     double    m_tolerance;
     int       m_maxIteration;

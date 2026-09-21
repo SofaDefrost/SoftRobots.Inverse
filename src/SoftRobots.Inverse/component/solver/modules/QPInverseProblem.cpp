@@ -56,7 +56,7 @@ using sofa::core::objectmodel::Base;
 
 
 QPInverseProblem::QPInverseProblem()
-    : m_epsilon(1e-3)
+    : m_ernergyWeight(1e-3)
     , m_tolerance(1e-5)
     , m_maxIteration(200)
     , m_largestQNormVariation(0.0)

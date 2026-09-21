@@ -48,8 +48,8 @@ QPInverseProblemQPOases::QPInverseProblemQPOases() :
 }
 
 void QPInverseProblemQPOases::solveInverseProblem(double& objective,
-                                               vector<double> &result,
-                                               vector<double> &dual)
+                                                   vector<double> &result,
+                                                   vector<double> &dual)
 {
     m_qpSystem->previousResult = result;
 
