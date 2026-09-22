@@ -47,7 +47,7 @@ def createScene(rootNode):
     cavity.addObject('MeshTopology', src='@loader', name='topo')
     cavity.addObject('MechanicalObject', name='cavity')
     cavity.addObject('SurfacePressureActuator', template='Vec3', triangles='@topo.triangles', minPressure=0,
-                     maxVolumeGrowthVariation=500)
+                     maxVolumeGrowthVariation=5)
     cavity.addObject('BarycentricMapping')
 
     ##########################################

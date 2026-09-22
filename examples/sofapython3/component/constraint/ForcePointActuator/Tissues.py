@@ -117,7 +117,7 @@ def createScene(rootNode):
     pointForce.addObject('VisualStyle', displayFlags="showInteractionForceFields")
     pointForce.addObject('MechanicalObject', name="MO", position=[[72, 68, -2], [70, 70, 2], [70, 70, 0]])
     pointForce.addObject('ForcePointActuator', showForce=True, visuScale=10,
-                         direction=[-1, -1, 0], indices=[0, 1, 2], maxForce=90, minForce=0, maxForceVariation=5)
+                         direction=[-1, -1, 0], indices=[0, 1, 2], maxForce=4500, minForce=0, maxForceVariation=250)
     pointForce.addObject('BarycentricMapping')
 
     ##########################################

@@ -51,7 +51,7 @@ def createScene(rootNode):
     accordeonCavity.addObject('MechanicalObject', src="@topology")
     # Here you can set the desired volume to reach
     accordeonCavity.addObject('SurfacePressureEquality', template='Vec3', triangles='@topology.triangles',
-                              eqVolumeGrowth=500)
+                              eqVolumeGrowth=5)
     accordeonCavity.addObject('BarycentricMapping')
 
     ##########################################

@@ -90,7 +90,7 @@ def createScene(rootNode):
                              translation=translation)
     modelActuation.addObject('MeshTopology', src='@loader', name='topo')
     modelActuation.addObject('MechanicalObject')
-    modelActuation.addObject('ForceSurfaceActuator', maxForce=0, minForce=-80, centers=centers, radii=[10, 10, 15],
+    modelActuation.addObject('ForceSurfaceActuator', maxForce=0, minForce=-4000, centers=centers, radii=[10, 10, 15],
                              drawForces=True, drawSpheres=False, drawSurfaces=True, updateNormals=True)
     modelActuation.addObject('BarycentricMapping')
 

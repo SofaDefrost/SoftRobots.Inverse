@@ -85,7 +85,7 @@ def createScene(rootNode):
                        maxNegativeDisp=10, maxPositiveDisp=10, maxDispVariation=0.1, maxForce=1000, minForce=-1000)
     # 2 - Rotation around z axis
     actuator.addObject('SlidingActuator', template='Rigid3', name="actuator1", indices=0, direction=[0, 0, 0, 0, 0, 1],
-                       maxNegativeDisp=1, maxPositiveDisp=1, maxDispVariation=0.1, maxForce=100)
+                       maxNegativeDisp=1, maxPositiveDisp=1, maxDispVariation=0.1, maxForce=10000)
     actuator.addObject('AdaptiveBeamMapping', name='mapping', mapForces=False, mapMasses=False)
 
     ##########################################
