@@ -15,7 +15,7 @@ def createScene(rootNode):
 
     # bunny
     bunny = rootNode.addChild('bunny')
-    bunny.addObject('EulerImplicitSolver')
+    bunny.addObject('EulerImplicitIntegrationScheme')
     bunny.addObject('SparseLDLSolver', template="CompressedRowSparseMatrixd")
     bunny.addObject('MeshVTKLoader', name='loader', filename=path + 'Hollow_Stanford_Bunny.vtu')
     bunny.addObject('MeshTopology', src='@loader', name='container')

@@ -17,7 +17,7 @@ def createScene(rootNode):
     # FEM Model                              #
     ##########################################
     model = rootNode.addChild('model')
-    model.addObject('EulerImplicitSolver', rayleighStiffness=0.1, rayleighMass=0.1)
+    model.addObject('EulerImplicitIntegrationScheme', rayleighStiffness=0.1, rayleighMass=0.1)
     model.addObject('SparseLDLSolver', template="CompressedRowSparseMatrixMat3x3d")
     model.addObject('MeshVTKLoader', name='loader', filename=path + 'PneuNets.vtk')
     model.addObject('MeshTopology', src='@loader', name='container')
@@ -47,7 +47,7 @@ def createScene(rootNode):
     cavity.addObject('MeshTopology', src='@loader', name='topo')
     cavity.addObject('MechanicalObject', name='cavity')
     cavity.addObject('SurfacePressureActuator', template='Vec3', triangles='@topo.triangles', minPressure=0,
-                     maxVolumeGrowthVariation=500)
+                     maxVolumeGrowthVariation=5)
     cavity.addObject('BarycentricMapping')
 
     ##########################################

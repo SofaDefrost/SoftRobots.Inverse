@@ -13,7 +13,7 @@ def createScene(rootNode):
 
     # goal
     goal = rootNode.addChild('goal')
-    goal.addObject('EulerImplicitSolver', firstOrder=True)
+    goal.addObject('EulerImplicitIntegrationScheme', firstOrder=True)
     goal.addObject('CGLinearSolver', iterations=100, tolerance=1e-5, threshold=1e-5)
     goal.addObject('MechanicalObject', name='goalMO', position=[-5.72055, 1.13543, 3.10608])
     goal.addObject('SphereCollisionModel', radius=0.25, group=3)
@@ -21,7 +21,7 @@ def createScene(rootNode):
 
     # bunny
     bunny = rootNode.addChild('bunny')
-    bunny.addObject('EulerImplicitSolver')
+    bunny.addObject('EulerImplicitIntegrationScheme')
     bunny.addObject('SparseLDLSolver')
     bunny.addObject('MeshVTKLoader', name='loader', filename=path + 'Hollow_Stanford_Bunny.vtu')
     bunny.addObject('MeshTopology', src='@loader', name='container')

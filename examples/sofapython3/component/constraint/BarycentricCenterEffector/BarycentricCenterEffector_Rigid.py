@@ -13,7 +13,7 @@ def createScene(rootNode):
     rootNode.addObject('RequiredPlugin', name='Sofa.Component.LinearSolver.Direct')  # Needed to use components [SparseLDLSolver]
     rootNode.addObject('RequiredPlugin', name='Sofa.Component.LinearSolver.Iterative')  # Needed to use components [CGLinearSolver]
     rootNode.addObject('RequiredPlugin', name='Sofa.Component.Mapping.NonLinear')  # Needed to use components [RigidMapping]
-    rootNode.addObject('RequiredPlugin', name='Sofa.Component.ODESolver.Backward')  # Needed to use components [EulerImplicitSolver]
+    rootNode.addObject('RequiredPlugin', name='Sofa.Component.IntegrationScheme.Backward')  # Needed to use components [EulerImplicitIntegrationScheme]
     rootNode.addObject('RequiredPlugin', name='Sofa.Component.StateContainer')  # Needed to use components [MechanicalObject]
     rootNode.addObject('RequiredPlugin', name='Sofa.Component.Topology.Container.Constant')  # Needed to use components [MeshTopology]
     rootNode.addObject('RequiredPlugin', name='Sofa.Component.Visual')  # Needed to use components [VisualStyle]
@@ -28,7 +28,7 @@ def createScene(rootNode):
     ##########################################
     goal = rootNode.addChild('goal')
     goal.addObject('VisualStyle', displayFlags="showCollisionModels")
-    goal.addObject('EulerImplicitSolver', firstOrder=True)
+    goal.addObject('EulerImplicitIntegrationScheme', firstOrder=True)
     goal.addObject('CGLinearSolver', iterations=100, tolerance=1e-5, threshold=1e-5)
     goal.addObject('MechanicalObject', name='goalMO', template="Rigid3", showObject=True,
                    showObjectScale=3, position=[[10, 0, 0, 0, 0, -sin(pi/16), cos(pi/16)]])
@@ -38,7 +38,7 @@ def createScene(rootNode):
     # solver
     ##########################################
     solverNode = rootNode.addChild('Solver')
-    solverNode.addObject('EulerImplicitSolver', firstOrder=False, rayleighStiffness=1)
+    solverNode.addObject('EulerImplicitIntegrationScheme', firstOrder=False, rayleighStiffness=1)
     solverNode.addObject('SparseLDLSolver', template="CompressedRowSparseMatrixd")
     solverNode.addObject('GenericConstraintCorrection')
 
