@@ -61,13 +61,6 @@ CableActuator<DataTypes>::CableActuator(MechanicalState* object)
     // These data from CableModel have no sense for actuator
     d_eqForce.setDisplayed(false);
     d_eqDisplacement.setDisplayed(false);
-
-    // QP on only one value, we set dimension to one
-    m_lambdaInit.resize(1);
-    m_deltaMax.resize(1);
-    m_deltaMin.resize(1);
-    m_lambdaMax.resize(1);
-    m_lambdaMin.resize(1);
 }
 
 
@@ -103,8 +96,10 @@ void CableActuator<DataTypes>::reset()
 template<class DataTypes>
 void CableActuator<DataTypes>::initData()
 {
-    d_displacement.setValue(0.0);
+    auto l = sofa::helper::getWriteAccessor(this->d_lambda);
+    l[0] = d_initForce.getValue();
     d_force.setValue(d_initForce.getValue());
+
     if(d_initForce.isSet())
     {
         m_hasLambdaInit = true;
@@ -119,7 +114,7 @@ void CableActuator<DataTypes>::initLimit()
     if(time < d_constrainAtTime.getValue())
         return;
 
-    ReadAccessor<sofa::Data<double>> displacement = d_displacement;
+    ReadAccessor<sofa::Data<sofa::type::vector<double>>> displacement = this->d_delta;
     ReadAccessor<sofa::Data<Real>> maxDispVariation = d_maxDispVariation;
     ReadAccessor<sofa::Data<Real>> maxPositiveDisplacement = d_maxPositiveDisplacement;
     ReadAccessor<sofa::Data<Real>> maxNegativeDisplacement = d_maxNegativeDisplacement;
@@ -157,10 +152,10 @@ void CableActuator<DataTypes>::initLimit()
     {
         m_hasDeltaMax = true;
         m_hasDeltaMin = true;
-        if(rabs(m_deltaMin[0] - displacement) >= maxDispVariation || !d_maxNegativeDisplacement.isSet())
-            m_deltaMin[0] = displacement - maxDispVariation;
-        if(rabs(m_deltaMax[0] - displacement) >= maxDispVariation || !d_maxPositiveDisplacement.isSet())
-            m_deltaMax[0] = displacement + maxDispVariation;
+        if(rabs(m_deltaMin[0] - displacement[0]) >= maxDispVariation || !d_maxNegativeDisplacement.isSet())
+            m_deltaMin[0] = displacement[0] - maxDispVariation;
+        if(rabs(m_deltaMax[0] - displacement[0]) >= maxDispVariation || !d_maxPositiveDisplacement.isSet())
+            m_deltaMax[0] = displacement[0] + maxDispVariation;
     }
 }
 
@@ -178,7 +173,7 @@ void CableActuator<DataTypes>::updateLimit()
         return;
     }
 
-    ReadAccessor<sofa::Data<double>> displacement = d_displacement;
+    ReadAccessor<sofa::Data<sofa::type::vector<double>>> displacement = this->d_delta;
     ReadAccessor<sofa::Data<Real>> maxDispVariation = d_maxDispVariation;
     ReadAccessor<sofa::Data<Real>> maxPositiveDisplacement = d_maxPositiveDisplacement;
     ReadAccessor<sofa::Data<Real>> maxNegativeDisplacement = d_maxNegativeDisplacement;
@@ -191,10 +186,10 @@ void CableActuator<DataTypes>::updateLimit()
 
     if(d_maxDispVariation.isSet())
     {
-        if(rabs(m_deltaMin[0] - displacement) >= maxDispVariation || !d_maxNegativeDisplacement.isSet())
-            m_deltaMin[0] = displacement - maxDispVariation;
-        if(rabs(m_deltaMax[0] - displacement) >= maxDispVariation || !d_maxPositiveDisplacement.isSet())
-            m_deltaMax[0] = displacement + maxDispVariation;
+        if(rabs(m_deltaMin[0] - displacement[0]) >= maxDispVariation || !d_maxNegativeDisplacement.isSet())
+            m_deltaMin[0] = displacement[0] - maxDispVariation;
+        if(rabs(m_deltaMax[0] - displacement[0]) >= maxDispVariation || !d_maxPositiveDisplacement.isSet())
+            m_deltaMax[0] = displacement[0] + maxDispVariation;
     }
 }
 
@@ -202,14 +197,14 @@ void CableActuator<DataTypes>::updateLimit()
 template<class DataTypes>
 void CableActuator<DataTypes>::updateVisualization()
 {
-    ReadAccessor<sofa::Data<double>> displacement = d_displacement;
-    ReadAccessor<sofa::Data<double>> force = d_force;
+    ReadAccessor<sofa::Data<sofa::type::vector<double>>> displacement = this->d_delta;
+    ReadAccessor<sofa::Data<sofa::type::vector<double>>> force = this->d_lambda;
     ReadAccessor<sofa::Data<Real>> maxPositiveDisplacement = d_maxPositiveDisplacement;
     ReadAccessor<sofa::Data<Real>> maxForce = d_maxForce;
 
     if(d_maxPositiveDisplacement.isSet())
     {
-        if(rabs(displacement-maxPositiveDisplacement) < 1e-5)
+        if(rabs(displacement[0]-maxPositiveDisplacement) < 1e-5)
             d_color.setValue(sofa::type::RGBAColor::red());
         else
             d_color.setValue(m_color);
@@ -217,7 +212,7 @@ void CableActuator<DataTypes>::updateVisualization()
 
     if(d_maxForce.isSet())
     {
-        if(rabs(force-maxForce) < 1e-5)
+        if(rabs(force[0]-maxForce) < 1e-5)
             d_color.setValue(sofa::type::RGBAColor::red());
         else
             d_color.setValue(m_color);
@@ -228,7 +223,13 @@ template<class DataTypes>
 void CableActuator<DataTypes>::storeResults(sofa::type::vector<double> &lambda,
                                             sofa::type::vector<double> &delta)
 {
+    auto l = sofa::helper::getWriteAccessor(this->d_lambda);
+    auto d = sofa::helper::getWriteAccessor(this->d_delta);
+
+    l[0] = lambda[0];
     d_force.setValue(lambda[0]);
+
+    d[0] = delta[0];
     d_displacement.setValue(delta[0]);
 
     updateLimit();

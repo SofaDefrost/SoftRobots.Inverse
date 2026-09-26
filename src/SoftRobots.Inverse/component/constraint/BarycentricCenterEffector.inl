@@ -51,10 +51,6 @@ using sofa::core::objectmodel::ComponentState;
 template<class DataTypes>
 BarycentricCenterEffector<DataTypes>::BarycentricCenterEffector(MechanicalState* object)
     : Inherit1(object)
-    , d_axis(initData(&d_axis, sofa::type::Vec<3,bool>(true,true,true), "axis",
-                      "The parameter axis is of type Vec3<bool> and allows to specify the directions in \n"
-                      "which you want to solve the effector. If unspecified, the default    \n"
-                      "values are {true, true, true})."))
 
     , d_drawBarycenter(initData(&d_drawBarycenter,false,"drawBarycenter",
                                 "If true, draw the barycenter" ))
@@ -62,7 +58,6 @@ BarycentricCenterEffector<DataTypes>::BarycentricCenterEffector(MechanicalState*
     , d_barycenter(initData(&d_barycenter,"barycenter",
                             "Position of barycenter." ))
 {
-    d_axis.setDisplayed(false);
     d_indices.setDisplayed(false); // inherited from PositionModel but not used here
     d_barycenter.setReadOnly(true);
 }
@@ -81,16 +76,6 @@ void BarycentricCenterEffector<DataTypes>::init()
     indices.resize(1);
 
     Inherit1::init();
-
-    if (d_axis.isSet())
-    {
-        msg_deprecated() << "The data axis is deprecated. To fix your scene please use useDirections instead. It will be remove in v25.06.";
-        auto useDirections = sofa::helper::getWriteAccessor(d_useDirections);
-        const auto& axis = sofa::helper::getReadAccessor(d_axis);
-        useDirections[0] = axis[0];
-        useDirections[1] = axis[1];
-        useDirections[2] = axis[2];
-    }
 }
 
 template<class DataTypes>

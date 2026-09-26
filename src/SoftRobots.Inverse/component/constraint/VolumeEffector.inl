@@ -85,6 +85,8 @@ void VolumeEffector<DataTypes>::getConstraintViolation(const ConstraintParams* c
 template<class DataTypes>
 void VolumeEffector<DataTypes>::storeResults(sofa::type::vector<double> &delta)
 {
+    auto d = sofa::helper::getWriteAccessor(this->d_delta);
+    d[0] = delta[0];
     d_volumeGrowth.setValue(delta[0]);
 }
 

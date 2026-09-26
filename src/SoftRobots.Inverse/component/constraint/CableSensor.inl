@@ -61,12 +61,12 @@ void CableSensor<DataTypes>::setUpData()
     d_maxForce.setDisplayed(false);
     d_minForce.setDisplayed(false);
     d_eqForce.setDisplayed(false);
-    d_force.setDisplayed(false);
+    this->d_lambda.setDisplayed(false);
     d_maxPositiveDisplacement.setDisplayed(false);
     d_maxNegativeDisplacement.setDisplayed(false);
     d_maxDispVariation.setDisplayed(false);
     d_eqDisplacement.setDisplayed(false);
-    d_displacement.setDisplayed(false);
+    this->d_delta.setDisplayed(false);
 }
 
 

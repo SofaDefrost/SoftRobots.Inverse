@@ -55,10 +55,6 @@ CableEquality<DataTypes>::CableEquality(MechanicalState* object)
     d_maxPositiveDisplacement.setDisplayed(false);
     d_maxNegativeDisplacement.setDisplayed(false);
     d_maxDispVariation.setDisplayed(false);
-
-    // QP on only one value, we set dimension to one
-    m_lambdaEqual.resize(1);
-    m_deltaEqual.resize(1);
 }
 
 
@@ -85,8 +81,6 @@ void CableEquality<DataTypes>::reinit()
 template<class DataTypes>
 void CableEquality<DataTypes>::reset()
 {
-    d_displacement.setValue(0.0);
-    d_force.setValue(0.0);
     updateConstraint();
 }
 

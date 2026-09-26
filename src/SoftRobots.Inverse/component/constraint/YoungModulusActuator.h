@@ -103,6 +103,7 @@ protected:
     sofa::Data<Real> d_maxYoung;
     sofa::Data<Real> d_maxYoungVariationRatio;
 
+    SOFA_ATTRIBUTE_DEPRECATED("v26.06", "v27.06", "Use d_lambda instead.")
     sofa::Data<Real> d_youngModulus;
     Real m_initialYoungModulus;
 
@@ -125,6 +126,7 @@ private:
     /// Bring inherited attributes and function in the current lookup context.
     /// otherwise any access to the base::attribute would require
     /// the "this->" approach.
+    using Actuator<DataTypes>::d_lambda ;
     using Actuator<DataTypes>::m_state ;
     using Actuator<DataTypes>::m_nbLines ;
     using Actuator<DataTypes>::d_constraintIndex ;

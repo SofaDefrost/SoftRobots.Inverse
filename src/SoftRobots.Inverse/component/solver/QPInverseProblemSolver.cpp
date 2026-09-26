@@ -159,6 +159,8 @@ QPInverseProblemSolver::QPInverseProblemSolver()
 
     , d_objective(initData(&d_objective, 0.0, "objective", "Calculated optimal objective function value."))
 
+    , d_mode(initData(&d_mode, sofa::helper::OptionsGroup{"inverse",  "skipSolve"}, "mode", "Solver mode. In the `skipSolve` case, the component will skip the solving step."))
+
     , m_CP1(nullptr)
     , m_CP2(nullptr)
     , m_CP3(nullptr)
@@ -496,12 +498,12 @@ bool QPInverseProblemSolver::solveSystem(const ConstraintParams * cParams,
     if(d_minContactForces.isSet()) m_currentCP->setMinContactForces(d_minContactForces.getValue());
     if(d_maxContactForces.isSet()) m_currentCP->setMaxContactForces(d_maxContactForces.getValue());
 
-    double objective;
-    int iterations;
+    double objective = 0.;
+    int iterations = 0;
+    if (d_mode.getValue().getSelectedId() == 0)
     {
         sofa::helper::ScopedAdvancedTimer("ConstraintsQP");
         m_currentCP->solve(objective, iterations);
-
     }
 
     module::QPInverseProblem::QPConstraintLists* qpCLists = m_currentCP->getQPConstraintLists();
