@@ -8,7 +8,7 @@ using sofa::testing::BaseTest ;
 
 #include <sofa/linearalgebra/FullVector.h>
 #include <sofa/simulation/common/SceneLoaderXML.h>
-#include <sofa/simulation/graph/DAGSimulation.h>
+#include <sofa/simulation/Simulation.h>
 #include <SoftRobots.Inverse/component/constraint/SlidingActuator.h>
 
 namespace softrobotsinverse
@@ -78,7 +78,7 @@ struct SlidingActuatorTest : public BaseTest, SlidingActuator<_DataTypes>
 
     void normalTests()
     {
-        auto simu = sofa::simulation::getSimulation();
+        auto simu = sofa::simulation::MainSimulation::getSimulation();
 
         Node::SPtr node = simu->createNewGraph("root");
         typename MechanicalObject<DataTypes>::SPtr mecaobject = New<MechanicalObject<DataTypes> >() ;

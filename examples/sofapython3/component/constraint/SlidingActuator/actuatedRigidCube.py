@@ -17,7 +17,7 @@ def createScene(rootnode):
                    name='Sofa.Component.Mapping.NonLinear')  # Needed to use components [RigidMapping]  
     rootnode.addObject('RequiredPlugin', name='Sofa.Component.Mass')  # Needed to use components [UniformMass]  
     rootnode.addObject('RequiredPlugin',
-                   name='Sofa.Component.ODESolver.Backward')  # Needed to use components [EulerImplicitSolver]  
+                   name='Sofa.Component.IntegrationScheme.Backward')  # Needed to use components [EulerImplicitIntegrationScheme]  
     rootnode.addObject('RequiredPlugin',
                    name='Sofa.Component.StateContainer')  # Needed to use components [MechanicalObject]  
     rootnode.addObject('RequiredPlugin', name='Sofa.GL.Component.Rendering3D')  # Needed to use components [OglModel] 
@@ -29,7 +29,7 @@ def createScene(rootnode):
     rootnode.addObject('QPInverseProblemSolver')
 
     cube = rootnode.addChild('Cube')
-    cube.addObject('EulerImplicitSolver')
+    cube.addObject('EulerImplicitIntegrationScheme')
     cube.addObject('SparseLDLSolver')
     cube.addObject('GenericConstraintCorrection')
     cube.addObject('MechanicalObject', template='Rigid3', position=[-10, 0, 0, 0, 0, 0, 1])
@@ -52,7 +52,7 @@ def createScene(rootnode):
 
     # Set a target for the effector that can be moved interactively
     target = rootnode.addChild('Target')
-    target.addObject('EulerImplicitSolver', firstOrder=True)
+    target.addObject('EulerImplicitIntegrationScheme', firstOrder=True)
     target.addObject('CGLinearSolver', tolerance=1e-5, iterations=20, threshold=1e-5)
     target.addObject('MechanicalObject', position=[30, 0, 0], showObject=True, drawMode=2, showObjectScale=3)
     target.addObject('PartialFixedProjectiveConstraint', fixedDirections=[0, 1, 1])

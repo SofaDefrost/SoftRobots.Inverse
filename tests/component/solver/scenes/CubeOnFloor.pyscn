@@ -32,7 +32,7 @@ def createScene(rootNode):
                 # FEM Model                              #
                 ##########################################
                 model = rootNode.addChild('model')
-                model.addObject('EulerImplicitSolver')
+                model.addObject('EulerImplicitIntegrationScheme')
                 model.addObject('SparseLDLSolver')
                 model.addObject('RegularGridTopology', name='loader', n=[6, 6, 6], min=[-10, -10, -10], max=[10, 10, 10])
                 model.addObject('MechanicalObject', name='tetras', template='Vec3', showIndices=False, showIndicesScale=4e-5)
