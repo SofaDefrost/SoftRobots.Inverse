@@ -117,6 +117,12 @@ void moduleAddQPInverseProblemSolver(py::module &m)
 
     s.def(py::init<>());
     s.def("solveSystem", &softrobotsinverse::solver::QPInverseProblemSolver::solveSystem);
+
+    /// register the binding in the downcasting subsystem
+    sofapython3::PythonFactory::registerType<softrobotsinverse::solver::QPInverseProblemSolver>([](sofa::core::objectmodel::Base* object)
+                                                      {
+                                                          return py::cast(dynamic_cast<softrobotsinverse::solver::QPInverseProblemSolver*>(object));
+                                                      });
 }
 
 }

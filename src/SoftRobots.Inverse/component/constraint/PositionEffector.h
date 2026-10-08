@@ -68,7 +68,7 @@ public:
                                 const sofa::linearalgebra::BaseVector *Jdx) override;
     ///////////////////////////////////////////////////////////////
 
-    sofa::Data<VecCoord>                                d_effectorGoal;
+    sofa::Data<VecCoord> d_effectorGoal;
 
     void setTargetDefaultValue();
     void resizeData();

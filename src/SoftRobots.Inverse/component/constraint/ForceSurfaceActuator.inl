@@ -91,12 +91,6 @@ ForceSurfaceActuator<DataTypes>::ForceSurfaceActuator(MechanicalState* object)
     , d_minDisplacement(initData(&d_minDisplacement, "minDisplacement",
                                  ""))
 
-    , d_force(initData(&d_force, vector<Real>(0), "force",
-                       "Warning: to get the actual force you should divide this value by dt."))
-
-    , d_displacement(initData(&d_displacement, vector<Real>(0), "displacement",
-                              ""))
-
     , d_drawForce(initData(&d_drawForce, false, "drawForces",
                            ""))
 
@@ -110,21 +104,10 @@ ForceSurfaceActuator<DataTypes>::ForceSurfaceActuator(MechanicalState* object)
                            ""))
 
 {
-    d_force.setReadOnly(true);
-    WriteAccessor<sofa::Data<vector<Real>>> force = d_force;
-    force.resize(1);
-    d_displacement.setReadOnly(true);
-
     d_drawForce.setGroup("Visualization");
     d_drawSphere.setGroup("Visualization");
     d_drawSurface.setGroup("Visualization");
     d_visuScale.setGroup("Visualization");
-
-    // QP on only one value, we set dimension to one
-    m_deltaMax.resize(1);
-    m_deltaMin.resize(1);
-    m_lambdaMax.resize(1);
-    m_lambdaMin.resize(1);
 }
 
 
@@ -283,14 +266,15 @@ void ForceSurfaceActuator<DataTypes>::initLimit()
         m_lambdaMin[0] = d_minForce.getValue();
     }
 
+    auto force = sofa::helper::getReadAccessor(this->d_lambda);
     if(d_maxForceVariation.isSet())
     {
         m_hasLambdaMax = true;
         m_hasLambdaMin = true;
-        if(rabs(m_lambdaMin[0] - d_force.getValue()[0]) >= d_maxForceVariation.getValue() || !d_minForce.isSet())
-            m_lambdaMin[0] = d_force.getValue()[0] - d_maxForceVariation.getValue();
-        if(rabs(m_lambdaMax[0] - d_force.getValue()[0]) >= d_maxForceVariation.getValue() || !d_maxForce.isSet())
-            m_lambdaMax[0] = d_force.getValue()[0] + d_maxForceVariation.getValue();
+        if(rabs(m_lambdaMin[0] - force[0]) >= d_maxForceVariation.getValue() || !d_minForce.isSet())
+            m_lambdaMin[0] = force[0] - d_maxForceVariation.getValue();
+        if(rabs(m_lambdaMax[0] - force[0]) >= d_maxForceVariation.getValue() || !d_maxForce.isSet())
+            m_lambdaMax[0] = force[0] + d_maxForceVariation.getValue();
     }
 
     if(d_maxDisplacement.isSet())
@@ -316,12 +300,13 @@ void ForceSurfaceActuator<DataTypes>::updateLimit()
     if(d_minForce.isSet())
         m_lambdaMin[0] = d_minForce.getValue();
 
+    auto force = sofa::helper::getReadAccessor(this->d_lambda);
     if(d_maxForceVariation.isSet())
     {
-        if(rabs(m_lambdaMin[0] - d_force.getValue()[0]) >= d_maxForceVariation.getValue() || !d_minForce.isSet())
-            m_lambdaMin[0] = d_force.getValue()[0] - d_maxForceVariation.getValue();
-        if(rabs(m_lambdaMax[0] - d_force.getValue()[0]) >= d_maxForceVariation.getValue() || !d_maxForce.isSet())
-            m_lambdaMax[0] = d_force.getValue()[0] + d_maxForceVariation.getValue();
+        if(rabs(m_lambdaMin[0] - force[0]) >= d_maxForceVariation.getValue() || !d_minForce.isSet())
+            m_lambdaMin[0] = force[0] - d_maxForceVariation.getValue();
+        if(rabs(m_lambdaMax[0] - force[0]) >= d_maxForceVariation.getValue() || !d_maxForce.isSet())
+            m_lambdaMax[0] = force[0] + d_maxForceVariation.getValue();
     }
 
     if(d_maxDisplacement.isSet())
@@ -338,7 +323,7 @@ void ForceSurfaceActuator<DataTypes>::computeSurfaces()
 {
     ReadAccessor<sofa::Data<vector<Triangle> > >  triangles = d_triangles;
     ReadAccessor<sofa::Data<vector<Quad> > >      quads     = d_quads;
-    ReadAccessor<sofa::Data<VecCoord> >      centers     = d_centers;
+    ReadAccessor<sofa::Data<VecCoord> >           centers   = d_centers;
 
     computePointsInSpheres();
 
@@ -661,14 +646,20 @@ void ForceSurfaceActuator<DataTypes>::storeResults(vector<double> &lambda, vecto
 {
     WriteAccessor<sofa::Data<vector<Real>>> force = d_force;
     WriteAccessor<sofa::Data<vector<Real>>> displacement = d_displacement;
+    WriteAccessor<sofa::Data<vector<Real>>> l = this->d_lambda;
+    WriteAccessor<sofa::Data<vector<Real>>> d = this->d_delta;
 
     unsigned int nbForces = d_centers.getValue().size();
     force.resize(nbForces);
+    l.resize(nbForces);
     displacement.resize(nbForces);
+    d.resize(nbForces);
     for(unsigned int i=0; i<nbForces; i++)
     {
         force[i] = lambda[i];
+        l[i] = lambda[i];
         displacement[i] = delta[i];
+        d[i] = delta[i];
     }
 
     updateCenter();
@@ -682,13 +673,13 @@ template<class DataTypes>
 void ForceSurfaceActuator<DataTypes>::updateCenter()
 {
     WriteAccessor<sofa::Data<vector<Coord>>> centers = d_centers;
-    ReadAccessor<sofa::Data<vector<Real>>> displacement = d_displacement;
+    ReadAccessor<sofa::Data<vector<Real>>> displacement = this->d_delta;
     ReadAccessor<sofa::Data<vector<Deriv>>> directions = d_directions;
 
     int nbCenters = centers.size();
 
     for(int i=0; i<nbCenters; i++)
-        centers[i] = m_initialCenters[i] + directions[i]*displacement[i];
+        centers[i] = m_initialCenters[i] + directions[i] * displacement[i];
 }
 
 
@@ -714,13 +705,14 @@ void ForceSurfaceActuator<DataTypes>::draw(const VisualParams* vparams)
 template<class DataTypes>
 void ForceSurfaceActuator<DataTypes>::drawForces(const VisualParams* vparams)
 {
-    if(m_state == nullptr || d_force.getValue().size()==0)
+    ReadAccessor<sofa::Data<vector<Real>>> force = this->d_lambda;
+
+    if(m_state == nullptr || force.size() == 0)
         return;
 
     VecDeriv directions = d_directions.getValue();
 
     ReadAccessor<sofa::Data<VecCoord> > positions = m_state->readPositions();
-    ReadAccessor<sofa::Data<vector<Real>>> force = d_force;
 
     RGBAColor color(0,1,0,1);
     for(unsigned int i=0; i<directions.size(); i++)
@@ -744,7 +736,6 @@ void ForceSurfaceActuator<DataTypes>::drawSpheres(const VisualParams* vparams)
 template<class DataTypes>
 void ForceSurfaceActuator<DataTypes>::drawSurfaces(const VisualParams* vparams)
 {
-
     if(m_state == nullptr)
         return;
 

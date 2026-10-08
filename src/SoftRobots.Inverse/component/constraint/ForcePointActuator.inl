@@ -51,22 +51,16 @@ ForcePointActuator<DataTypes>::ForcePointActuator(MechanicalState* object)
                        "Index of the point of the model on which we want to apply the force"))
 
     , d_maxForce(initData(&d_maxForce, "maxForce",
-                       ""))
+                       "Maximum force."))
 
     , d_minForce(initData(&d_minForce, "minForce",
-                       ""))
+                       "Minimum force."))
 
     , d_initForce(initData(&d_initForce, Real(0.0), "initForce",
                        "Initial force if any. Default is 0."))
 
     , d_maxForceVariation(initData(&d_maxForceVariation, "maxForceVariation",
                        "Only available if the direction is set."))
-
-    , d_force(initData(&d_force, "force",
-                       "Warning: to get the actual force you should divide this value by dt."))
-
-    , d_displacement(initData(&d_displacement, Real(0.0), "displacement",
-                       ""))
 
     , d_direction(initData(&d_direction, "direction",
                            "Direction of the force we want to apply. If d=[0,0,0], the direction \n"
@@ -78,10 +72,10 @@ ForcePointActuator<DataTypes>::ForcePointActuator(MechanicalState* object)
                               "transfered by this actuator. The default value used is the energyWeight defined in the inverse problem solver."))
 
     , d_showForce(initData(&d_showForce, false, "showForce",
-                           ""))
+                           "Either to show the force or not."))
 
     , d_visuScale(initData(&d_visuScale, Real(0.1), "visuScale",
-                           ""))
+                           "Visualization scale."))
 
 {
     setUpData();
@@ -93,9 +87,6 @@ void ForcePointActuator<DataTypes>::setUpData()
 {
     d_epsilon.setOriginalData(&d_energyWeight);
     this->addAlias(&d_energyWeight, "penalty");
-
-    d_force.setReadOnly(true);
-    d_displacement.setReadOnly(true);
 
     d_showForce.setGroup("Visualization");
     d_visuScale.setGroup("Visualization");
@@ -135,6 +126,7 @@ template<class DataTypes>
 void ForcePointActuator<DataTypes>::initData()
 {
     m_dim = (d_direction.getValue().norm()<1e-10)? Deriv::total_size: 1;
+    this->resizeConstraints(m_dim);
 
     if(d_energyWeight.isSet())
     {
@@ -150,12 +142,8 @@ void ForcePointActuator<DataTypes>::initData()
 
     sofa::type::vector<Real> force;
     force.resize(m_dim, d_initForce.getValue());
+    this->d_lambda.setValue(force);
     d_force.setValue(force);
-
-    // QP on only one value, we set dimension to one
-    m_lambdaInit.resize(m_dim);
-    m_lambdaMax.resize(m_dim);
-    m_lambdaMin.resize(m_dim);
 }
 
 
@@ -193,24 +181,26 @@ void ForcePointActuator<DataTypes>::updateLimit()
             lambda = d_minForce.getValue();
     }
 
+    auto lambda = sofa::helper::getReadAccessor(this->d_lambda);
+
     if(d_maxForceVariation.isSet())
     {
         if (m_dim>1)
         {
             for(unsigned int j=0; j<Deriv::total_size; j++)
             {
-                if(rabs(m_lambdaMin[j] - d_force.getValue()[j]) >= d_maxForceVariation.getValue() || !d_minForce.isSet())
-                    m_lambdaMin[j] = d_force.getValue()[j] - d_maxForceVariation.getValue();
-                if(rabs(m_lambdaMax[j] - d_force.getValue()[j]) >= d_maxForceVariation.getValue() || !d_maxForce.isSet())
-                    m_lambdaMax[j] = d_force.getValue()[j] + d_maxForceVariation.getValue();
+                if(rabs(m_lambdaMin[j] - lambda[j]) >= d_maxForceVariation.getValue() || !d_minForce.isSet())
+                    m_lambdaMin[j] = lambda[j] - d_maxForceVariation.getValue();
+                if(rabs(m_lambdaMax[j] - lambda[j]) >= d_maxForceVariation.getValue() || !d_maxForce.isSet())
+                    m_lambdaMax[j] = lambda[j] + d_maxForceVariation.getValue();
             }
         }
         else
         {
-            if(rabs(m_lambdaMin[0] - d_force.getValue()[0]) >= d_maxForceVariation.getValue() || !d_minForce.isSet())
-                m_lambdaMin[0] = d_force.getValue()[0] - d_maxForceVariation.getValue();
-            if(rabs(m_lambdaMax[0] - d_force.getValue()[0]) >= d_maxForceVariation.getValue() || !d_maxForce.isSet())
-                m_lambdaMax[0] = d_force.getValue()[0] + d_maxForceVariation.getValue();
+            if(rabs(m_lambdaMin[0] - lambda[0]) >= d_maxForceVariation.getValue() || !d_minForce.isSet())
+                m_lambdaMin[0] = lambda[0] - d_maxForceVariation.getValue();
+            if(rabs(m_lambdaMax[0] - lambda[0]) >= d_maxForceVariation.getValue() || !d_maxForce.isSet())
+                m_lambdaMax[0] = lambda[0] + d_maxForceVariation.getValue();
         }
     }
 }
@@ -287,17 +277,27 @@ void ForcePointActuator<DataTypes>::getConstraintViolation(const ConstraintParam
 template<class DataTypes>
 void ForcePointActuator<DataTypes>::storeResults(vector<double> &lambda, vector<double> &delta)
 {
+    auto l = sofa::helper::getWriteAccessor(this->d_lambda);
+    auto d = sofa::helper::getWriteAccessor(this->d_delta);
+
     WriteAccessor<sofa::Data<vector<Real>>> force = d_force;
 
+    d[0] = delta[0];
     d_displacement.setValue(delta[0]);
 
     if(m_dim > 1) // No fixed direction
     {
         for(unsigned int j=0; j<Deriv::total_size; j++)
+        {
+            l[j] = lambda[j];
             force[j]=lambda[j];
+        }
     }
     else
+    {
+        l[0] = lambda[0];
         force[0] = lambda[0];
+    }
 
     updateLimit();
 
@@ -316,7 +316,7 @@ void ForcePointActuator<DataTypes>::draw(const VisualParams* vparams)
     ReadAccessor<sofa::Data<sofa::type::vector<sofa::Index>>> indices = sofa::helper::getReadAccessor(d_indices);
     ReadAccessor<sofa::Data<Real>> visuScale = sofa::helper::getReadAccessor(d_visuScale);
     ReadAccessor<sofa::Data<VecCoord> > positions = m_state->readPositions();
-    ReadAccessor<sofa::Data<vector<Real>>> force = d_force;
+    ReadAccessor<sofa::Data<vector<Real>>> force = this->d_lambda;
     Deriv direction = d_direction.getValue();
 
     static const sofa::type::RGBAColor color(0,0,0.8,1);

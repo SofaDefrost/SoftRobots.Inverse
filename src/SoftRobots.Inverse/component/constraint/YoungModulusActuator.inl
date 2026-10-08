@@ -54,19 +54,13 @@ YoungModulusActuator<DataTypes>::YoungModulusActuator(MechanicalState* object)
                                         "Maximum variation of young / its actual value. \n"
                                         "If unspecified default value 1.0e1."))
 
-    , d_youngModulus(initData(&d_youngModulus, (Real)0., "youngModulus", "Optimized Young modulus."))
-
     , l_forceField(initLink("forceField", "link to the force field"))
 
     , m_initialYoungModulus(0.0)
     , m_initError(false)
     , m_deltaYoungModulus(0.0)
 {
-    // QP on only one value, we set dimension to one
-    m_lambdaMax.resize(1);
-    m_lambdaMin.resize(1);
-
-    d_youngModulus.setReadOnly(true);
+    this->setLambdaNameAndHelp("youngModulus", "Optimized Young modulus");
 }
 
 
@@ -103,21 +97,21 @@ void YoungModulusActuator<DataTypes>::initLimit()
 template<class DataTypes>
 void YoungModulusActuator<DataTypes>::updateLimit()
 {
-    const auto& youngModulus = sofa::helper::getReadAccessor(d_youngModulus);
+    const auto& youngModulus = sofa::helper::getReadAccessor(d_lambda);
     const auto& minYoung = sofa::helper::getReadAccessor(d_minYoung);
     const auto& maxYoung = sofa::helper::getReadAccessor(d_maxYoung);
     const auto& maxYoungVariationRatio = sofa::helper::getReadAccessor(d_maxYoungVariationRatio);
 
-    m_lambdaMin[0] =- (youngModulus - minYoung);
-    m_lambdaMax[0] = maxYoung - youngModulus;
+    m_lambdaMin[0] =- (youngModulus[0] - minYoung);
+    m_lambdaMax[0] = maxYoung - youngModulus[0];
 
-    double youngMin = youngModulus - youngModulus * maxYoungVariationRatio;
+    double youngMin = youngModulus[0] - youngModulus[0] * maxYoungVariationRatio;
     if(youngMin >= minYoung)
-        m_lambdaMin[0] =- youngModulus * maxYoungVariationRatio;
+        m_lambdaMin[0] =- youngModulus[0] * maxYoungVariationRatio;
 
-    double youngMax = youngModulus + youngModulus * maxYoungVariationRatio;
+    double youngMax = youngModulus[0] + youngModulus[0] * maxYoungVariationRatio;
     if(youngMax <= maxYoung)
-        m_lambdaMax[0] = youngModulus * maxYoungVariationRatio;
+        m_lambdaMax[0] = youngModulus[0] * maxYoungVariationRatio;
 }
 
 
@@ -134,6 +128,8 @@ void YoungModulusActuator<DataTypes>::bwdInit()
             msg_info() << "Found force field named " << l_forceField->getName();
             m_initialYoungModulus = l_forceField->d_youngModulus.getValue()[0];
 
+            auto youngModulus = sofa::helper::getWriteAccessor(d_lambda);
+            youngModulus[0] = m_initialYoungModulus;
             d_youngModulus.setValue(m_initialYoungModulus);
             initLimit();
         }
@@ -152,6 +148,8 @@ void YoungModulusActuator<DataTypes>::reset()
     if(d_componentState.getValue() == ComponentState::Invalid)
         return;
 
+    auto youngModulus = sofa::helper::getWriteAccessor(d_lambda);
+    youngModulus[0] = m_initialYoungModulus;
     d_youngModulus.setValue(m_initialYoungModulus);
     initLimit();
 }
@@ -179,6 +177,8 @@ void YoungModulusActuator<DataTypes>::buildConstraintMatrix(const ConstraintPara
     
     MatrixDerivRowIterator rowIterator = matrix.writeLine(constraintIndex);
     const auto& youngModulus = l_forceField->d_youngModulus.getValue()[0];
+    auto lambda = sofa::helper::getWriteAccessor(d_lambda);
+    lambda[0] = youngModulus;
     d_youngModulus.setValue(youngModulus);
 
     for (unsigned int j=0; j<force.size(); j++)
@@ -240,6 +240,8 @@ void YoungModulusActuator<DataTypes>::storeResults(vector<double> &lambda, vecto
     if(d_componentState.getValue() == ComponentState::Invalid)
         return;
 
+    auto l = sofa::helper::getWriteAccessor(d_lambda);
+    l[0] += Real(lambda[0]);
     Real youngModulus = sofa::helper::getWriteAccessor(d_youngModulus);
     youngModulus += Real(lambda[0]);
 

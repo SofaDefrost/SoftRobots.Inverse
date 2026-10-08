@@ -156,6 +156,8 @@ public:
     sofa::Data<double>    d_maxContactForces;
     sofa::Data<SReal >    d_objective;
 
+    sofa::Data<sofa::helper::OptionsGroup> d_mode;
+
 protected:
 
     MultiVecDerivId m_lambdaId;
