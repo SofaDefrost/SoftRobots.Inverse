@@ -71,7 +71,7 @@ void QPInverseProblemQPOases::solveInverseProblem(double& objective,
 
     updateQPMatrices(Q, c, l, u, A, bl, bu);
 
-    qpOASES::int_t nWSR = 500;
+    qpOASES::int_t nWSR = m_maxWorkingSetRecalculations;
     //    Eulalie.C (01/19): QProblemB of qpOASES for simply bounded problem does not work (constraints are not satisfied). We should either find why or remove this commented block of code
     //    if(nbConstraints==0)
     //    {
@@ -87,7 +87,7 @@ void QPInverseProblemQPOases::solveInverseProblem(double& objective,
     //    {
     qpOASES::QProblem problem = getNewQProblem(nWSR);
 
-    problem.init(Q, c, A, l, u, bl, bu, nWSR);
+    qpOASES::returnValue status = problem.init(Q, c, A, l, u, bl, bu, nWSR);
 
     if(problem.isInfeasible())
     {
@@ -98,7 +98,7 @@ void QPInverseProblemQPOases::solveInverseProblem(double& objective,
             updateQPMatrices(Q, c, l, u, A, bl, bu);
 
             problem = getNewQProblem(nWSR);
-            problem.init(Q, c, A, l, u, bl, bu, nWSR);
+            status = problem.init(Q, c, A, l, u, bl, bu, nWSR);
         }
 
         if(problem.isInfeasible() || !problem.isSolved())
@@ -110,12 +110,21 @@ void QPInverseProblemQPOases::solveInverseProblem(double& objective,
 
             problem = getNewQProblem(nWSR);
             problem.setHessianType(qpOASES::HST_INDEF);
-            problem.init(Q, c, A, l, u, bl, bu, nWSR);
+            status = problem.init(Q, c, A, l, u, bl, bu, nWSR);
 
             if(problem.isInfeasible())
                 msg_error("QPInverseProblemImpl") << "QP infeasible at time = " << m_time << ", iteration = " << m_iteration << ", and final nWSR = " << nWSR;
         }
     }
+
+    // Neither solved nor infeasible: qpOASES stopped before converging (typically at the maximum number of working set
+    // recalculations, with many contacts). Its last iterate, used below, can violate the constraints (actuator bounds,
+    // contacts): report it as an error, as an infeasible problem.
+    if(!problem.isInfeasible() && !problem.isSolved())
+        msg_error("QPInverseProblemImpl") << "QP not converged at time = " << m_time << ", iteration = " << m_iteration
+                                          << (status == qpOASES::RET_MAX_NWSR_REACHED ? ": maximum number of working set recalculations reached (nWSR = "
+                                                                                       : ": qpOASES did not solve the problem (nWSR = ")
+                                          << nWSR << ")";
 
     {
         const qpOASES::returnValue primalResult = problem.getPrimalSolution(lambda);
@@ -167,7 +176,7 @@ qpOASES::QProblem QPInverseProblemQPOases::getNewQProblem(int& nWSR)
 
     problem.setPrintLevel(qpOASES::PL_LOW);
 
-    nWSR = 500; // problem.init() changes the variable nWSR with the number of working set recalculation it took to solve the problem. So we have to update it.
+    nWSR = m_maxWorkingSetRecalculations; // problem.init() changes the variable nWSR with the number of working set recalculation it took to solve the problem. So we have to update it.
 
     return problem;
 }

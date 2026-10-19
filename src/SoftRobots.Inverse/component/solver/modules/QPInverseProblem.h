@@ -104,6 +104,7 @@ class SOFA_SOFTROBOTS_INVERSE_API QPInverseProblem : public sofa::component::con
     void setEnergyActuatorsOnly(const bool& actuatorsOnly) {m_actuatorsOnly = actuatorsOnly;}
     void setTolerance(const double& tolerance) {m_tolerance = tolerance;}
     void setMaxIterations(const int& maxIt) {m_maxIteration = maxIt;}
+    void setMaxWorkingSetRecalculations(const int& nWSR) {m_maxWorkingSetRecalculations = nWSR;}
     void setFrictionCoeff(const double& mu) {m_mu = mu;}
     void allowSliding(const bool& allowSliding) {m_allowSliding = allowSliding;}
 
@@ -132,6 +133,7 @@ protected:
     double    m_tolerance;
     int       m_maxIteration;
     int       m_maxNbPivot{100}; //TODO: set by user?
+    int       m_maxWorkingSetRecalculations{500}; // of qpOASES (nWSR)
     double    m_mu{0.0};
     bool      m_allowSliding;
 
