@@ -97,16 +97,21 @@ void LCPQPSolverQPOases::solve(int dim, double*q, double**M, double*res)
     // Solve
     /////////////////////////////////////////
 
-    int_t nWSR = 500;
+    int_t nWSR = m_maxWorkingSetRecalculations;
     QProblem problem(dim, dim);
     Options options;
     problem.setOptions(options);
     problem.setPrintLevel(qpOASES::PL_LOW);
-    problem.init(Q, c, A, l, u, bl, bu, nWSR);
+    const qpOASES::returnValue status = problem.init(Q, c, A, l, u, bl, bu, nWSR);
     problem.getPrimalSolution(lambda);
 
     if(problem.isInfeasible())
         msg_warning("LCPQPSolver") << "QP infeasible.";
+    else if(!problem.isSolved()) // stopped before converging, see QPInverseProblemQPOases::solveInverseProblem
+        msg_error("LCPQPSolver") << "QP not converged"
+                                 << (status == qpOASES::RET_MAX_NWSR_REACHED ? ": maximum number of working set recalculations reached (nWSR = "
+                                                                    : ": qpOASES did not solve the problem (nWSR = ")
+                                 << nWSR << ")";
 
 
     /////////////////////////////////////////
