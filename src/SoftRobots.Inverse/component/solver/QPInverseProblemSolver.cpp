@@ -128,6 +128,10 @@ QPInverseProblemSolver::QPInverseProblemSolver()
 
     , d_tolerance(initData(&d_tolerance, 1e-10, "tolerance", "Tolerance for LCP solver"))
 
+    , d_maxWorkingSetRecalculations(initData(&d_maxWorkingSetRecalculations, 500, "maxWorkingSetRecalculations",
+                                             "Maximum number of working set recalculations of qpOASES (nWSR) per QP. \n"
+                                             "When reached, the QP is not converged (an error is logged)."))
+
     , d_responseFriction(initData(&d_responseFriction, 0., "responseFriction", "Response friction for contact resolution"))
 
     , d_qpSolver(initData(&d_qpSolver, "qpSolver", "QP solver implementation to be used"))
@@ -493,6 +497,7 @@ bool QPInverseProblemSolver::solveSystem(const ConstraintParams * cParams,
     m_currentCP->setEnergyActuatorsOnly(d_actuatorsOnly.getValue());
     m_currentCP->setTolerance(d_tolerance.getValue());
     m_currentCP->setMaxIterations(d_maxIterations.getValue());
+    m_currentCP->setMaxWorkingSetRecalculations(d_maxWorkingSetRecalculations.getValue());
     m_currentCP->setFrictionCoeff(d_responseFriction.getValue());
     m_currentCP->allowSliding(d_allowSliding.getValue());
     if(d_minContactForces.isSet()) m_currentCP->setMinContactForces(d_minContactForces.getValue());

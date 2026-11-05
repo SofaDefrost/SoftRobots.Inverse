@@ -39,6 +39,11 @@ public:
     virtual ~LCPQPSolver() = default;
 
     virtual void solve(int dim, double*q, double**M, double*res) = 0;
+
+    void setMaxWorkingSetRecalculations(const int nWSR) {m_maxWorkingSetRecalculations = nWSR;}
+
+protected:
+    int m_maxWorkingSetRecalculations{500}; // of qpOASES (nWSR)
 };
 
 } // namespace

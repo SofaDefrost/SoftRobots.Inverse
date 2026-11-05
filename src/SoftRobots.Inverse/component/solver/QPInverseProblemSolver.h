@@ -142,6 +142,7 @@ public:
 
     sofa::Data<int>       d_maxIterations;
     sofa::Data<double>    d_tolerance;
+    sofa::Data<int>       d_maxWorkingSetRecalculations;
     sofa::Data<double>    d_responseFriction;
     sofa::Data<sofa::helper::OptionsGroup> d_qpSolver;
 

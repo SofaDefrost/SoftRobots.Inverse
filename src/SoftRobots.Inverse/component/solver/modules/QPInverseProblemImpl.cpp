@@ -432,6 +432,7 @@ void QPInverseProblemImpl::solveContacts(vector<double>& res)
         x.clear();
         x.resize(nbContactRows);
         // will use overrided solve depending on its solver implementation
+        m_lcpQpSolver->setMaxWorkingSetRecalculations(m_maxWorkingSetRecalculations);
         m_lcpQpSolver->solve(nbContactRows, q.ptr(), M.lptr(), x.ptr());
 
         for (unsigned int i=0; i<nbContactRows; i++)
