@@ -49,6 +49,7 @@ namespace constraint {
     extern void registerSurfacePressureSensor(sofa::core::ObjectFactory* factory);
     extern void registerVolumeEffector(sofa::core::ObjectFactory* factory);
     extern void registerYoungModulusActuator(sofa::core::ObjectFactory* factory);
+    extern void registerSpringStiffnessActuator(sofa::core::ObjectFactory* factory);
 }
 
 namespace solver {
@@ -134,6 +135,7 @@ void registerObjects(sofa::core::ObjectFactory* factory)
     constraint::registerSurfacePressureSensor(factory);
     constraint::registerVolumeEffector(factory);
     constraint::registerYoungModulusActuator(factory);
+    constraint::registerSpringStiffnessActuator(factory);
     solver::registerQPInverseProblemSolver(factory);
 }
 
