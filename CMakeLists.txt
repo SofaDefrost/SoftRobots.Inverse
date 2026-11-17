@@ -47,6 +47,8 @@ set(HEADER_FILES
     ${SRC_DIR}/component/constraint/JointActuator.inl
     ${SRC_DIR}/component/constraint/SlidingActuator.h
     ${SRC_DIR}/component/constraint/SlidingActuator.inl
+    ${SRC_DIR}/component/constraint/SpringStiffnessActuator.h
+    ${SRC_DIR}/component/constraint/SpringStiffnessActuator.inl
     ${SRC_DIR}/component/constraint/SurfacePressureActuator.h
     ${SRC_DIR}/component/constraint/SurfacePressureActuator.inl
 
@@ -100,6 +102,7 @@ set(SOURCE_FILES
     ${SRC_DIR}/component/constraint/ForcePointActuator.cpp
     ${SRC_DIR}/component/constraint/JointActuator.cpp
     ${SRC_DIR}/component/constraint/SlidingActuator.cpp
+    ${SRC_DIR}/component/constraint/SpringStiffnessActuator.cpp
     ${SRC_DIR}/component/constraint/SurfacePressureActuator.cpp
 
     # SENSOR
