@@ -54,7 +54,7 @@ using sofa::linearalgebra::LPtrFullMatrix;
 
 using sofa::component::collision::response::contact::CollisionResponse;
 using sofa::core::objectmodel::BaseContext;
-using sofa::core::behavior::BaseConstraint;
+using sofa::core::behavior::BaseLagrangianConstraint;
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
